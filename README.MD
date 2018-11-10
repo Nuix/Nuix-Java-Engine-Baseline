@@ -39,6 +39,43 @@ Once a license has been found which is available and passes requirements of the 
 
 Once your code completes and `Consumer.accept` returns, `withDongleLicense` closes the `Engine` instance and `GlobalContainer` instance, during which the license you acquired is released.
 
+## LicenseFilter
+
+This class is used by `EngineWrapper` while iterating available licenses to determine which license to acquire.  The default instance included with `EngineWrapper` will accept any license, effectively meaning that the first available license is acquired.  You can get the `LicenseFilter` used by an `EngineWrapper` instance by calling `EngineWrapper.getLicenseFilter`.  Once you have the license filter you can alter it to choose a license based on:
+- Whether a license has at least a minimum number of workers available
+- Whether a license has no more than a maximum number of workers available
+- Whether a license has a particular short name such as `enterprise-workstation`
+- Whether a license has one or more [features](https://download.nuix.com/releases/desktop/stable/docs/en/reference/licence-profiles.html)
+
+For example, if I wish to only acquire a license which
+- Has at least 8 workers
+- Has the features:
+    - `EXPORT_ITEMS`
+    - `CASE_CREATION`
+
+I can do the following:
+
+```java
+EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\7.6.5");
+
+LicenseFilter filter = wrapper.getLicenseFilter();
+filter.setMinWorkers(8);
+filter.addRequiredFeature("EXPORT_ITEMS");
+filter.addRequiredFeature("CASE_CREATION");
+
+try {
+	wrapper.withServerLicense("username", "password", new Consumer<Utilities>(){
+		public void accept(Utilities utilities) {
+			// If we have reached here, we should have an instance which has obtained a license
+			// with at least 8 workers and features "EXPORT_ITEMS" AND "CASE_CREATION"
+		}
+	});
+		
+} catch (Exception e) {
+	logger.error("Unhandled exception",e);
+}
+```
+
 ## LicenseFeaturesLogger
 
 While `EngineWrapper` is iterating each available license, it will also log the feature set available in each license using `LicenseFeatureLogger.logFeaturesOfLicense(license)`.  An example of what this looks like in the logs:
@@ -88,7 +125,7 @@ While `EngineWrapper` is iterating each available license, it will also log the 
 
 ## ThirdPartyDependencyChecker
 
-Once a license has been obtained by `EngineWrapper` and a `Utilities` object has been obtaine from the now licensed `Engine` instance, this class logs third party dependency information via a call to `ThirdPartyDependencyChecker.logAllDependencyInfo(Utilities)`.  The output of which looks like this:
+Once a license has been obtained by `EngineWrapper` and a `Utilities` object has been obtained from the now licensed `Engine` instance, this class logs third party dependency information via a call to `ThirdPartyDependencyChecker.logAllDependencyInfo(Utilities)`.  The output of which looks like this:
 
 ```
 2018-11-09 15:37:45 INFO  ThirdPartyDependencyChecker:logAllDependencyInfo():25 - Reviewing third party dependency statuses:
