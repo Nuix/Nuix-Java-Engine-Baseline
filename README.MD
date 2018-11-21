@@ -33,9 +33,60 @@ The workflow of `withDongleLicense` and `withServerLicense` are basically the sa
 
 The method begins by ensuring the specified engine release directory does indeed exist since nothing will work without this.  The method then loads the properties in the embedded resource `log4j.properties`.  This file contains various properties related to how [Log4j](https://github.com/apache/log4j) should be configured.  This file is essentially the same as the one included with a Nuix Workbench install at `/config/log4j.properties`.  The method then proceeds to construct a `GlobalContainer` instance, of which there should only ever be 1 per Java Virtual Machine.
 
-From the `GlobalContainer` instance an `Engine` instance is constructed.  From the `Engine` instance a `Licensor` is obtained.  In the case of `withDongleLicense`, `Licensor.findAvailableLicences` is called with the setting `sources` having a value of `dongle`.  `withServerLicence` would instead call `Licensor.findAvailableLicences` with the setting `sources` having a value of `server`.  `Licensor.findAvailableLicences` returns an `Iterable<AvailableLicence>`.  This is where we can begin to inspect the licenses available.  The `EngineWrapper` class makes use of a `LicenseFilter` object to test each license for some requirements such as having a certain number of workers available, certain license type or particular features.  The `EngineWrapper` defaults to an instance of `LicenseFilter` which will approve any license that is available.
+From the `GlobalContainer` instance an `Engine` instance is constructed, from that a `Licensor` is obtained.  In the case of `withDongleLicense`, `Licensor.findAvailableLicences` is called with the setting `sources` having a value of `dongle`.  `withServerLicence` instead provides the setting `sources` a value of `server`.
 
-Once a license has been found which is available and passes requirements of the license filter, its is acquired by calling `AvailableLicense.acquire`, making your engine instance licensed and that license exclusive to you application.  At this point `withDongleLicense` creates and instance of the Nuix `Utilities` object and provides it to the `accept` method of the `Consumer<Utilities>` object passed to the method.  This is where your code can begin working with the Nuix API, creating cases, processing data, etc.
+```java
+// withDongleLicense
+Map<String,Object> licenseOptions = new HashMap<String,Object>();
+licenseOptions.put("sources","dongle");
+
+// withServerLicense
+Map<String,Object> licenseOptions = new HashMap<String,Object>();
+licenseOptions.put("sources","server");
+
+Iterable<AvailableLicence> licences = licensor.findAvailableLicences(licenseOptions);
+```
+
+`Licensor.findAvailableLicences` returns an `Iterable<AvailableLicence>`.  This is where we can begin to inspect the licenses available.  The `EngineWrapper` class makes use of a `LicenseFilter` object to test each license for some requirements such as having a certain number of workers available, certain license type or particular features.  The `EngineWrapper` defaults to an instance of `LicenseFilter` which will approve any license that is available.
+
+```java
+// Iterate available licenses
+for(AvailableLicence license : licences) {
+	logger.info("\t Count: " + license.getCount());
+	logger.info("\t Workers: " + license.getWorkers());
+	logger.info("\t Short Name: " + license.getShortName());
+	logger.info("\t Type: " + license.getSource().getType());
+	logger.info("\t ID: " + license.getSource().getLocation());
+	logger.info("\t Description: " + license.getDescription());
+	LicenseFeaturesLogger.logFeaturesOfLicense(license);
+	
+	if(licenseFilter.isValid(license)) {
+		logger.info(">>>> Acquiring this licence");
+		license.acquire();
+		licenceObtained = true;
+	} else {
+		logger.info("<<<< Ignoring this license, does not meet requirements of license filter");
+		continue;
+	}
+	
+	break;
+}
+```
+
+Once a license has been found which is available and passes requirements of the license filter, its is acquired by calling `AvailableLicense.acquire`, making your engine instance licensed and that license exclusive to your application.  At this point `withDongleLicense` creates and instance of the Nuix `Utilities` object and provides it to the `accept` method of the `Consumer<Utilities>` object passed to the method.  This is where your code can begin working with the Nuix API, creating cases, processing data, etc.
+
+```java
+// EngineWrapper
+consumer.accept(utilities);
+
+// Your code
+wrapper.withDongleLicense(new Consumer<Utilities>(){
+	public void accept(Utilities utilities) {
+		// Accept method in Consumer object you provided
+		// Called if license was obtained, meaning we should be ready to begin using the Nuix API
+	}
+});
+```
 
 Once your code completes and `Consumer.accept` returns, `withDongleLicense` closes the `Engine` instance and `GlobalContainer` instance, during which the license you acquired is released.
 
@@ -138,6 +189,31 @@ Once a license has been obtained by `EngineWrapper` and a `Utilities` object has
 2018-11-09 15:37:45 INFO  ThirdPartyDependencyChecker:logDependencyInfo():38 - [ ] 'FFmpeg / FFprobe': Not found
 2018-11-09 15:37:45 INFO  ThirdPartyDependencyChecker:logDependencyInfo():38 - [X] 'Relativity': Found
 2018-11-09 15:37:45 INFO  ThirdPartyDependencyChecker:logDependencyInfo():38 - [ ] 'Nuix OCR': Not found
+```
+
+## NuixDiagnostics
+
+When there is a problem it is handy to capture a snapshot of the state of things for trouble shooting purposes.  In the Nuix Workbench GUI we can generate a diagnostics file with the click of a button.  When using the Java engine API we have to do a bit more work.  This class provides a method `saveDiagnostics`.  The method accepts as an argument the directory (as a String or java.io.File) to which the diagnostics zip will be saved.  The output zip file will be automatically be given a time stamped name in the form `NuixEngineDiagnostics-YYYYMMDDHHmmss.zip`, for example `NuixEngineDiagnostics-201811325100354.zip`.
+
+In this example `NuixDiagnostics.saveDiagnostics` is called when an exception bubbles all the way up to our main method.
+
+```java
+public static void main(String[] args) throws Exception {
+	EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\7.6.5");
+	
+	try {
+		wrapper.withDongleLicense(new Consumer<Utilities>(){
+			public void accept(Utilities utilities) {
+				// ...
+			}
+		});
+
+	} catch (Exception e) {
+		logger.error("Unhandled exception",e);
+		// Lets dump a diagnostics file since something went wrong and having this may be helpful for trouble shooting
+		NuixDiagnostics.saveDiagnostics("C:\\EngineDiagnostics");
+	}
+}
 ```
 
 # License

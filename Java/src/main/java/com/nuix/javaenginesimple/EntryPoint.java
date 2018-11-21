@@ -46,6 +46,8 @@ public class EntryPoint {
 			
 		} catch (Exception e) {
 			logger.error("Unhandled exception",e);
+			// Lets dump a diagnostics file since something went wrong and having this may be helpful for trouble shooting
+			NuixDiagnostics.saveDiagnostics("C:\\EngineDiagnostics");
 		}
 	}
 }
