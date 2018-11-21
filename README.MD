@@ -193,7 +193,7 @@ Once a license has been obtained by `EngineWrapper` and a `Utilities` object has
 
 ## NuixDiagnostics
 
-When there is a problem it is handy to capture a snapshot of the state of things for trouble shooting purposes.  In the Nuix Workbench GUI we can generate a diagnostics file with the click of a button.  When using the Java engine API we have to do a bit more work.  This class provides a method `saveDiagnostics`.  The method accepts as an argument the directory (as a String or java.io.File) to which the diagnostics zip will be saved.  The output zip file will be automatically be given a time stamped name in the form `NuixEngineDiagnostics-YYYYMMDDHHmmss.zip`, for example `NuixEngineDiagnostics-201811325100354.zip`.
+When there is a problem it is handy to capture a snapshot of the state of things for trouble shooting purposes.  In the Nuix Workbench GUI we can generate a diagnostics file with the click of a button.  When using the Java engine API we have to do a bit more work.  This class provides a method `saveDiagnostics`.  The method accepts as an argument the directory (as a String or java.io.File) to which the diagnostics zip will be saved.  The generated zip file will automatically be given a time stamped name in the form `NuixEngineDiagnostics-YYYYMMDDHHmmss.zip`, for example `NuixEngineDiagnostics-201811325100354.zip`.
 
 In this example `NuixDiagnostics.saveDiagnostics` is called when an exception bubbles all the way up to our main method.
 
