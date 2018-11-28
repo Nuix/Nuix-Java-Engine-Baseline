@@ -132,46 +132,46 @@ try {
 While `EngineWrapper` is iterating each available license, it will also log the feature set available in each license using `LicenseFeatureLogger.logFeaturesOfLicense(license)`.  An example of what this looks like in the logs:
 
 ```
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():74 - License Features:
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] OTHER_EMAIL
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] LOG_STASH
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] NETWORK_DATA
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] OUTLOOK
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] GENERAL_DATA
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] DESKTOP
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] OUTLOOK_EXPRESS
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] LOTUS_NOTES
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] GRAPH
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] IMAP_POP
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] CYBER_CONTEXT
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] ANALYSIS
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] SCRIPTING
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] EXPORT_SINGLE_ITEM
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] EXPORT_ITEMS
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] EXPORT_VIEW
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] OCR_PROCESSING
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] WORKER_SCRIPTING
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] MOBILE_DEVICE_IMAGING
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] CASE_CREATION
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] PRODUCTION_SET
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] PARTIAL_LOAD
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] EXPORT_LEGAL
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [ ] ELASTIC_SEARCH
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] EXPORT_CASE_SUBSET
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] EXCHANGE_WS
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] FAST_REVIEW
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] AUTOMATIC_CLASSIFIER_EDITING
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] WORKER
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [X] METADATA_IMPORT
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [ ] UNRESTRICTED_CASE_ACCESS
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [ ] SYMANTEC_VAULT
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [ ] MAIL_XTENDER
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [ ] AXS_ONE
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [ ] ZANTAZ
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [ ] SOCIAL_MEDIA
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [ ] LIGHT_SPEED
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [ ] GWAVA
-2018-11-09 15:37:45 INFO  LicenseFeatures:logFeaturesOfLicense():78 - [ ] AOS_DATA
+2018-11-28 11:35:30 INFO  LicenseFeatures:logFeaturesOfLicense():83 - License Features:
+[X] ANALYSIS
+[ ] AOS_DATA
+[X] AUTOMATIC_CLASSIFIER_EDITING
+[ ] AXS_ONE
+[X] CASE_CREATION
+[X] CYBER_CONTEXT
+[X] DESKTOP
+[X] ELASTIC_SEARCH
+[X] EXCHANGE_WS
+[X] EXPORT_CASE_SUBSET
+[X] EXPORT_ITEMS
+[X] EXPORT_LEGAL
+[X] EXPORT_SINGLE_ITEM
+[X] EXPORT_VIEW
+[X] FAST_REVIEW
+[X] GENERAL_DATA
+[X] GRAPH
+[ ] GWAVA
+[X] IMAP_POP
+[X] LIGHT_SPEED
+[X] LOG_STASH
+[X] LOTUS_NOTES
+[ ] MAIL_XTENDER
+[X] METADATA_IMPORT
+[X] MOBILE_DEVICE_IMAGING
+[X] NETWORK_DATA
+[X] OCR_PROCESSING
+[X] OTHER_EMAIL
+[X] OUTLOOK
+[X] OUTLOOK_EXPRESS
+[X] PARTIAL_LOAD
+[X] PRODUCTION_SET
+[X] SCRIPTING
+[ ] SOCIAL_MEDIA
+[ ] SYMANTEC_VAULT
+[ ] UNRESTRICTED_CASE_ACCESS
+[X] WORKER
+[X] WORKER_SCRIPTING
+[ ] ZANTAZ
 ```
 
 ## ThirdPartyDependencyChecker
@@ -179,16 +179,16 @@ While `EngineWrapper` is iterating each available license, it will also log the 
 Once a license has been obtained by `EngineWrapper` and a `Utilities` object has been obtained from the now licensed `Engine` instance, this class logs third party dependency information via a call to `ThirdPartyDependencyChecker.logAllDependencyInfo(Utilities)`.  The output of which looks like this:
 
 ```
-2018-11-09 15:37:45 INFO  ThirdPartyDependencyChecker:logAllDependencyInfo():25 - Reviewing third party dependency statuses:
-2018-11-09 15:37:45 INFO  ThirdPartyDependencyChecker:logDependencyInfo():38 - [X] 'Lotus Notes': Found Version 9.0.1
-2018-11-09 15:37:45 INFO  ThirdPartyDependencyChecker:logDependencyInfo():38 - [ ] 'Microsoft Access': Not found
-2018-11-09 15:37:45 INFO  ThirdPartyDependencyChecker:logDependencyInfo():38 - [X] 'Microsoft Word': Found PDF Capable Word
-2018-11-09 15:37:45 INFO  ThirdPartyDependencyChecker:logDependencyInfo():38 - [X] 'Microsoft Excel': Found PDF Capable Excel
-2018-11-09 15:37:45 INFO  ThirdPartyDependencyChecker:logDependencyInfo():38 - [X] 'Microsoft PowerPoint': Found PDF Capable PowerPoint
-2018-11-09 15:37:45 INFO  ThirdPartyDependencyChecker:logDependencyInfo():38 - [ ] 'Microsoft Visio': Not found
-2018-11-09 15:37:45 INFO  ThirdPartyDependencyChecker:logDependencyInfo():38 - [ ] 'FFmpeg / FFprobe': Not found
-2018-11-09 15:37:45 INFO  ThirdPartyDependencyChecker:logDependencyInfo():38 - [X] 'Relativity': Found
-2018-11-09 15:37:45 INFO  ThirdPartyDependencyChecker:logDependencyInfo():38 - [ ] 'Nuix OCR': Not found
+2018-11-28 11:35:30 INFO  ThirdPartyDependencyChecker:logAllDependencyInfo():38 - Reviewing third party dependency statuses:
+[X] 'Lotus Notes': Found Version 9.0.1
+[ ] 'Microsoft Access': Not found
+[X] 'Microsoft Word': Found PDF Capable Word
+[X] 'Microsoft Excel': Found PDF Capable Excel
+[X] 'Microsoft PowerPoint': Found PDF Capable PowerPoint
+[ ] 'Microsoft Visio': Not found
+[ ] 'FFmpeg / FFprobe': Not found
+[X] 'Relativity': Found
+[ ] 'Nuix OCR': Not found
 ```
 
 ## NuixDiagnostics
@@ -210,7 +210,8 @@ public static void main(String[] args) throws Exception {
 
 	} catch (Exception e) {
 		logger.error("Unhandled exception",e);
-		// Lets dump a diagnostics file since something went wrong and having this may be helpful for trouble shooting
+		// Lets dump a diagnostics file since something went wrong and having
+		// this may be helpful for trouble shooting
 		NuixDiagnostics.saveDiagnostics("C:\\EngineDiagnostics");
 	}
 }

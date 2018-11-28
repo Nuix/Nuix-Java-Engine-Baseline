@@ -1,5 +1,7 @@
 package com.nuix.javaenginesimple;
 
+import java.util.StringJoiner;
+
 import org.apache.log4j.Logger;
 
 import nuix.LicenceProperties;
@@ -17,45 +19,45 @@ public class LicenseFeaturesLogger {
 	// List generated from 7.6 license profiles documentation found here:
 	// https://download.nuix.com/releases/desktop/stable/docs/en/reference/licence-profiles.html
 	private static String[] knownFeatures = new String[] {
-		"OTHER_EMAIL",
-		"LOG_STASH",
-		"NETWORK_DATA",
-		"OUTLOOK",
-		"GENERAL_DATA",
-		"DESKTOP",
-		"OUTLOOK_EXPRESS",
-		"LOTUS_NOTES",
-		"GRAPH",
-		"IMAP_POP",
-		"CYBER_CONTEXT",
 		"ANALYSIS",
-		"SCRIPTING",
-		"EXPORT_SINGLE_ITEM",
-		"EXPORT_ITEMS",
-		"EXPORT_VIEW",
-		"OCR_PROCESSING",
-		"WORKER_SCRIPTING",
-		"MOBILE_DEVICE_IMAGING",
-		"CASE_CREATION",
-		"PRODUCTION_SET",
-		"PARTIAL_LOAD",
-		"EXPORT_LEGAL",
-		"ELASTIC_SEARCH",
-		"EXPORT_CASE_SUBSET",
-		"EXCHANGE_WS",
-		"FAST_REVIEW",
-		"AUTOMATIC_CLASSIFIER_EDITING",
-		"WORKER",
-		"METADATA_IMPORT",
-		"UNRESTRICTED_CASE_ACCESS",
-		"SYMANTEC_VAULT",
-		"MAIL_XTENDER",
-		"AXS_ONE",
-		"ZANTAZ",
-		"SOCIAL_MEDIA",
-		"LIGHT_SPEED",
-		"GWAVA",
 		"AOS_DATA",
+		"AUTOMATIC_CLASSIFIER_EDITING",
+		"AXS_ONE",
+		"CASE_CREATION",
+		"CYBER_CONTEXT",
+		"DESKTOP",
+		"ELASTIC_SEARCH",
+		"EXCHANGE_WS",
+		"EXPORT_CASE_SUBSET",
+		"EXPORT_ITEMS",
+		"EXPORT_LEGAL",
+		"EXPORT_SINGLE_ITEM",
+		"EXPORT_VIEW",
+		"FAST_REVIEW",
+		"GENERAL_DATA",
+		"GRAPH",
+		"GWAVA",
+		"IMAP_POP",
+		"LIGHT_SPEED",
+		"LOG_STASH",
+		"LOTUS_NOTES",
+		"MAIL_XTENDER",
+		"METADATA_IMPORT",
+		"MOBILE_DEVICE_IMAGING",
+		"NETWORK_DATA",
+		"OCR_PROCESSING",
+		"OTHER_EMAIL",
+		"OUTLOOK",
+		"OUTLOOK_EXPRESS",
+		"PARTIAL_LOAD",
+		"PRODUCTION_SET",
+		"SCRIPTING",
+		"SOCIAL_MEDIA",
+		"SYMANTEC_VAULT",
+		"UNRESTRICTED_CASE_ACCESS",
+		"WORKER",
+		"WORKER_SCRIPTING",
+		"ZANTAZ",
 	};
 
 	/***
@@ -71,11 +73,13 @@ public class LicenseFeaturesLogger {
 	 * @param license The license to log feature presence information about
 	 */
 	public static void logFeaturesOfLicense(LicenceProperties license) {
-		logger.info("License Features:");
+		StringJoiner message = new StringJoiner("\n");
+		message.add("License Features:");
 		for (int i = 0; i < knownFeatures.length; i++) {
 			String feature = knownFeatures[i];
 			boolean hasFeature = license.hasFeature(feature);
-			logger.info(String.format("[%s] %s", hasFeature ? "X":" ", feature));
+			message.add(String.format("[%s] %s", hasFeature ? "X":" ", feature));
 		}
+		logger.info(message.toString());
 	}
 }

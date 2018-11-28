@@ -1,6 +1,7 @@
 package com.nuix.javaenginesimple;
 
 import java.util.List;
+import java.util.StringJoiner;
 
 import org.apache.log4j.Logger;
 
@@ -22,24 +23,18 @@ public class ThirdPartyDependencyChecker {
 	 * @param utilities Needs an instance of Utilities to get access to third party dependency information
 	 */
 	public static void logAllDependencyInfo(Utilities utilities) {
-		logger.info("Reviewing third party dependency statuses:");
+		StringJoiner message = new StringJoiner("\n");
+		message.add("Reviewing third party dependency statuses:");
 		List<ThirdPartyDependency> dependencies = utilities.getThirdPartyDependencies();
 		for(ThirdPartyDependency dependency : dependencies) {
-			logDependencyInfo(dependency);
+			ThirdPartyDependencyStatus status = dependency.performCheck();
+			message.add(String.format(
+					"[%s] '%s': %s",
+					status.isAttentionRequired() ? " " : "X",
+					dependency.getDescription(),
+					status.getMessage()
+			));
 		}
-	}
-	
-	/***
-	 * Logs information about a single Nuix third party dependency
-	 * @param dependency The third party dependency to log about
-	 */
-	public static void logDependencyInfo(ThirdPartyDependency dependency) {
-		ThirdPartyDependencyStatus status = dependency.performCheck();
-		logger.info(String.format(
-				"[%s] '%s': %s",
-				status.isAttentionRequired() ? " " : "X",
-				dependency.getDescription(),
-				status.getMessage()
-		));
+		logger.info(message.toString());
 	}
 }
