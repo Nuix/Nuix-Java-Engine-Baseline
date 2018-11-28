@@ -27,6 +27,8 @@ This is a base line example of a Java project making use of the Java Engine API 
 
 In the example we start at the `main` method of the `EntryPoint` class.  The method begins by creating a new instance of the `EngineWrapper` class, providing it the root directory of the engine release we downloaded earlier.  At this point not much has happened.  Its once we call `withDongleLicense` or `withServerLicense` that the `EngineWrapper` class gets to work.
 
+Note that the classes (such as `EngineWrapper`) provided in this project are not required to use the engine API, instead they demonstrate one way you can implement some of this base functionality.
+
 ## EngineWrapper
 
 The workflow of `withDongleLicense` and `withServerLicense` are basically the same with the exception that one instructs Nuix to look for a dongle and the other tell Nuix to connect to a Nuix Management Server with a particular user name and password.  In the following I'll focus on `withDongleLicense` and note differences in behavior by `withServerLicense`.
