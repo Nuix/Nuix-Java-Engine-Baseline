@@ -26,6 +26,17 @@ public class LicenseFilter {
 	 * Creates a new instance which by default will accept any license.
 	 */
 	public LicenseFilter() {
+		acquireAnyLicense();
+	}
+	
+	/***
+	 * Resets filtering criteria of this instance such that it will accept any license configuration.
+	 */
+	public void acquireAnyLicense() {
+		minWorkers = 0;
+		maxWorkers = 0;
+		name = null;
+		requiredFeatures.clear();
 	}
 	
 	/***
