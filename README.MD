@@ -17,7 +17,7 @@ This is a base line example of a Java project making use of the Java Engine API 
 
 ## Setup
 
-- To begin you will need to [download](https://download.nuix.com/releases/engine) a release of the Nuix Java Engine and extract that somewhere on your local machine.  You will want to extract the engine release to a directory with a relatively short name such as `D:\engine-releases\7.6.5`.  The short directory name is due to the way the class path is passed to Nuix Worker processes, a longer directory name can cause issues later on.
+- To begin you will need to [download](https://download.nuix.com/releases/engine) a release of the Nuix Java Engine and extract that somewhere on your local machine.  You will want to extract the engine release to a directory with a relatively short name such as `D:\engine-releases\7.6.8`.  The short directory name is due to the way the class path is passed to Nuix Worker processes, a longer directory name can cause issues later on.
 - Have a Nuix license available, be it a license dongle or a Nuix Management Server instance you can obtain a license from.
 - Download a copy of this repository and open the `Java` sub directory in your IDE of choice.  Add the contents of the `lib` sub directory of your engine release to your build path.
 - Ensure that the Windows `PATH` environment variable references the `bin` sub directory of your engine release as well as the `bin\x86` directory.  For example if I have my engine distribution located at `D:\engine-releases\7.6.6`, I will want to add the following to my `PATH`: `D:\engine-releases\7.6.6\bin` and `D:\engine-releases\7.6.6\bin\x86`.
@@ -109,7 +109,7 @@ For example, if I wish to only acquire a license which
 I can do the following:
 
 ```java
-EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\7.6.5");
+EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\7.6.8");
 
 LicenseFilter filter = wrapper.getLicenseFilter();
 filter.setMinWorkers(8);
@@ -201,7 +201,7 @@ In this example `NuixDiagnostics.saveDiagnostics` is called when an exception bu
 
 ```java
 public static void main(String[] args) throws Exception {
-	EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\7.6.5");
+	EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\7.6.8");
 	
 	try {
 		wrapper.withDongleLicense(new Consumer<Utilities>(){
