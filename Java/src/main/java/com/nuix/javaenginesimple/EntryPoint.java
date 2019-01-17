@@ -3,6 +3,7 @@ package com.nuix.javaenginesimple;
 import java.util.function.Consumer;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 
 import nuix.Utilities;
 
@@ -16,7 +17,10 @@ public class EntryPoint {
 	private final static Logger logger = Logger.getLogger("EntryPoint");
 
 	public static void main(String[] args) throws Exception {
-		
+		// Specify a custom location for our log files
+		String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
+		System.getProperties().put("nuix.logdir", logDirectory);
+				
 		// Create an instance of engine wrapper, which will do the work of getting the Nuix bits initialized.
 		// Engine wrapper will need to know what directory you engine release resides.
 		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\7.6.8");
