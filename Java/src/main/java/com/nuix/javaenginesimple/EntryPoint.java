@@ -23,7 +23,7 @@ public class EntryPoint {
 				
 		// Create an instance of engine wrapper, which will do the work of getting the Nuix bits initialized.
 		// Engine wrapper will need to know what directory you engine release resides.
-		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\7.8.0.10");
+		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\7.8.7.573");
 		
 		try {
 			// Attempt to initialize Nuix with a dongle based license
