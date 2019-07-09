@@ -49,17 +49,6 @@ public class EntryPoint {
 				}
 			});
 			
-			// Attempt to initialize Nuix with a cloud based server based license
-			wrapper.withServerLicense("nuix", "nuixpassword", new Consumer<Utilities>(){
-				public void accept(Utilities utilities) {
-					// Here's where we would begin to make use of the Nuix API for
-					// the more interesting things like opening a case, searching ,tagging, etc
-					logger.info("Looks like it worked! Now time to do something great.");
-					
-					//TODO: Use Nuix to do stuff
-				}
-			});
-			
 		} catch (Exception e) {
 			logger.error("Unhandled exception",e);
 			// Lets dump a diagnostics file since something went wrong and having
