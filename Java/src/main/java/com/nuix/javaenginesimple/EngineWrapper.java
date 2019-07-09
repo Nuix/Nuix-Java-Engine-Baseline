@@ -11,6 +11,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import nuix.Utilities;
 import nuix.engine.AvailableLicence;
+import nuix.engine.CertificateTrustCallback;
+import nuix.engine.CertificateTrustCallbackInfo;
 import nuix.engine.CredentialsCallback;
 import nuix.engine.CredentialsCallbackInfo;
 import nuix.engine.Engine;
@@ -34,9 +36,13 @@ public class EngineWrapper {
 	
 	private File nuixBaseDirectory = null;
 	private Engine engine = null;
+	
 	// We will use this while iterating licenses to determine which one to acquire.
 	// By default this filter accepts any license.
 	private LicenseFilter licenseFilter = new LicenseFilter();
+	
+	private CertificateTrustCallback certificateTrustCallback = null;
+	private String nuixCloudLicenseServer = "licence-api.nuix.com";
 	
 	/***
 	 * Creates a new instance running against the specified engine release.
@@ -132,9 +138,37 @@ public class EngineWrapper {
 	 * Exceptions are caught locally, logged and then rethrown.
 	 */
 	public void withServerLicense(final String userName, final String password, Consumer<Utilities> consumer) throws Exception{
+		withServerLicense(null, userName, password, consumer);
+	}
+	
+	/***
+	 * Attempts to obtain a server based license.  If and when a server based license is obtained, a Utilities object will be
+	 * provided to consumer, which may then make use of the Nuix API to do work.  Once the consumer has returned this method will
+	 * cleanup the Engine and GlobalContainer instances it created.
+	 * @param userName Username to provide license server
+	 * @param password Password to provide license server
+	 * @param consumer Consumer which will make use of Utilities object once a license has been obtained.
+	 * @throws Exception May throw exceptions due to: error creating GlobalContainer, error creating Engine instance or error obtaining license.
+	 * Exceptions are caught locally, logged and then rethrown.
+	 */
+	public void withServerLicense(final String server, final String userName, final String password, Consumer<Utilities> consumer) throws Exception{
+		if(server != null) {
+			System.getProperties().put("nuix.registry.servers", server);
+		}
+		
 		// Make sure we have a valid path to Nuix distributable
 		if(nuixBaseDirectory == null){
 			throw new Exception(String.format("Value provided for nuixBaseDirectory is invalid, value provided is: %s",nuixBaseDirectory));
+		}
+		
+		// Warn if we don't have a certificate trust callback.  Technically this license acquisition could succeed without
+		// one, but there is also a good chance it will fail.  If it fails, its good to have something in the log suggesting what
+		// the user could do to resolve the issue.
+		if(certificateTrustCallback == null) {
+			String message = "No CertificateTrustCallback was provided.  Please either call EngineWrapper.trustAllCertificates() or "+
+					"EnginerWrapper.setCertificateTrustCallback(CertificateTrustCallback certificateTrustCallback) before attempting to "+
+					"obtain a license from a license server.";
+			logger.warn(message);
 		}
 		
 		Properties props = new Properties();
@@ -157,10 +191,15 @@ public class EngineWrapper {
 				logger.info("Specifying credentials to use with license server...");
 				engine.whenAskedForCredentials(new CredentialsCallback() {
 					public void execute(CredentialsCallbackInfo info) {
+						logger.info(String.format("Providing credentials for %s to license server...", userName));
 						info.setUsername(userName);
 						info.setPassword(password);
 					}
 				});
+				
+				if(certificateTrustCallback != null) {
+					engine.whenAskedForCertificateTrust(certificateTrustCallback);
+				}
 				
 				logger.info("Attempting to obtain a license...");
 				try {
@@ -214,6 +253,11 @@ public class EngineWrapper {
 			logger.info(String.format("\t%s: %s",entry.getKey(),entry.getValue()));
 		}
 		
+//		logger.info("Potential license sources:");
+//		for(LicenceSource source : licensor.findLicenceSources()) {
+//			logger.info(source.getLocation());
+//		}
+		
 		Iterable<AvailableLicence> licences = licensor.findAvailableLicences(licenseOptions);
 		
 		logger.info("Iterating available licences...");
@@ -264,6 +308,37 @@ public class EngineWrapper {
 		
 		//Obtain an engine instance
 		engine = container.newEngine(engineConfiguration);
+	}
+	
+	/***
+	 * Provides a CertificateTrustCallback that trusts ALL certificates.  Useful for testing purposes, but it is recommended for production
+	 * deployments of your solution that you provide your own CertificateTrustCallback via {@link #setCertificateTrustCallback(CertificateTrustCallback)}.
+	 */
+	public void trustAllCertificates() {
+		certificateTrustCallback = new CertificateTrustCallback() {
+			@Override
+			public void execute(CertificateTrustCallbackInfo info) {
+				logger.info("Trusting certificate blindly!");
+				
+				info.setTrusted(true);
+			}
+		};
+	}
+
+	public CertificateTrustCallback getCertificateTrustCallback() {
+		return certificateTrustCallback;
+	}
+
+	public void setCertificateTrustCallback(CertificateTrustCallback certificateTrustCallback) {
+		this.certificateTrustCallback = certificateTrustCallback;
+	}
+
+	public String getNuixCloudLicenseServer() {
+		return nuixCloudLicenseServer;
+	}
+
+	public void setNuixCloudLicenseServer(String nuixCloudLicenseServerUrl) {
+		this.nuixCloudLicenseServer = nuixCloudLicenseServerUrl;
 	}
 
 	/***
