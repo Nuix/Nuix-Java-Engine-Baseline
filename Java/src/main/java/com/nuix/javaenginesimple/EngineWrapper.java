@@ -42,7 +42,6 @@ public class EngineWrapper {
 	private LicenseFilter licenseFilter = new LicenseFilter();
 	
 	private CertificateTrustCallback certificateTrustCallback = null;
-	private String nuixCloudLicenseServer = "licence-api.nuix.com";
 	
 	/***
 	 * Creates a new instance running against the specified engine release.
