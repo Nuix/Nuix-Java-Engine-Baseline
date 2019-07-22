@@ -3,11 +3,9 @@ package com.nuix.javaenginesimple;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.function.Consumer;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 import nuix.Utilities;
 import nuix.engine.AvailableLicence;
@@ -72,10 +70,6 @@ public class EngineWrapper {
 		if(nuixBaseDirectory == null){
 			throw new Exception(String.format("Value provided for nuixBaseDirectory is invalid, value provided is: %s",nuixBaseDirectory));
 		}
-		
-		Properties props = new Properties();
-		props.load(getClass().getResourceAsStream("/log4j.properties"));
-		PropertyConfigurator.configure(props);
 				
 		logger.info("Creating GlobalContainer...");
 		try {
@@ -169,10 +163,6 @@ public class EngineWrapper {
 					"obtain a license from a license server.";
 			logger.warn(message);
 		}
-		
-		Properties props = new Properties();
-		props.load(getClass().getResourceAsStream("/log4j.properties"));
-		PropertyConfigurator.configure(props);
 		
 		logger.info("Creating GlobalContainer...");
 		try {
@@ -330,14 +320,6 @@ public class EngineWrapper {
 
 	public void setCertificateTrustCallback(CertificateTrustCallback certificateTrustCallback) {
 		this.certificateTrustCallback = certificateTrustCallback;
-	}
-
-	public String getNuixCloudLicenseServer() {
-		return nuixCloudLicenseServer;
-	}
-
-	public void setNuixCloudLicenseServer(String nuixCloudLicenseServerUrl) {
-		this.nuixCloudLicenseServer = nuixCloudLicenseServerUrl;
 	}
 
 	/***

@@ -1,8 +1,10 @@
 package com.nuix.javaenginesimple;
 
+import java.util.Properties;
 import java.util.function.Consumer;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.joda.time.DateTime;
 
 import nuix.Utilities;
@@ -17,6 +19,10 @@ public class EntryPoint {
 	private final static Logger logger = Logger.getLogger("EntryPoint");
 
 	public static void main(String[] args) throws Exception {
+		Properties props = new Properties();
+		props.load(EntryPoint.class.getResourceAsStream("/resources/log4j.properties"));
+		PropertyConfigurator.configure(props);
+		
 		// Specify a custom location for our log files
 		String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
 		System.getProperties().put("nuix.logdir", logDirectory);
