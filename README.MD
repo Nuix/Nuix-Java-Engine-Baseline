@@ -19,9 +19,21 @@ This is a base line example of a Java project making use of the Java Engine API 
 
 - To begin you will need to [download](https://download.nuix.com/releases/engine) a release of the Nuix Java Engine and extract that somewhere on your local machine.  You will want to extract the engine release to a directory with a relatively short name such as `D:\engine-releases\7.8.7.573`.  The short directory name is due to the way the class path is passed to Nuix Worker processes, a longer directory name can cause issues later on.
 - Have a Nuix license available, be it a license dongle or a Nuix Management Server instance you can obtain a license from.
-- Download a copy of this repository and open the `Java` sub directory in your IDE of choice.  Add the contents of the `lib` sub directory of your engine release to your build path.
+- Download a copy of this repository and open the `Java` sub directory in your IDE of choice.  Add the contents of the `lib` sub directory of your engine release to your project's build path.
 - Ensure that the Windows `PATH` environment variable references the `bin` sub directory of your engine release as well as the `bin\x86` directory.  For example if I have my engine distribution located at `D:\engine-releases\7.8.7.573`, I will want to add the following to my `PATH`: `D:\engine-releases\7.8.7.573\bin` and `D:\engine-releases\7.8.7.573\bin\x86`.
-- Build the project, executing the `main` method of the class `EntryPoint`.
+- Build your project and export a JAR file.
+
+To run the program, execute the `main` method of the class `EntryPoint` using a 64-bit JRE (Java Runtime Environment).  For example, if you build the project and export a JAR file to `C:\MyCustomNuixApp\MyApp.jar`, then you can run it by executing the following command from the directory `C:\MyCustomNuixApp`:
+
+```
+C:\MyCustomNuixApp> java -classpath "D:\engine-releases\7.8.7.573\lib\*;.\*" com.nuix.javaenginesimple.EntryPoint
+```
+
+The above command:
+- Uses the `-classpath` argument to include on the class path:
+	- All jars in `D:\engine-releases\7.8.7.573\lib`
+	- All jars in local directory so that `MyApp.jar` is picked up
+- Specifies the fully qualified name (`com.nuix.javaenginesimple.EntryPoint`) of our class `EntryPoint` which contains the "public static void main(String[] args)" method (the entry point into the program).
 
 # Code Overview
 
