@@ -54,8 +54,10 @@ public class LicenseFilter {
 			return false;
 		}
 		
-		// Verify the maximum worker count
-		if(maxWorkers > 0 && workerCount > maxWorkers) {
+		// Verify the maximum worker count.  This is intended for situations where perhaps multiple fixed worker count licenses
+		// may be available and you don't want to acquire licenses with larger worker counts.  When acquiring from a license server
+		// and the license shares a worker pool (canChooseWorkers below) then the maximum is ignored.
+		if(license.canChooseWorkers() && maxWorkers > 0 && workerCount > maxWorkers) {
 			logger.info(String.format("!!!! License has %s workers, filter specifies a maximum of %s",workerCount,minWorkers));
 			return false;
 		}
@@ -81,7 +83,8 @@ public class LicenseFilter {
 
 	/***
 	 * Gets the minimum number of workers that must be present in a license
-	 * for this filter to approve it.
+	 * for this filter to approve it.  Note that when a given license allows you to select the number of
+	 * workers to acquire from a pool of workers, this value will be the number of workers requested from the pool.
 	 * @return The minimum number of workers that must be present in a license.  A value of 0 means no minimum.
 	 */
 	public int getMinWorkers() {
@@ -90,7 +93,8 @@ public class LicenseFilter {
 
 	/***
 	 * Sets the minimum number of workers that must be present in a license
-	 * for this filter to approve it.
+	 * for this filter to approve it.  Note that when a given license allows you to select the number of
+	 * workers to acquire from a pool of workers, this value will be the number of workers requested from the pool.
 	 * @param minWorkers The minimum number of workers that must be present in a license.  A value of 0 mean no minimum.
 	 */
 	public void setMinWorkers(int minWorkers) {
@@ -99,7 +103,8 @@ public class LicenseFilter {
 
 	/***
 	 * Gets the maximum number of workers that can be present in a license
-	 * for this filter to approve it.
+	 * for this filter to approve it.  Note that this filtering criteria is only considered
+	 * when a given license has a fixed number of workers associated.
 	 * @return The maximum number of workers that can be present in a license.  A value of 0 means no maximum.
 	 */
 	public int getMaxWorkers() {
@@ -108,7 +113,8 @@ public class LicenseFilter {
 
 	/***
 	 * Sets the maximum number of workers that can be present in a license
-	 * for this filter to approve it.
+	 * for this filter to approve it.  Note that this filtering criteria is only considered
+	 * when a given license has a fixed number of workers associated.
 	 * @param maxWorkers The maximum number of workers that can be present in a license.  A value of 0 means no maximum.
 	 */
 	public void setMaxWorkers(int maxWorkers) {

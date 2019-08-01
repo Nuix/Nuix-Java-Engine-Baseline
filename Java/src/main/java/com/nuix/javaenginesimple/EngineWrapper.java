@@ -179,8 +179,9 @@ public class EngineWrapper {
 				
 				logger.info("Specifying credentials to use with license server...");
 				engine.whenAskedForCredentials(new CredentialsCallback() {
+					Logger logger = Logger.getLogger("CredentialCallback");
 					public void execute(CredentialsCallbackInfo info) {
-						logger.info(String.format("Providing credentials for %s to license server...", userName));
+						logger.info(String.format("Providing credentials for %s to license server %s...", userName,info.getAddress().getHostName()));
 						info.setUsername(userName);
 						info.setPassword(password);
 					}
@@ -242,11 +243,6 @@ public class EngineWrapper {
 			logger.info(String.format("\t%s: %s",entry.getKey(),entry.getValue()));
 		}
 		
-//		logger.info("Potential license sources:");
-//		for(LicenceSource source : licensor.findLicenceSources()) {
-//			logger.info(source.getLocation());
-//		}
-		
 		Iterable<AvailableLicence> licences = licensor.findAvailableLicences(licenseOptions);
 		
 		logger.info("Iterating available licences...");
@@ -263,15 +259,25 @@ public class EngineWrapper {
 			LicenseFeaturesLogger.logFeaturesOfLicense(license);
 			
 			if(licenseFilter.isValid(license)) {
-				logger.info(">>>> Acquiring this licence");
-				license.acquire();
-				licenceObtained = true;
+				if(license.canChooseWorkers()) {
+					logger.info(">>>> Acquiring this licence with "+licenseFilter.getMinWorkers()+" workers");
+					int targetWorkerCount = licenseFilter.getMinWorkers();
+					if(targetWorkerCount < 1) { targetWorkerCount = 2; }
+					Map<String,Object> acquireSettings = new HashMap<String,Object>();
+					acquireSettings.put("workerCount", targetWorkerCount);
+					license.acquire(acquireSettings);
+					licenceObtained = true;	
+				} else {
+					logger.info(">>>> Acquiring this licence");
+					license.acquire();
+					licenceObtained = true;	
+				}
+				
+				break;
 			} else {
 				logger.info("<<<< Ignoring this license, does not meet requirements of license filter");
 				continue;
 			}
-			
-			break;
 		}
 		
 		return licenceObtained;
@@ -297,6 +303,8 @@ public class EngineWrapper {
 		
 		//Obtain an engine instance
 		engine = container.newEngine(engineConfiguration);
+		
+		logger.info("Obtained Engine instance v"+engine.getVersion());
 	}
 	
 	/***
