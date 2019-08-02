@@ -1,7 +1,7 @@
 Nuix Java Engine Baseline
 =========================
 
-![Nuix Engine 7.8](https://img.shields.io/badge/Nuix%20Engine-7.8-green.svg)
+![Nuix Engine 8.0](https://img.shields.io/badge/Nuix%20Engine-8.0-green.svg)
 
 View the GitHub project [here](https://github.com/Nuix/Nuix-Java-Engine-Baseline) or download the latest release [here](https://github.com/Nuix/Nuix-Java-Engine-Baseline/releases).
 
