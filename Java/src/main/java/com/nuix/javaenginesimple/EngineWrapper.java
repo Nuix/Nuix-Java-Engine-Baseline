@@ -138,6 +138,7 @@ public class EngineWrapper {
 	 * Attempts to obtain a server based license.  If and when a server based license is obtained, a Utilities object will be
 	 * provided to consumer, which may then make use of the Nuix API to do work.  Once the consumer has returned this method will
 	 * cleanup the Engine and GlobalContainer instances it created.
+	 * @param server Location of license server (IP or hostname)
 	 * @param userName Username to provide license server
 	 * @param password Password to provide license server
 	 * @param consumer Consumer which will make use of Utilities object once a license has been obtained.
