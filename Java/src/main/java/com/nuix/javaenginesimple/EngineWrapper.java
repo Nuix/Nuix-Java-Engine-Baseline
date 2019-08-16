@@ -292,7 +292,7 @@ public class EngineWrapper {
 		
 		logger.info("Building engine instance...");
 		
-		//Define out engine configuration settings
+		//Define our engine configuration settings
 		Map<Object,Object> engineConfiguration = new HashMap<Object,Object>();
 		engineConfiguration.put("user", System.getProperty("user.name"));
 		engineConfiguration.put("userDataDirs", userDataDirs);
