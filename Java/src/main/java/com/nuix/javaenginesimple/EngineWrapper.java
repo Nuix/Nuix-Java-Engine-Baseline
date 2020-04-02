@@ -241,7 +241,7 @@ public class EngineWrapper {
 	 * Exceptions are caught locally, logged and then rethrown.
 	 */
 	public void withCloudLicense(final String userName, final String password, Consumer<Utilities> consumer) throws Exception{
-		System.getProperties().put("nuix.registry.servers", "http://https://licence-api.nuix.com");
+		System.getProperties().put("nuix.registry.servers", "https://licence-api.nuix.com");
 		
 		// Make sure we have a valid path to Nuix distributable
 		if(nuixBaseDirectory == null){
