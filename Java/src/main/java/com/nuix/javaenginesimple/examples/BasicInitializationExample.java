@@ -1,4 +1,4 @@
-package com.nuix.javaenginesimple;
+package com.nuix.javaenginesimple.examples;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -8,16 +8,21 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.joda.time.DateTime;
 
+import com.nuix.javaenginesimple.EngineWrapper;
+import com.nuix.javaenginesimple.LicenseFilter;
+import com.nuix.javaenginesimple.NuixDiagnostics;
+
 import nuix.Utilities;
 
 /***
- * Entry point into the application (contains a void main method).
+ * Basic example of using the EngineWrapper class to get a session of Nuix initialized and licensed.  For more detail
+ * on the process of getting the Nuix engine setup and licensed, see the code for the EngineWrapper class.
  * @author Jason Wells
  *
  */
-public class EntryPoint {
+public class BasicInitializationExample {
 	// Obtain a logger instance for this class
-	private final static Logger logger = Logger.getLogger("EntryPoint");
+	private final static Logger logger = Logger.getLogger(BasicInitializationExample.class);
 
 	public static void main(String[] args) throws Exception {
 		
@@ -31,7 +36,7 @@ public class EntryPoint {
 		// Configure log4j using properties file, note that this should be performed after
 		// setting "nuix.logdir" to have that setting determine log output directory!
 		Properties props = new Properties();
-		InputStream log4jSettingsStream = EntryPoint.class.getResourceAsStream("/log4j.properties");
+		InputStream log4jSettingsStream = BasicInitializationExample.class.getResourceAsStream("/log4j.properties");
 		props.load(log4jSettingsStream);
 		PropertyConfigurator.configure(props);
 		
@@ -118,3 +123,4 @@ public class EntryPoint {
 		}
 	}
 }
+
