@@ -1,10 +1,13 @@
 package com.nuix.javaenginesimple;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.util.StringJoiner;
 
 import org.apache.log4j.Logger;
 
 import nuix.LicenceProperties;
+import nuix.engine.AvailableLicence;
 
 /***
  * Helper class for logging what features are present on a given license.
@@ -66,6 +69,31 @@ public class LicenseFeaturesLogger {
 	 */
 	public static String[] getKnownFeatures() {
 		return knownFeatures;
+	}
+	
+	public static List<String> getLicenseFeatures(LicenceProperties license){
+		List<String> result = new ArrayList<String>();
+		for (int i = 0; i < knownFeatures.length; i++) {
+			String feature = knownFeatures[i];
+			boolean hasFeature = license.hasFeature(feature);
+			if(hasFeature) {
+				result.add(feature);
+			}
+		}
+		return result;
+	}
+	
+	public static String summarizeLicense(AvailableLicence license) {
+		String result = String.format("[%s/%s/%s, %s, Count:%s, Workers: %s, Features: %s]",
+				license.getSource().getLocation(),
+				license.getSource().getType(),
+				license.getShortName(),
+				license.getDescription(),
+				license.getCount(),
+				license.getWorkers(),
+				String.join("; ", getLicenseFeatures(license))
+				);
+		return result;
 	}
 	
 	/***
