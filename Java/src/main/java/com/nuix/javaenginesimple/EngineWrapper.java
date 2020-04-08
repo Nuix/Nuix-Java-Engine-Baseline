@@ -340,9 +340,13 @@ public class EngineWrapper {
 		Iterable<AvailableLicence> licences = licensor.findAvailableLicences(licenseOptions);
 		
 		logger.info("Iterating available licences...");
+		for(AvailableLicence license : licences) {
+			logger.info(LicenseFeaturesLogger.summarizeLicense(license));
+		}
+		
 		boolean licenceObtained = false;
 		
-		// Iterate available licenses
+		logger.info("Finding first license which meets filter requirements...");
 		for(AvailableLicence license : licences) {
 			logger.info("\t Count: " + license.getCount());
 			logger.info("\t Workers: " + license.getWorkers());
