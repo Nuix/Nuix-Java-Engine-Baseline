@@ -27,7 +27,7 @@ public class NuixDiagnostics {
 				if(beanName.toString().contains("DiagnosticsControl")){
 					directory.mkdirs();
 					DateTime timeStamp = DateTime.now();
-					String timeStampString = timeStamp.toString("YYYYMMDDHHmmss");
+					String timeStampString = timeStamp.toString("yyyyMMddHHmmss");
 					File zipFile = new File(directory,"NuixEngineDiagnostics-"+timeStampString+".zip");
 					try {
 						mBeanServer.invoke(beanName,"generateDiagnostics",new Object[] {zipFile.getPath()},new String[] {"java.lang.String"});
