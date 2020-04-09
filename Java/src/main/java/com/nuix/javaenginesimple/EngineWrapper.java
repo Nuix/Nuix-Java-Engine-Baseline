@@ -55,16 +55,6 @@ public class EngineWrapper {
 		File engineLibDirectory = new File(nuixBaseDirectory,"lib");
 		logger.info(String.format("Setting 'nuix.libdir' to: %s", engineLibDirectory.getAbsolutePath()));
 		System.setProperty("nuix.libdir", engineLibDirectory.getAbsolutePath());
-
-		// Tell Nuix where it can locate some additional binaries
-		File engineBinDirectory = new File(nuixBaseDirectory,"bin");
-		File engineX86Directory = new File(engineBinDirectory,"x86");
-		String libPathAddition = engineBinDirectory.getAbsolutePath()+";"+engineX86Directory.getAbsolutePath();
-		logger.info(String.format("Appending to 'java.library.path': %s", libPathAddition));
-		String existingLibPath = System.getProperty("java.library.path");
-		System.setProperty("java.library.path", existingLibPath+";"+libPathAddition);
-		existingLibPath = System.getProperty("java.library.path");
-		logger.info(String.format("New 'java.library.path' value: %s", existingLibPath));
 	}
 	
 	/***
