@@ -17,7 +17,10 @@ This repository contains a series of examples making use of the Java Engine API 
 
 ## Setup
 
-- To begin you will need to [download a release](https://download.nuix.com/releases/engine) of the Nuix Java Engine and extract that somewhere on your local machine.  You will want to extract the engine release to a directory with a relatively short name such as `D:\engine-releases\8.4.2.466`.  We want to use a short directory name to avoid some potential issues later on.
+- To begin you will need to [download a release](https://download.nuix.com/releases/engine) of the Nuix Java Engine and extract that somewhere on your local machine.  You will want to extract the engine release to a directory with a relatively short name such as the following:
+```
+D:\engine-releases\8.4.2.466
+```
 - Have a Nuix license available on a Nuix license dongle, available from a Nuix Management Server instance or available from the Nuix Cloud License Server.
 - Download a copy of this repository and open the `Java` sub directory in your IDE of choice.  Add the contents of the `lib` sub directory of your engine release to your project's build path.
 - Ensure that the Windows `PATH` environment variable references the `bin` sub directory of your engine release as well as the `bin\x86` directory.  For example if I have my engine distribution located at `D:\engine-releases\8.4.2.466`, I will want to add the following to my `PATH`: `D:\engine-releases\8.4.2.466\bin` and `D:\engine-releases\8.4.2.466\bin\x86`.
@@ -48,7 +51,7 @@ Note that the classes (such as [EngineWrapper]) provided in this project are not
 
 The workflow of [withDongleLicense], [withServerLicense] and [withCloudLicense] are fairly similar in the steps they take, differing mostly in how they acquire a license for the engine instance they obtain.  In the following I'll focus on [withDongleLicense] and note some of the differences in behavior to [withServerLicense] and [withCloudLicense].
 
-The method begins by ensuring the specified engine release directory does indeed exist since nothing will work without this.  The method then loads the properties in the embedded resource [log4j.properties](https://github.com/Nuix/Nuix-Java-Engine-Baseline/blob/master/Java/src/main/resources/log4j.properties).  This file contains various properties related to how [Log4j](https://github.com/apache/log4j) should be configured.  This file is essentially the same as the one included with a Nuix Workbench install at `/config/log4j.properties`.  The method then proceeds to construct a `GlobalContainer` instance, of which there should only ever be 1 per Java Virtual Machine.
+The method [withDongleLicense] begins by ensuring the specified engine release directory does indeed exist since nothing will work without this.  It then loads the properties in the embedded resource [log4j.properties](https://github.com/Nuix/Nuix-Java-Engine-Baseline/blob/master/Java/src/main/resources/log4j.properties) and uses them to configure [Log4j](https://github.com/apache/log4j).  This file is essentially the same as the one included with a Nuix Workbench install at `<NUIXINSTALL>/config/log4j.properties`.  The method then proceeds to construct a `GlobalContainer` instance (as needed).  There should only ever be 1 `GlobalContainer` instance per Java Virtual Machine.
 
 From the `GlobalContainer` instance an `Engine` instance is constructed, from that a `Licensor` is obtained.  In the case of [withDongleLicense], `Licensor.findAvailableLicences` is called with the setting `sources` having a value of `dongle`.  The method [withServerLicense] instead provides the setting `sources` a value of `server` and [withCloudLicense] provides the value `cloud-server`.
 
@@ -68,7 +71,7 @@ licenseOptions.put("sources","cloud-server");
 Iterable<AvailableLicence> licences = licensor.findAvailableLicences(licenseOptions);
 ```
 
-`Licensor.findAvailableLicences` returns an `Iterable<AvailableLicence>`.  This is where we can begin to inspect the licenses available.  The [EngineWrapper] class makes use of a [LicenseFilter] object to test each license for some requirements such as having a certain number of workers available, being a certain license type or having particular features.  The [EngineWrapper] defaults to an instance of [LicenseFilter] which will acquire any license that is available.
+`Licensor.findAvailableLicences` returns an `Iterable<AvailableLicence>`.  With this collection we can iterate and inspect each available license, choosing one we wish to acquire and license our Engine instance with.  The [EngineWrapper] class makes use of a [LicenseFilter] object to test each license for some requirements such as having a certain number of workers available, being a certain license type or having particular features.  The default [LicenseFilter] provided by [EngineWrapper] will acquire the first license it finds available, but it can be configured to be more selective.
 
 ```java
 logger.info("Finding first license which meets filter requirements...");
@@ -104,7 +107,7 @@ for(AvailableLicence license : licences) {
 }
 ```
 
-Once a license has been found which is available and meets the requirements of our license filter, its is acquired by calling `AvailableLicense.acquire`, making your engine instance licensed and making that license exclusive to your application for the lifetime of your engine instance.  At this point [withDongleLicense] creates an instance of the Nuix `Utilities` object and provides it to the `accept` method of the `Consumer<Utilities>` object passed to the method.  This is where your code can begin working with the Nuix API, creating cases, processing data, etc.
+Once a license has been found which is available and meets the requirements of our [LicenseFilter], it is acquired by calling `AvailableLicense.acquire`, causing your Engine instance to capture that license and become licensed until you release the license back.  At this point [withDongleLicense] creates an instance of the Nuix `Utilities` object and provides it to the `accept` method of the `Consumer<Utilities>` object passed to the method.  This is where your code can begin working with the Nuix API, creating cases, processing data, etc.
 
 ```java
 // EngineWrapper
@@ -119,17 +122,17 @@ wrapper.withDongleLicense(new Consumer<Utilities>(){
 });
 ```
 
-Once your code completes and `Consumer.accept` returns, `withDongleLicense` closes the `Engine` instance by calling `Engine.close` and closes the `GlobalContainer` instance by calling `GlobalContainer.close`, during which the license you acquired is released.
+Once your code completes and `Consumer.accept` returns, [withDongleLicense] closes the `Engine` instance by calling `Engine.close` and closes the `GlobalContainer` instance by calling `GlobalContainer.close`, during which the license you acquired is released.
 
 ## LicenseFilter
 
-This class is used by [EngineWrapper] while iterating available licenses to determine which license to acquire.  The default instance included with [EngineWrapper] will accept any license, effectively meaning that the first available license is acquired.  You can get the [LicenseFilter] used by an [EngineWrapper] instance by calling [EngineWrapper.getLicenseFilter](https://nuix.github.io/Nuix-Java-Engine-Baseline/com/nuix/javaenginesimple/EngineWrapper.html#getLicenseFilter--).  Once you have the license filter you can alter it to choose a license based on:
+The [LicenseFilter] class is used by [EngineWrapper] while iterating available licenses to determine which license to acquire.  The default instance included with [EngineWrapper] will accept any license, effectively meaning that the first available license is acquired.  You can get the [LicenseFilter] used by an [EngineWrapper] instance by calling [EngineWrapper.getLicenseFilter](https://nuix.github.io/Nuix-Java-Engine-Baseline/com/nuix/javaenginesimple/EngineWrapper.html#getLicenseFilter--).  Once you have the license filter you can alter it to choose a license based on:
 - Whether a license has at least a minimum number of workers available
 - Whether a license has no more than a maximum number of workers available
 - Whether a license has a particular short name such as `enterprise-workstation`
 - Whether a license has one or more [features](https://download.nuix.com/releases/desktop/stable/docs/en/reference/licence-profiles.html)
 
-For example, if I wish to only acquire a license which
+For example, if I wish to only acquire a license which:
 - Has at least 8 workers
 - Has the features:
     - `EXPORT_ITEMS`
@@ -223,9 +226,9 @@ Once a license has been obtained by [EngineWrapper] and a `Utilities` object has
 
 ## NuixDiagnostics
 
-When there is a problem it is handy to capture a snapshot of the state of things for trouble shooting purposes.  In the Nuix Workbench GUI we can generate a diagnostics file with the click of a button.  When using the Java engine API we have to do a bit more work.  The class [NuixDiagnostics] provides a method [saveDiagnostics](https://nuix.github.io/Nuix-Java-Engine-Baseline/com/nuix/javaenginesimple/NuixDiagnostics.html#saveDiagnostics-java.lang.String-).  The method accepts as an argument the directory (as a String or [java.io.File](https://docs.oracle.com/javase/8/docs/api/java/io/File.html)) to which the diagnostics zip will be saved.  The generated zip file will automatically be given a time stamped name in the form `NuixEngineDiagnostics-yyyyMMddHHmmss.zip`, for example `NuixEngineDiagnostics-20200408113545.zip`.
+When there is a problem, it is helpful to capture a snapshot of the state of things for trouble shooting purposes.  In the Nuix Workbench GUI we can generate a diagnostics file with the click of a button.  When using the Java engine API we have to do a bit more work.  The class [NuixDiagnostics] provides a method [saveDiagnostics](https://nuix.github.io/Nuix-Java-Engine-Baseline/com/nuix/javaenginesimple/NuixDiagnostics.html#saveDiagnostics-java.lang.String-) which can generate a Nuix diagnostics file for you.  The method accepts as an argument the directory (as a String or [java.io.File](https://docs.oracle.com/javase/8/docs/api/java/io/File.html)) to which the diagnostics zip will be saved.  The generated zip file will automatically be given a time stamped name in the form `NuixEngineDiagnostics-yyyyMMddHHmmss.zip`, for example `NuixEngineDiagnostics-20200408113545.zip`.
 
-In the example [NuixDiagnostics.saveDiagnostics][saveDiagnostics] is called when an exception bubbles all the way up to our main method.
+In the example [NuixDiagnostics.saveDiagnostics][saveDiagnostics] is called when an exception bubbles all the way up to our main `try`/`catch`.
 
 ```java
 public static void main(String[] args) throws Exception {
@@ -240,7 +243,7 @@ public static void main(String[] args) throws Exception {
 	} catch (Exception e) {
 		logger.error("Unhandled exception",e);
 		// Lets dump a diagnostics file since something went wrong and having
-		// this may be helpful for trouble shooting
+		// this may be helpful for troubleshooting
 		NuixDiagnostics.saveDiagnostics("C:\\EngineDiagnostics");
 	}
 }
