@@ -47,6 +47,14 @@ public class EngineWrapper {
 	 */
 	public EngineWrapper(File nuixBaseDirectory){
 		this.nuixBaseDirectory = nuixBaseDirectory;
+		
+		// We want to set the System property "nuix.libdir" so that when the engine spins up worker processes,
+		// that it can specify the "lib" directory properly to the workers.  Without this the engine will instead
+		// attempt to specify an absolute path to each of the JARs, which can cause the command used to start the
+		// worker process in being longer than the maximum length allowed by the OS.
+		File engineLibDirectory = new File(nuixBaseDirectory,"lib");
+		logger.info(String.format("Setting 'nuix.libdir' to: %s", engineLibDirectory.getAbsolutePath()));
+		System.setProperty("nuix.libdir", engineLibDirectory.getAbsolutePath());
 	}
 	
 	/***
