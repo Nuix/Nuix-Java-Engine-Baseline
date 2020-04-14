@@ -67,7 +67,7 @@ public class IntermediateSearchAndTagExample {
 		searchAndTagData.put("dog", "Animals|Dog");
 		searchAndTagData.put("mouse", "Animals|Mouse");
 		
-		// Specify if we want to include family members of items resposive to a search
+		// Specify if we want to include family members of items responsive to a search
 		boolean includeFamilyMembers = true;
 		
 		// Specify if we want to remove excluded items before tagging
