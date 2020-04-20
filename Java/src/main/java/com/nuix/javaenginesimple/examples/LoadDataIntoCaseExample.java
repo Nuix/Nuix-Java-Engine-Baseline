@@ -177,7 +177,7 @@ public class LoadDataIntoCaseExample {
 						processingSettings.put("storeBinary",true);
 						processingSettings.put("maxStoredBinarySize",250000000);
 						processingSettings.put("maxDigestSize",250000000);
-						processingSettings.put("digests",new String[] {"md5"});
+						processingSettings.put("digests",new String[] {"MD5"});
 						processingSettings.put("addBccToEmailDigests",false);
 						processingSettings.put("addCommunicationDateToEmailDigests",false);
 						processingSettings.put("reuseEvidenceStores",true);
