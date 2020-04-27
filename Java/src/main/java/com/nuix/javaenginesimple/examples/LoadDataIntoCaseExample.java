@@ -201,6 +201,8 @@ public class LoadDataIntoCaseExample {
 						parallelProcessingSettings.put("workerCount",licenseWorkerCount);
 						parallelProcessingSettings.put("workerTemp","D:\\WorkerTemp");
 						
+						processor.setParallelProcessingSettings(parallelProcessingSettings);
+						
 						// ========================
 						// Setup Progress Callbacks
 						// ========================
