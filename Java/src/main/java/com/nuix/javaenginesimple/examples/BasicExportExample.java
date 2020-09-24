@@ -38,7 +38,7 @@ public class BasicExportExample {
 		props.load(log4jSettingsStream);
 		PropertyConfigurator.configure(props);
 		
-		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\8.4.2.466");
+		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\8.8.1.131");
 		
 		LicenseFilter licenseFilter = wrapper.getLicenseFilter();
 		licenseFilter.setMinWorkers(4);
