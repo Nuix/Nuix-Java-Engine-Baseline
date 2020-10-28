@@ -26,7 +26,7 @@ import nuix.engine.Licensor;
  * @author Jason Wells
  *
  */
-public class EngineWrapper {
+public class EngineWrapper implements AutoCloseable {
 	// Obtain a logger instance for this class
 	private final static Logger logger = Logger.getLogger("EngineWrapper");
 	
@@ -34,6 +34,8 @@ public class EngineWrapper {
 	
 	private File nuixBaseDirectory = null;
 	private Engine engine = null;
+	
+	private Thread shutdownHook = null;
 	
 	// We will use this while iterating licenses to determine which one to acquire.
 	// By default this filter accepts any license.
@@ -55,6 +57,15 @@ public class EngineWrapper {
 		File engineLibDirectory = new File(nuixBaseDirectory,"lib");
 		logger.info(String.format("Setting 'nuix.libdir' to: %s", engineLibDirectory.getAbsolutePath()));
 		System.setProperty("nuix.libdir", engineLibDirectory.getAbsolutePath());
+		
+		// Whenever we create an instance of the engine to hand over to the user, we will register
+		// our shutdown hook to close this instance.  This helps to ensure that the license is released
+		// in some scenarios where the finally block may not execute, such as code calling System.exit before
+		// returning from user provided Consumer<Utilities>.
+		shutdownHook = new Thread(() -> {
+			try { close(); } catch (Exception e)
+			{ logger.error("Error in shutdown hook",e); }
+		});
 	}
 	
 	/***
@@ -101,6 +112,11 @@ public class EngineWrapper {
 					if(licenseObtained){
 						Utilities utilities = engine.getUtilities();
 						ThirdPartyDependencyChecker.logAllDependencyInfo(utilities);
+						
+						// Setup our shutdown hook in case user terminates before consumer returns
+						logger.info("Adding shutdown hook for EngineWrapper::close");
+						Runtime.getRuntime().addShutdownHook(shutdownHook);
+						
 						logger.info("License was obtained, providing Utilities object to consumer...");
 						consumer.accept(utilities);
 					}
@@ -112,10 +128,7 @@ public class EngineWrapper {
 				logger.error("Error while creating Engine instance",engineException);
 				throw engineException;
 			} finally {
-				if(engine != null){
-					logger.info("Closing Engine instance...");
-					engine.close();
-				}
+				close();
 			}
 		} catch (Exception globalContainerException) {
 			logger.error("Error while creating GlobalContainer",globalContainerException);
@@ -209,6 +222,11 @@ public class EngineWrapper {
 					if(licenseObtained){
 						Utilities utilities = engine.getUtilities();
 						ThirdPartyDependencyChecker.logAllDependencyInfo(utilities);
+						
+						// Setup our shutdown hook in case user terminates before consumer returns
+						logger.info("Adding shutdown hook for EngineWrapper::close");
+						Runtime.getRuntime().addShutdownHook(shutdownHook);
+						
 						logger.info("License was obtained, providing Utilities object to consumer...");
 						consumer.accept(utilities);
 					} else {
@@ -222,10 +240,7 @@ public class EngineWrapper {
 				logger.error("Error while creating Engine instance",engineException);
 				throw engineException;
 			} finally {
-				if(engine != null){
-					logger.info("Closing Engine instance...");
-					engine.close();
-				}
+				close();
 			}
 		} catch (Exception globalContainerException) {
 			logger.error("Error while creating GlobalContainer",globalContainerException);
@@ -302,6 +317,11 @@ public class EngineWrapper {
 					if(licenseObtained){
 						Utilities utilities = engine.getUtilities();
 						ThirdPartyDependencyChecker.logAllDependencyInfo(utilities);
+
+						// Setup our shutdown hook in case user terminates before consumer returns
+						logger.info("Adding shutdown hook for EngineWrapper::close");
+						Runtime.getRuntime().addShutdownHook(shutdownHook);
+						
 						logger.info("License was obtained, providing Utilities object to consumer...");
 						consumer.accept(utilities);
 					} else {
@@ -315,10 +335,7 @@ public class EngineWrapper {
 				logger.error("Error while creating Engine instance",engineException);
 				throw engineException;
 			} finally {
-				if(engine != null){
-					logger.info("Closing Engine instance...");
-					engine.close();
-				}
+				close();
 			}
 		} catch (Exception globalContainerException) {
 			logger.error("Error while creating GlobalContainer",globalContainerException);
@@ -476,5 +493,17 @@ public class EngineWrapper {
 	 */
 	public void setLicenseFilter(LicenseFilter licenseFilter) {
 		this.licenseFilter = licenseFilter;
+	}
+
+	@Override
+	public void close() throws Exception {
+		if(engine != null) {
+			logger.info("Closing engine instance");
+			engine.close();
+		}
+		
+		// Remove our shutdown hook since engine has now been closed
+		logger.info("Removing shutdown hook to EngineWrapper::close");
+		Runtime.getRuntime().removeShutdownHook(shutdownHook);
 	}
 }
