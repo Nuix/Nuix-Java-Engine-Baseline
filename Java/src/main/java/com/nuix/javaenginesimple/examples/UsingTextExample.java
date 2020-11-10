@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -118,6 +116,8 @@ public class UsingTextExample {
 		} catch (Exception e) {
 			logger.error("Unhandled exception",e);
 			NuixDiagnostics.saveDiagnostics("C:\\EngineDiagnostics");
+		} finally {
+			wrapper.close();
 		}
 	}
 }
