@@ -19,11 +19,11 @@ This repository contains a series of examples making use of the Java Engine API 
 
 - To begin you will need to [download a release](https://download.nuix.com/releases/engine) of the Nuix Java Engine and extract that somewhere on your local machine.  You will want to extract the engine release to a directory with a relatively short name such as the following:
 ```
-D:\engine-releases\8.8.1.131
+D:\engine-releases\9.0.1.325
 ```
 - Have a Nuix license available on a Nuix license dongle, available from a Nuix Management Server instance or available from the Nuix Cloud License Server.
 - Download a copy of this repository and open the `Java` sub directory in your IDE of choice.  Add the contents of the `lib` sub directory of your engine release to your project's build path.
-- Ensure that the Windows `PATH` environment variable references the `bin` sub directory of your engine release as well as the `bin\x86` directory.  For example if I have my engine distribution located at `D:\engine-releases\8.8.1.131`, I will want to add the following to my `PATH`: `D:\engine-releases\8.8.1.131\bin` and `D:\engine-releases\8.8.1.131\bin\x86`.
+- Ensure that the Windows `PATH` environment variable references the `bin` sub directory of your engine release as well as the `bin\x86` directory.  For example if I have my engine distribution located at `D:\engine-releases\9.0.1.325`, I will want to add the following to my `PATH`: `D:\engine-releases\9.0.1.325\bin` and `D:\engine-releases\9.0.1.325\bin\x86`.
 - Build your project and export a JAR file.
 
 The package `com.nuix.javaenginebaseline.examples` contains a series of examples demonstrating fundamental activities.  Each example is executable (they have a static void main method).  For example, to run the example [BasicInitializationExample]:
@@ -32,12 +32,12 @@ The package `com.nuix.javaenginebaseline.examples` contains a series of examples
 2. Export a JAR file to a location such as `C:\MyCustomNuixApp\MyApp.jar`
 3. Execute the `main` method of the class `BasicInitializationExample` using a 64-bit JRE (Java Runtime Environment) with a command along the lines of:
 ```
-C:\MyCustomNuixApp> java -classpath "D:\engine-releases\8.8.1.131\lib\*;.\*" com.nuix.javaenginesimple.examples.BasicInitializationExample
+C:\MyCustomNuixApp> java -classpath "D:\engine-releases\9.0.1.325\lib\*;.\*" com.nuix.javaenginesimple.examples.BasicInitializationExample
 ```
 
 A breakdown of the above command:
 - Uses the `-classpath` argument to include on the class path:
-	- All jars in `D:\engine-releases\8.8.1.131\lib`
+	- All jars in `D:\engine-releases\9.0.1.325\lib`
 	- All jars in local directory so that `MyApp.jar` is picked up
 - Specifies the fully qualified name (`com.nuix.javaenginesimple.examples.BasicInitializationExample`) of our class [BasicInitializationExample] which contains the `public static void main(String[] args)` method (an entry point into the program).
 
@@ -141,7 +141,7 @@ For example, if I wish to only acquire a license which:
 You configure the license filter to only acquire licenses meeting this criteria with the following code:
 
 ```java
-EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\8.8.1.131");
+EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.0.1.325");
 
 LicenseFilter filter = wrapper.getLicenseFilter();
 filter.setMinWorkers(8);
@@ -232,7 +232,7 @@ In the example [NuixDiagnostics.saveDiagnostics][saveDiagnostics] is called when
 
 ```java
 public static void main(String[] args) throws Exception {
-	EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\8.8.1.131");
+	EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.0.1.325");
 	
 	try {
 		wrapper.withDongleLicense(new Consumer<Utilities>(){

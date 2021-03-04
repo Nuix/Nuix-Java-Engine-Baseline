@@ -47,7 +47,7 @@ public class BasicInitializationExample {
 				
 		// Create an instance of engine wrapper, which will do the work of getting the Nuix bits initialized.
 		// Engine wrapper will need to know what directory you engine release resides.
-		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\8.8.1.131");
+		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.0.1.325");
 		
 		
 		// =========================================================================================================

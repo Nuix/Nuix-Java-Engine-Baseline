@@ -36,7 +36,7 @@ public class CreateProductionSetExample {
 			props.load(log4jSettingsStream);
 			PropertyConfigurator.configure(props);
 			
-			EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\8.8.1.131");
+			EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.0.1.325");
 			
 			LicenseFilter licenseFilter = wrapper.getLicenseFilter();
 			licenseFilter.setMinWorkers(4);
