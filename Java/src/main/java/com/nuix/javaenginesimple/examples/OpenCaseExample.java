@@ -87,6 +87,8 @@ public class OpenCaseExample {
 		} catch (Exception e) {
 			logger.error("Unhandled exception",e);
 			NuixDiagnostics.saveDiagnostics("C:\\EngineDiagnostics");
+		} finally {
+			wrapper.close();
 		}
 	}
 }

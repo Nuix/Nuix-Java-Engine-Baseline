@@ -1,7 +1,6 @@
 package com.nuix.javaenginesimple;
 
 import java.util.List;
-import java.util.StringJoiner;
 
 import org.apache.log4j.Logger;
 
@@ -23,18 +22,28 @@ public class ThirdPartyDependencyChecker {
 	 * @param utilities Needs an instance of Utilities to get access to third party dependency information
 	 */
 	public static void logAllDependencyInfo(Utilities utilities) {
-		StringJoiner message = new StringJoiner("\n");
-		message.add("Reviewing third party dependency statuses:");
-		List<ThirdPartyDependency> dependencies = utilities.getThirdPartyDependencies();
-		for(ThirdPartyDependency dependency : dependencies) {
-			ThirdPartyDependencyStatus status = dependency.performCheck();
-			message.add(String.format(
-					"[%s] '%s': %s",
-					status.isAttentionRequired() ? " " : "X",
-					dependency.getDescription(),
-					status.getMessage()
-			));
+		logger.info("Reviewing third party dependency statuses:");
+		try {
+			List<ThirdPartyDependency> dependencies = utilities.getThirdPartyDependencies();
+			for(ThirdPartyDependency dependency : dependencies) {
+				try {
+					ThirdPartyDependencyStatus status = dependency.performCheck();
+					logger.info(String.format(
+							"[%s] '%s': %s",
+							status.isAttentionRequired() ? " " : "X",
+							dependency.getDescription(),
+							status.getMessage()
+					));
+				} catch (Exception e) {
+					logger.error(String.format(
+							"[!] '%s': Error Checking Status: %s",
+							dependency.getDescription(),
+							e.getMessage()
+					));
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error while fetching list of third party dependencies",e);
 		}
-		logger.info(message.toString());
 	}
 }
