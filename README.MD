@@ -1,7 +1,7 @@
 Nuix Java Engine Baseline
 =========================
 
-![Nuix Engine 8.8](https://img.shields.io/badge/Nuix%20Engine-8.8-green.svg)
+![Nuix Engine 9.0](https://img.shields.io/badge/Nuix%20Engine-9.0-green.svg)
 
 View the GitHub project [here](https://github.com/Nuix/Nuix-Java-Engine-Baseline) or download the latest release [here](https://github.com/Nuix/Nuix-Java-Engine-Baseline/releases).
 
@@ -23,7 +23,9 @@ D:\engine-releases\9.0.1.325
 ```
 - Have a Nuix license available on a Nuix license dongle, available from a Nuix Management Server instance or available from the Nuix Cloud License Server.
 - Download a copy of this repository and open the `Java` sub directory in your IDE of choice.  Add the contents of the `lib` sub directory of your engine release to your project's build path.
-- Ensure that the Windows `PATH` environment variable references the `bin` sub directory of your engine release as well as the `bin\x86` directory.  For example if I have my engine distribution located at `D:\engine-releases\9.0.1.325`, I will want to add the following to my `PATH`: `D:\engine-releases\9.0.1.325\bin` and `D:\engine-releases\9.0.1.325\bin\x86`.
+- Ensure that the Windows `PATH` environment variable references the `bin` sub directory of your engine release as well as the `bin\x86` directory.  For example if I have my engine distribution located at `D:\engine-releases\9.0.1.325`, I will want to add the following to my `PATH`:
+    - `D:\engine-releases\9.0.1.325\bin`
+    - `D:\engine-releases\9.0.1.325\bin\x86`
 - Build your project and export a JAR file.
 
 The package `com.nuix.javaenginebaseline.examples` contains a series of examples demonstrating fundamental activities.  Each example is executable (they have a static void main method).  For example, to run the example [BasicInitializationExample]:
@@ -252,7 +254,7 @@ public static void main(String[] args) throws Exception {
 # License
 
 ```
-Copyright 2020 Nuix
+Copyright 2021 Nuix
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

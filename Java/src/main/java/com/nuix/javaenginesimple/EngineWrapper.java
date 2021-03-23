@@ -495,6 +495,28 @@ public class EngineWrapper implements AutoCloseable {
 		this.licenseFilter = licenseFilter;
 	}
 
+	/***
+	 * Returns the Nuix engine version by internally calling Engine.getVersion
+	 * <br/>Note that if Engine instance has not yet been initialized this returns "0.0.0.0"
+	 * @return A String representing the Nuix Engine version or "0.0.0.0" if Engine has not yet been initialized.
+	 */
+	public String getNuixVersionString() {
+		if(engine != null) {
+			return engine.getVersion();
+		} else {
+			return "0.0.0.0";
+		}
+	}
+	
+	/***
+	 * Gets a {@link NuixVersion} object representing the Engine version as obtained by calling Engine.getVersion
+	 * <br/>Note that if Engine instance has not yet been initialized this returns "0.0.0.0"
+	 * @return A NuixVersion object representing the Nuix Engine version or one representing "0.0.0.0" if Engine has not yet been initialized.
+	 */
+	public NuixVersion getNuixVersion() {
+		return NuixVersion.parse(getNuixVersionString());
+	}
+
 	@Override
 	public void close() throws Exception {
 		if(engine != null) {
