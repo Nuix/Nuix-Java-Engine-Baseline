@@ -288,7 +288,7 @@ public class EngineWrapper implements AutoCloseable {
 			if(container == null){
 				container = nuix.engine.GlobalContainerFactory.newContainer();	
 			}
-			
+			System.out.println("nuix log dir- "+System.getProperty("nuix.logdir"));
 			logger.info("Initializing engine....");
 			try {
 				// Next we build an Engine instance from the GlobalContainer
@@ -363,7 +363,7 @@ public class EngineWrapper implements AutoCloseable {
 		}
 		
 		Iterable<AvailableLicence> licences = licensor.findAvailableLicences(licenseOptions);
-		
+
 		logger.info("Iterating available licences...");
 		for(AvailableLicence license : licences) {
 			logger.info(LicenseFeaturesLogger.summarizeLicense(license));
@@ -372,7 +372,7 @@ public class EngineWrapper implements AutoCloseable {
 		boolean licenceObtained = false;
 		
 		logger.info("Finding first license which meets filter requirements...");
-		for(AvailableLicence license : licences) {
+		for(AvailableLicence license : licensor.findAvailableLicences(licenseOptions)) {
 			logger.info("\t Count: " + license.getCount());
 			logger.info("\t Workers: " + license.getWorkers());
 			logger.info("\t Short Name: " + license.getShortName());

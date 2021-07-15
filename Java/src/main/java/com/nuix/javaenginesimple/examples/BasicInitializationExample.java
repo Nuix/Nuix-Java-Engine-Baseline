@@ -30,13 +30,14 @@ public class BasicInitializationExample {
 		// * Configure some logging details *
 		// ==================================
 		// Specify a custom location for our log files
-		String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
+		String logDirectory = String.format("/Users/vdudani01/Documents/NuixEngineLogs/%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
 		System.getProperties().put("nuix.logdir", logDirectory);
-		
+//		System.getProperties().put("nuix.thread.workers", false);
+
 		// Configure log4j using properties file, note that this should be performed after
 		// setting "nuix.logdir" to have that setting determine log output directory!
 		Properties props = new Properties();
-		InputStream log4jSettingsStream = BasicInitializationExample.class.getResourceAsStream("/log4j.properties");
+		InputStream log4jSettingsStream = BasicInitializationExample.class.getResourceAsStream("/log4j2.yml");
 		props.load(log4jSettingsStream);
 		PropertyConfigurator.configure(props);
 		
@@ -47,8 +48,9 @@ public class BasicInitializationExample {
 				
 		// Create an instance of engine wrapper, which will do the work of getting the Nuix bits initialized.
 		// Engine wrapper will need to know what directory you engine release resides.
-		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.0.1.325");
-		
+//		EngineWrapper wrapper = new EngineWrapper("/Users/vdudani01/IdeaProjects/core/core/release/macos/engine/build/engine-dist-macos-x86_64-9.3.2.1181+vdudani01-643b8194b18");
+		EngineWrapper wrapper = new EngineWrapper("/Users/vdudani01/Downloads/engine-dist-macos-x86_64-9.3.1.1148");
+
 		
 		// =========================================================================================================
 		// * Create LicenseFilter instance which will instruct EngineWrapper on how to choose an available license *

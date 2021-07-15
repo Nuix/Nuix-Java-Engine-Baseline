@@ -37,16 +37,20 @@ public class LoadDataIntoCaseExample {
 	private final static Logger logger = Logger.getLogger(LoadDataIntoCaseExample.class);
 
 	public static void main(String[] args) throws Exception {
-		String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
-		System.getProperties().put("nuix.logdir", logDirectory);
-		
+//		String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
+		String logDirectory = String.format("/Users/vdudani01/Documents/NuixEngineLogs/%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
+		System.setProperty("nuix.logdir", logDirectory);
+		System.setProperty("nuix.security.provider", "FIPS");
+		System.setProperty("nuix.data.keystoreProtectionPassword", "fooo");
+
 		Properties props = new Properties();
 		InputStream log4jSettingsStream = LoadDataIntoCaseExample.class.getResourceAsStream("/log4j.properties");
 		props.load(log4jSettingsStream);
 		PropertyConfigurator.configure(props);
 		
-		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.0.1.325");
-		
+//		EngineWrapper wrapper = new EngineWrapper("/Users/vdudani01/IdeaProjects/core/core/release/macos/engine/build/engine-dist-macos-x86_64-9.3.1.1181+vdudani01-6a0d1e44b2a");
+		EngineWrapper wrapper = new EngineWrapper("/Users/vdudani01/Downloads/engine-dist-macos-x86_64-9.4.0.30");
+
 		LicenseFilter licenseFilter = wrapper.getLicenseFilter();
 		licenseFilter.setMinWorkers(4);
 		licenseFilter.addRequiredFeature("CASE_CREATION");
@@ -66,7 +70,7 @@ public class LoadDataIntoCaseExample {
 			wrapper.trustAllCertificates();
 			wrapper.withCloudLicense(licenseUserName, licensePassword, new Consumer<Utilities>() {
 				public void accept(Utilities utilities) {
-					File caseDirectory = new File("D:\\Cases\\LoadDataExample");
+					File caseDirectory = new File("/Users/vdudani01/Documents/Work/engine/cases/case-temp");
 					
 					// Specify additional settings to use when creating case
 					Map<String,Object> caseSettings = new HashMap<String,Object>();
@@ -121,8 +125,8 @@ public class LoadDataIntoCaseExample {
 						EvidenceContainer evidenceContainer01 = processor.newEvidenceContainer(evidenceName01, evidenceSettings01);
 						
 						// Add some files/directories to be processed
-						evidenceContainer01.addFile("D:\\Natives\\DirectoryWithData");
-						evidenceContainer01.addFile("D:\\Natives\\SpecificFile.zip");
+						evidenceContainer01.addFile("/Users/vdudani01/Documents/Work/engine/evidence");
+//						evidenceContainer01.addFile("D:\\Natives\\SpecificFile.zip");
 						
 						// And now we call save method, this step is important, if you forget this step, when you start processing later
 						// it will be as though this evidence container does not exist!
@@ -136,7 +140,7 @@ public class LoadDataIntoCaseExample {
 						evidenceSettings02.put("encoding","UTF8");
 						evidenceSettings02.put("locale","en-US");
 						EvidenceContainer evidenceContainer02 = processor.newEvidenceContainer(evidenceName02, evidenceSettings02);
-						evidenceContainer02.addFile("D:\\Natives\\AnotherDirectoryWithData");
+						evidenceContainer02.addFile("/Users/vdudani01/Documents/Work/engine/scripts");
 						evidenceContainer02.save();
 						
 						// =============================
@@ -199,7 +203,7 @@ public class LoadDataIntoCaseExample {
 						Map<String,Object> parallelProcessingSettings = new HashMap<String,Object>();
 						int licenseWorkerCount = utilities.getLicence().getWorkers();
 						parallelProcessingSettings.put("workerCount",licenseWorkerCount);
-						parallelProcessingSettings.put("workerTemp","D:\\WorkerTemp");
+						parallelProcessingSettings.put("workerTemp","/Users/vdudani01/Documents/Work/engine/WorkerTemp");
 						
 						processor.setParallelProcessingSettings(parallelProcessingSettings);
 						
@@ -275,7 +279,7 @@ public class LoadDataIntoCaseExample {
 			
 		} catch (Exception e) {
 			logger.error("Unhandled exception",e);
-			NuixDiagnostics.saveDiagnostics("C:\\EngineDiagnostics");
+			NuixDiagnostics.saveDiagnostics("/Users/vdudani01/Documents/Work/engine/EngineDiagnostics");
 		} finally {
 			wrapper.close();
 		}
