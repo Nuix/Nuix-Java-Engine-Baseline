@@ -10,12 +10,13 @@ import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.joda.time.DateTime;
 
 public class NuixDiagnostics {
 	// Obtain a logger instance for this class
-	private final static Logger logger = Logger.getLogger(NuixDiagnostics.class);
+	private final static Logger logger = LogManager.getLogger(NuixDiagnostics.class);
 		
 	public static void saveDiagnostics(File directory){
 		List<MBeanServer> beanServers = new ArrayList<MBeanServer>();
