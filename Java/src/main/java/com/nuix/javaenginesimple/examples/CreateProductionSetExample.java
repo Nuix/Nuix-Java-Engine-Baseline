@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.joda.time.DateTime;
 
 import com.nuix.javaenginesimple.EngineWrapper;
@@ -22,7 +23,7 @@ import nuix.Utilities;
 
 public class CreateProductionSetExample {
 	// Obtain a logger instance for this class
-		private final static Logger logger = Logger.getLogger(CreateProductionSetExample.class);
+		private final static Logger logger = LogManager.getLogger(CreateProductionSetExample.class);
 
 		public static void main(String[] args) throws Exception {
 			String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));

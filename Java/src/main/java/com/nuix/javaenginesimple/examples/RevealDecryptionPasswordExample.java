@@ -6,7 +6,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import com.nuix.javaenginesimple.EngineWrapper;
@@ -19,7 +20,7 @@ import nuix.Utilities;
 
 public class RevealDecryptionPasswordExample {
 	// Obtain a logger instance for this class
-	private final static Logger logger = Logger.getLogger(RevealDecryptionPasswordExample.class);
+	private final static Logger logger = LogManager.getLogger(RevealDecryptionPasswordExample.class);
 
 	public static void main(String[] args) throws Exception {
 		String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
