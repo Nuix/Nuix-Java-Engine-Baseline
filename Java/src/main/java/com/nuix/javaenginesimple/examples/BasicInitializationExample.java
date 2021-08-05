@@ -74,19 +74,8 @@ public class BasicInitializationExample {
 //			});
 			
 			// Attempt to initialize Nuix with a server based license
-			wrapper.trustAllCertificates();
-			wrapper.withServerLicense("127.0.0.1", licenseUserName, licensePassword, new Consumer<Utilities>(){
-				public void accept(Utilities utilities) {
-					// Here's where we would begin to make use of the Nuix API for
-					// the more interesting things like opening a case, searching ,tagging, etc
-					wrapper.logger.info("Looks like it worked! Now time to do something great.");
-					//TODO: Use Nuix to do stuff
-				}
-			});
-			
-			// Attempt to initialize Nuix with a cloud based license
 //			wrapper.trustAllCertificates();
-//			wrapper.withCloudLicense(licenseUserName, licensePassword, new Consumer<Utilities>() {
+//			wrapper.withServerLicense("127.0.0.1", licenseUserName, licensePassword, new Consumer<Utilities>(){
 //				public void accept(Utilities utilities) {
 //					// Here's where we would begin to make use of the Nuix API for
 //					// the more interesting things like opening a case, searching ,tagging, etc
@@ -94,6 +83,17 @@ public class BasicInitializationExample {
 //					//TODO: Use Nuix to do stuff
 //				}
 //			});
+			
+			// Attempt to initialize Nuix with a cloud based license
+			wrapper.trustAllCertificates();
+			wrapper.withCloudLicense(licenseUserName, licensePassword, new Consumer<Utilities>() {
+				public void accept(Utilities utilities) {
+					// Here's where we would begin to make use of the Nuix API for
+					// the more interesting things like opening a case, searching ,tagging, etc
+					wrapper.logger.info("Looks like it worked! Now time to do something great.");
+					//TODO: Use Nuix to do stuff
+				}
+			});
 			
 		} catch (Exception e) {
 			wrapper.logger.error("Unhandled exception",e);
