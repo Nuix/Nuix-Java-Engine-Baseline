@@ -34,6 +34,7 @@ import nuix.engine.Licensor;
  */
 public class EngineWrapper implements AutoCloseable {
 	private static GlobalContainer container = null;
+	private static boolean loggingInitHasBeenPerformed = false;
 	
 	private File nuixBaseDirectory = null;
 	private Engine engine = null;
@@ -51,20 +52,25 @@ public class EngineWrapper implements AutoCloseable {
 	public EngineWrapper(File nuixBaseDirectory, String logDirectory){
 		this.nuixBaseDirectory = nuixBaseDirectory;
 		
-		System.getProperties().put("nuix.logdir", logDirectory);
-		
-		// Use Log4j2 config YAML from engine base directory
-		File log4jConfigFile = new File(nuixBaseDirectory,"config/log4j2.yml");
-		System.setProperty("log4j.configurationFile",log4jConfigFile.getAbsolutePath());
-		logger = LogManager.getLogger("EngineWrapper");
-		
-		// Register our own console appender that writes more than just fatal errors
-		PatternLayout layout = PatternLayout.newBuilder().withPattern("%d{yyyy-MM-dd HH:mm:ss.SSS Z} [%t] %r %-5p %c - %m%n").build();
-	    ConsoleAppender appender = ConsoleAppender.createDefaultAppenderForLayout(layout);
-	    appender.start();
-	    LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-	    ctx.getRootLogger().addAppender(appender);
-	    ctx.updateLoggers();
+		// Lets only initialize the logging stuff the first time
+		if(!loggingInitHasBeenPerformed) {
+			System.getProperties().put("nuix.logdir", logDirectory);
+			
+			// Use Log4j2 config YAML from engine base directory
+			File log4jConfigFile = new File(nuixBaseDirectory,"config/log4j2.yml");
+			System.setProperty("log4j.configurationFile",log4jConfigFile.getAbsolutePath());
+			logger = LogManager.getLogger("EngineWrapper");
+			
+			// Register our own console appender that writes more than just fatal errors
+			PatternLayout layout = PatternLayout.newBuilder().withPattern("%d{yyyy-MM-dd HH:mm:ss.SSS Z} [%t] %r %-5p %c - %m%n").build();
+		    ConsoleAppender appender = ConsoleAppender.createDefaultAppenderForLayout(layout);
+		    appender.start();
+		    LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+		    ctx.getRootLogger().addAppender(appender);
+		    ctx.updateLoggers();
+		    
+		    loggingInitHasBeenPerformed = true;
+		}
 	    
 		licenseFilter = new LicenseFilter();
 		
