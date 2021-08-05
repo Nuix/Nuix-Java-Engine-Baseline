@@ -138,10 +138,6 @@ public class EngineWrapper implements AutoCloseable {
 						Utilities utilities = engine.getUtilities();
 						ThirdPartyDependencyChecker.logAllDependencyInfo(utilities);
 						
-						// Setup our shutdown hook in case user terminates before consumer returns
-						logger.info("Adding shutdown hook for EngineWrapper::close");
-						Runtime.getRuntime().addShutdownHook(shutdownHook);
-						
 						logger.info("License was obtained, providing Utilities object to consumer...");
 						consumer.accept(utilities);
 					}
@@ -247,11 +243,7 @@ public class EngineWrapper implements AutoCloseable {
 					if(licenseObtained){
 						Utilities utilities = engine.getUtilities();
 						ThirdPartyDependencyChecker.logAllDependencyInfo(utilities);
-						
-						// Setup our shutdown hook in case user terminates before consumer returns
-						logger.info("Adding shutdown hook for EngineWrapper::close");
-						Runtime.getRuntime().addShutdownHook(shutdownHook);
-						
+												
 						logger.info("License was obtained, providing Utilities object to consumer...");
 						consumer.accept(utilities);
 					} else {
@@ -342,10 +334,6 @@ public class EngineWrapper implements AutoCloseable {
 					if(licenseObtained){
 						Utilities utilities = engine.getUtilities();
 						ThirdPartyDependencyChecker.logAllDependencyInfo(utilities);
-
-						// Setup our shutdown hook in case user terminates before consumer returns
-						logger.info("Adding shutdown hook for EngineWrapper::close");
-						Runtime.getRuntime().addShutdownHook(shutdownHook);
 						
 						logger.info("License was obtained, providing Utilities object to consumer...");
 						consumer.accept(utilities);
@@ -431,8 +419,11 @@ public class EngineWrapper implements AutoCloseable {
 		
 		//Obtain an engine instance
 		engine = container.newEngine(engineConfiguration);
-		
 		logger.info("Obtained Engine instance v"+engine.getVersion());
+		
+		// Setup our shutdown hook in case user terminates before consumer returns
+		logger.info("Adding shutdown hook for EngineWrapper::close");
+		Runtime.getRuntime().addShutdownHook(shutdownHook);
 	}
 	
 	/***
