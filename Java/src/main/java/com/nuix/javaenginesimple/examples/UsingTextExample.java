@@ -22,12 +22,12 @@ import nuix.Text;
 import nuix.Utilities;
 
 public class UsingTextExample {
-	// Obtain a logger instance for this class
-	private final static Logger logger = LogManager.getLogger(BasicSearchAndTagExample.class);
+	private static Logger logger = null;
 
 	public static void main(String[] args) throws Exception {
 		String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
 		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.2.4.392",logDirectory);
+		logger = LogManager.getLogger(UsingTextExample.class);
 		
 		LicenseFilter licenseFilter = wrapper.getLicenseFilter();
 		licenseFilter.setMinWorkers(4);

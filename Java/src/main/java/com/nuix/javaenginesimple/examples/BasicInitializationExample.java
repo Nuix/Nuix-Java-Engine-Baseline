@@ -2,6 +2,8 @@ package com.nuix.javaenginesimple.examples;
 
 import java.util.function.Consumer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import com.nuix.javaenginesimple.EngineWrapper;
@@ -17,6 +19,8 @@ import nuix.Utilities;
  *
  */
 public class BasicInitializationExample {
+	private static Logger logger;
+	
 	public static void main(String[] args) throws Exception {
 		// =========================================================================================
 		// * Create instance of EngineWrapper which we will delegate much of the initialization to *
@@ -29,6 +33,8 @@ public class BasicInitializationExample {
 		// Engine wrapper will need to know what directory you engine release resides.
 		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.2.4.392", logDirectory);
 		
+		// Relying on log4j2 initializations in EngineWrapper creation, so we wait until after that to fetch our logger
+		logger = LogManager.getLogger(BasicInitializationExample.class);
 		
 		// =========================================================================================================
 		// * Create LicenseFilter instance which will instruct EngineWrapper on how to choose an available license *
@@ -51,11 +57,11 @@ public class BasicInitializationExample {
 		String licensePassword = System.getProperty("License.Password");
 		
 		if(licenseUserName != null && !licenseUserName.trim().isEmpty()) {
-			wrapper.logger.info(String.format("License username was provided via argument -DLicense.UserName: %s",licenseUserName));
+			logger.info(String.format("License username was provided via argument -DLicense.UserName: %s",licenseUserName));
 		}
 		
 		if(licensePassword != null && !licensePassword.trim().isEmpty()) {
-			wrapper.logger.info("License password was provided via argument -DLicense.Password");
+			logger.info("License password was provided via argument -DLicense.Password");
 		}
 		
 		// =========================================================================================================
@@ -68,7 +74,7 @@ public class BasicInitializationExample {
 //				public void accept(Utilities utilities) {
 //					// Here's where we would begin to make use of the Nuix API for
 //					// the more interesting things like opening a case, searching ,tagging, etc
-//					wrapper.logger.info("Looks like it worked! Now time to do something great.");
+//					logger.info("Looks like it worked! Now time to do something great.");
 //					//TODO: Use Nuix to do stuff
 //				}
 //			});
@@ -79,7 +85,7 @@ public class BasicInitializationExample {
 //				public void accept(Utilities utilities) {
 //					// Here's where we would begin to make use of the Nuix API for
 //					// the more interesting things like opening a case, searching ,tagging, etc
-//					wrapper.logger.info("Looks like it worked! Now time to do something great.");
+//					logger.info("Looks like it worked! Now time to do something great.");
 //					//TODO: Use Nuix to do stuff
 //				}
 //			});
@@ -90,7 +96,7 @@ public class BasicInitializationExample {
 				public void accept(Utilities utilities) {
 					// Here's where we would begin to make use of the Nuix API for
 					// the more interesting things like opening a case, searching ,tagging, etc
-					wrapper.logger.info("Looks like it worked! Now time to do something great.");
+					logger.info("Looks like it worked! Now time to do something great.");
 					//TODO: Use Nuix to do stuff
 				}
 			});
