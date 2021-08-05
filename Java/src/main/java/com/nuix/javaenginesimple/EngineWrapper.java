@@ -3,9 +3,15 @@ package com.nuix.javaenginesimple;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import nuix.Utilities;
 import nuix.engine.AvailableLicence;
@@ -27,28 +33,40 @@ import nuix.engine.Licensor;
  *
  */
 public class EngineWrapper implements AutoCloseable {
-	// Obtain a logger instance for this class
-	private final static Logger logger = Logger.getLogger("EngineWrapper");
-	
 	private static GlobalContainer container = null;
 	
 	private File nuixBaseDirectory = null;
 	private Engine engine = null;
-	
 	private Thread shutdownHook = null;
-	
-	// We will use this while iterating licenses to determine which one to acquire.
-	// By default this filter accepts any license.
-	private LicenseFilter licenseFilter = new LicenseFilter();
-	
+	private LicenseFilter licenseFilter = null;
 	private CertificateTrustCallback certificateTrustCallback = null;
+	
+	public Logger logger = null;
 	
 	/***
 	 * Creates a new instance running against the specified engine release.
 	 * @param nuixBaseDirectory Base directory of the target engine release.
+	 * @param logDirectory Where logs for this sessions should be written to
 	 */
-	public EngineWrapper(File nuixBaseDirectory){
+	public EngineWrapper(File nuixBaseDirectory, String logDirectory){
 		this.nuixBaseDirectory = nuixBaseDirectory;
+		
+		System.getProperties().put("nuix.logdir", logDirectory);
+		
+		// Use Log4j2 config YAML from engine base directory
+		File log4jConfigFile = new File(nuixBaseDirectory,"config/log4j2.yml");
+		System.setProperty("log4j.configurationFile",log4jConfigFile.getAbsolutePath());
+		logger = LogManager.getLogger("EngineWrapper");
+		
+		// Register our own console appender that writes more than just fatal errors
+		PatternLayout layout = PatternLayout.newBuilder().withPattern("%d{yyyy-MM-dd HH:mm:ss.SSS Z} [%t] %r %-5p %c - %m%n").build();
+	    ConsoleAppender appender = ConsoleAppender.createDefaultAppenderForLayout(layout);
+	    appender.start();
+	    LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+	    ctx.getRootLogger().addAppender(appender);
+	    ctx.updateLoggers();
+	    
+		licenseFilter = new LicenseFilter();
 		
 		// We want to set the System property "nuix.libdir" so that when the engine spins up worker processes,
 		// that it can specify the "lib" directory properly to the workers.  Without this the engine will instead
@@ -71,9 +89,10 @@ public class EngineWrapper implements AutoCloseable {
 	/***
 	 * Creates a new instance running against the specified engine release.
 	 * @param nuixBaseDirectory Base directory of the target engine release.
+	 * @param logDirectory Where logs for this sessions should be written to
 	 */
-	public EngineWrapper(String nuixBaseDirectory){
-		this(new File(nuixBaseDirectory));
+	public EngineWrapper(String nuixBaseDirectory, String logDirectory){
+		this(new File(nuixBaseDirectory), logDirectory);
 	}
 
 	/***
@@ -201,7 +220,7 @@ public class EngineWrapper implements AutoCloseable {
 				
 				logger.info("Specifying credentials to use with license server...");
 				engine.whenAskedForCredentials(new CredentialsCallback() {
-					Logger logger = Logger.getLogger("CredentialCallback");
+					Logger logger = LogManager.getLogger("CredentialCallback");
 					public void execute(CredentialsCallbackInfo info) {
 						logger.info(String.format("Providing credentials for %s to license server %s...", userName,info.getAddress().getHostName()));
 						info.setUsername(userName);
@@ -296,7 +315,7 @@ public class EngineWrapper implements AutoCloseable {
 				
 				logger.info("Specifying credentials to use with cloud license server...");
 				engine.whenAskedForCredentials(new CredentialsCallback() {
-					Logger logger = Logger.getLogger("CredentialCallback");
+					Logger logger = LogManager.getLogger("CredentialCallback");
 					public void execute(CredentialsCallbackInfo info) {
 						logger.info(String.format("Providing credentials for %s to cloud license server %s...", userName,info.getAddress().getHostName()));
 						info.setUsername(userName);
@@ -362,45 +381,25 @@ public class EngineWrapper implements AutoCloseable {
 			logger.info(String.format("\t%s: %s",entry.getKey(),entry.getValue()));
 		}
 		
-		Iterable<AvailableLicence> licences = licensor.findAvailableLicences(licenseOptions);
-		
-		logger.info("Iterating available licences...");
-		for(AvailableLicence license : licences) {
-			logger.info(LicenseFeaturesLogger.summarizeLicense(license));
-		}
-		
-		boolean licenceObtained = false;
-		
 		logger.info("Finding first license which meets filter requirements...");
-		for(AvailableLicence license : licences) {
-			logger.info("\t Count: " + license.getCount());
-			logger.info("\t Workers: " + license.getWorkers());
-			logger.info("\t Short Name: " + license.getShortName());
-			logger.info("\t Type: " + license.getSource().getType());
-			logger.info("\t ID: " + license.getSource().getLocation());
-			logger.info("\t Description: " + license.getDescription());
-			LicenseFeaturesLogger.logFeaturesOfLicense(license);
-			
-			if(licenseFilter.isValid(license)) {
-				if(license.canChooseWorkers()) {
-					logger.info(">>>> Acquiring this licence with "+licenseFilter.getMinWorkers()+" workers");
-					int targetWorkerCount = licenseFilter.getMinWorkers();
-					if(targetWorkerCount < 1) { targetWorkerCount = 2; }
-					Map<String,Object> acquireSettings = new HashMap<String,Object>();
-					acquireSettings.put("workerCount", targetWorkerCount);
-					license.acquire(acquireSettings);
-					licenceObtained = true;	
-				} else {
-					logger.info(">>>> Acquiring this licence");
-					license.acquire();
-					licenceObtained = true;	
-				}
-				
-				break;
+		Stream<AvailableLicence> licences = licensor.findAvailableLicencesStream(licenseOptions);
+		boolean licenceObtained = false;
+		Optional<AvailableLicence> possiblyFoundLicense = licences.filter(availableLicence -> licenseFilter.isValid(availableLicence)).findFirst();
+		if(possiblyFoundLicense.isEmpty() == false) {
+			AvailableLicence foundLicense = possiblyFoundLicense.get();
+			logger.info(">>>> Acquiring following license: "+LicenseFeaturesLogger.summarizeLicense(foundLicense));
+			if(foundLicense.canChooseWorkers()) {
+				int targetWorkerCount = licenseFilter.getMinWorkers();
+				if(targetWorkerCount < 1) { targetWorkerCount = 2; }
+				Map<String,Object> acquireSettings = new HashMap<String,Object>();
+				acquireSettings.put("workerCount", targetWorkerCount);
+				foundLicense.acquire(acquireSettings);
 			} else {
-				logger.info("<<<< Ignoring this license, does not meet requirements of license filter");
-				continue;
+				foundLicense.acquire();
 			}
+			licenceObtained = true;
+		} else {
+			logger.warn("!!!! No license found that matches "+licenseFilter.toString());
 		}
 		
 		return licenceObtained;
@@ -524,8 +523,11 @@ public class EngineWrapper implements AutoCloseable {
 			engine.close();
 		}
 		
-		// Remove our shutdown hook since engine has now been closed
-		logger.info("Removing shutdown hook to EngineWrapper::close");
-		Runtime.getRuntime().removeShutdownHook(shutdownHook);
+		if(shutdownHook != null) {
+			// Remove our shutdown hook since engine has now been closed
+			logger.info("Removing shutdown hook to EngineWrapper::close");
+			Runtime.getRuntime().removeShutdownHook(shutdownHook);
+			shutdownHook = null;
+		}
 	}
 }

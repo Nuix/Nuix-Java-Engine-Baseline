@@ -3,7 +3,8 @@ package com.nuix.javaenginesimple;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import nuix.engine.AvailableLicence;
 
@@ -15,7 +16,7 @@ import nuix.engine.AvailableLicence;
  */
 public class LicenseFilter {
 	// Obtain a logger instance for this class
-	private final static Logger logger = Logger.getLogger("LicenseFilter");
+	private final static Logger logger = LogManager.getLogger("LicenseFilter");
 	
 	private int minWorkers = 0;
 	private int maxWorkers = 0;
@@ -175,5 +176,11 @@ public class LicenseFilter {
 			requiredFeatures = new ArrayList<String>();
 		}
 		requiredFeatures.clear();
+	}
+
+	@Override
+	public String toString() {
+		return "LicenseFilter [minWorkers=" + minWorkers + ", maxWorkers=" + maxWorkers + ", name=" + name
+				+ ", requiredFeatures=" + requiredFeatures + "]";
 	}
 }

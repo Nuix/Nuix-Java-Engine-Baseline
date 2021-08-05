@@ -1,11 +1,10 @@
 package com.nuix.javaenginesimple.examples;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -16,13 +15,11 @@ import com.nuix.javaenginesimple.NuixDiagnostics;
 
 import nuix.Case;
 import nuix.Item;
-import nuix.ReaderReadLogic;
-import nuix.Text;
 import nuix.Utilities;
 
-public class UsingTextExample {
+public class RevealDecryptionPasswordExample {
 	// Obtain a logger instance for this class
-	private final static Logger logger = Logger.getLogger(BasicSearchAndTagExample.class);
+	private final static Logger logger = Logger.getLogger(RevealDecryptionPasswordExample.class);
 
 	public static void main(String[] args) throws Exception {
 		String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
@@ -43,23 +40,12 @@ public class UsingTextExample {
 			logger.info("License password was provided via argument -DLicense.Password");
 		}
 		
-		String query = "flag:audited AND content:*";
-		
-		// Contrived example where we will iterate each line of the item's text and when a given
-		// line is blank after trimming whitespace, we add 1 to our blank line count, ultimately
-		// returning the number of blank lines we encountered.
-		ReaderReadLogic<Integer> textOperation = new ReaderReadLogic<Integer>() {
+		Function<char[],String> passwordHandler = new Function<char[],String>(){
 			@Override
-			public Integer withReader(Reader reader) throws IOException {
-				int blankLineCount = 0;
-				BufferedReader buffer = new BufferedReader(reader);
-				String line;
-				while((line = buffer.readLine()) != null) {
-					if(line.trim().isEmpty()) {
-						blankLineCount++;
-					}
-				}
-				return blankLineCount;
+			public String apply(char[] t) {
+				// We convert the character array containing the password to
+				// a String and then return that to the outside
+				return new String(t);
 			}
 		};
 		
@@ -75,19 +61,12 @@ public class UsingTextExample {
 						logger.info(String.format("Opening case: %s",caseDirectory.toString()));
 						nuixCase = utilities.getCaseFactory().open(caseDirectory);
 						logger.info("Case opened");
-						
-						Set<Item> items = nuixCase.searchUnsorted(query);
+
+						Set<Item> items = nuixCase.searchUnsorted("flag:encrypted");
 						for(Item item : items) {
-							Text itemTextObject = item.getTextObject();
-							// Have our text operation do something with the items text.  Since this operation is handed a
-							// Reader rather than attempting to construct one solitary string in memory, this operation should
-							// behave better when an item has an especially large text value.
-							int blankLineCount = itemTextObject.usingText(textOperation);
-							
-							// Record the number of blank lines we encountered as custom metadata
-							item.getCustomMetadata().putInteger("ContentBlankLines", blankLineCount);
-							
-							logger.info(String.format("%s has %s blank lines in its content text", item.getGuid(), blankLineCount));
+							String guid = item.getGuid();
+							String password = item.revealDecryptionPassword(passwordHandler);
+							logger.info(String.format("Item with GUID %s was decrypted with password: %s", guid, password));
 						}
 						
 						// Note that nuixCase is closed in finally block below

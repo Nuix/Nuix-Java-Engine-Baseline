@@ -2,14 +2,11 @@ package com.nuix.javaenginesimple.examples;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.function.Consumer;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.joda.time.DateTime;
 
 import com.nuix.javaenginesimple.EngineWrapper;
@@ -32,14 +29,7 @@ public class CreateSimpleCaseExample {
 
 	public static void main(String[] args) throws Exception {
 		String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
-		System.getProperties().put("nuix.logdir", logDirectory);
-		
-		Properties props = new Properties();
-		InputStream log4jSettingsStream = CreateSimpleCaseExample.class.getResourceAsStream("/log4j.properties");
-		props.load(log4jSettingsStream);
-		PropertyConfigurator.configure(props);
-		
-		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.0.1.325");
+		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.2.4.392",logDirectory);
 		
 		LicenseFilter licenseFilter = wrapper.getLicenseFilter();
 		licenseFilter.setMinWorkers(4);

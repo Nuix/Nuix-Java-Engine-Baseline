@@ -2,7 +2,8 @@ package com.nuix.javaenginesimple;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import nuix.ThirdPartyDependency;
 import nuix.ThirdPartyDependencyStatus;
@@ -15,7 +16,7 @@ import nuix.Utilities;
  */
 public class ThirdPartyDependencyChecker {
 	// Obtain a logger instance for this class
-	private final static Logger logger = Logger.getLogger("ThirdPartyDependencyChecker");
+	private final static Logger logger = LogManager.getLogger("ThirdPartyDependencyChecker");
 	
 	/***
 	 * Logs information about all Nuix third party dependencies
