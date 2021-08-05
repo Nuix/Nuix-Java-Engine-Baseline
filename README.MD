@@ -1,7 +1,7 @@
 Nuix Java Engine Baseline
 =========================
 
-![Nuix Engine 9.0](https://img.shields.io/badge/Nuix%20Engine-9.0-green.svg)
+![Nuix Engine 9.2](https://img.shields.io/badge/Nuix%20Engine-9.2-green.svg)
 
 View the GitHub project [here](https://github.com/Nuix/Nuix-Java-Engine-Baseline) or download the latest release [here](https://github.com/Nuix/Nuix-Java-Engine-Baseline/releases).
 
@@ -19,13 +19,13 @@ This repository contains a series of examples making use of the Java Engine API 
 
 - To begin you will need to [download a release](https://download.nuix.com/releases/engine) of the Nuix Java Engine and extract that somewhere on your local machine.  You will want to extract the engine release to a directory with a relatively short name such as the following:
 ```
-D:\engine-releases\9.0.1.325
+D:\engine-releases\9.2.4.392
 ```
 - Have a Nuix license available on a Nuix license dongle, available from a Nuix Management Server instance or available from the Nuix Cloud License Server.
 - Download a copy of this repository and open the `Java` sub directory in your IDE of choice.  Add the contents of the `lib` sub directory of your engine release to your project's build path.
-- Ensure that the Windows `PATH` environment variable references the `bin` sub directory of your engine release as well as the `bin\x86` directory.  For example if I have my engine distribution located at `D:\engine-releases\9.0.1.325`, I will want to add the following to my `PATH`:
-    - `D:\engine-releases\9.0.1.325\bin`
-    - `D:\engine-releases\9.0.1.325\bin\x86`
+- Ensure that the Windows `PATH` environment variable references the `bin` sub directory of your engine release as well as the `bin\x86` directory.  For example if I have my engine distribution located at `D:\engine-releases\9.2.4.392`, I will want to add the following to my `PATH`:
+    - `D:\engine-releases\9.2.4.392\bin`
+    - `D:\engine-releases\9.2.4.392\bin\x86`
 - Build your project and export a JAR file.
 
 The package `com.nuix.javaenginebaseline.examples` contains a series of examples demonstrating fundamental activities.  Each example is executable (they have a static void main method).  For example, to run the example [BasicInitializationExample]:
@@ -34,12 +34,12 @@ The package `com.nuix.javaenginebaseline.examples` contains a series of examples
 2. Export a JAR file to a location such as `C:\MyCustomNuixApp\MyApp.jar`
 3. Execute the `main` method of the class `BasicInitializationExample` using a 64-bit JRE (Java Runtime Environment) with a command along the lines of:
 ```
-C:\MyCustomNuixApp> java -classpath "D:\engine-releases\9.0.1.325\lib\*;.\*" com.nuix.javaenginesimple.examples.BasicInitializationExample
+C:\MyCustomNuixApp> java -classpath "D:\engine-releases\9.2.4.392\lib\*;.\*" com.nuix.javaenginesimple.examples.BasicInitializationExample
 ```
 
 A breakdown of the above command:
 - Uses the `-classpath` argument to include on the class path:
-	- All jars in `D:\engine-releases\9.0.1.325\lib`
+	- All jars in `D:\engine-releases\9.2.4.392\lib`
 	- All jars in local directory so that `MyApp.jar` is picked up
 - Specifies the fully qualified name (`com.nuix.javaenginesimple.examples.BasicInitializationExample`) of our class [BasicInitializationExample] which contains the `public static void main(String[] args)` method (an entry point into the program).
 
@@ -53,7 +53,7 @@ Note that the classes (such as [EngineWrapper]) provided in this project are not
 
 The workflow of [withDongleLicense], [withServerLicense] and [withCloudLicense] are fairly similar in the steps they take, differing mostly in how they acquire a license for the engine instance they obtain.  In the following I'll focus on [withDongleLicense] and note some of the differences in behavior to [withServerLicense] and [withCloudLicense].
 
-The method [withDongleLicense] begins by ensuring the specified engine release directory does indeed exist since nothing will work without this.  It then loads the properties in the embedded resource [log4j.properties](https://github.com/Nuix/Nuix-Java-Engine-Baseline/blob/master/Java/src/main/resources/log4j.properties) and uses them to configure [Log4j](https://github.com/apache/log4j).  This file is essentially the same as the one included with a Nuix Workbench install at `<NUIXINSTALL>/config/log4j.properties`.  The method then proceeds to construct a `GlobalContainer` instance (as needed).  There should only ever be 1 `GlobalContainer` instance per Java Virtual Machine.
+The method [withDongleLicense] begins by ensuring the specified engine release directory does indeed exist since nothing will work without this.  The method then proceeds to construct a `GlobalContainer` instance (as needed).  There should only ever be 1 `GlobalContainer` instance per Java Virtual Machine.
 
 From the `GlobalContainer` instance an `Engine` instance is constructed, from that a `Licensor` is obtained.  In the case of [withDongleLicense], `Licensor.findAvailableLicences` is called with the setting `sources` having a value of `dongle`.  The method [withServerLicense] instead provides the setting `sources` a value of `server` and [withCloudLicense] provides the value `cloud-server`.
 
@@ -73,39 +73,28 @@ licenseOptions.put("sources","cloud-server");
 Iterable<AvailableLicence> licences = licensor.findAvailableLicences(licenseOptions);
 ```
 
-`Licensor.findAvailableLicences` returns an `Iterable<AvailableLicence>`.  With this collection we can iterate and inspect each available license, choosing one we wish to acquire and license our Engine instance with.  The [EngineWrapper] class makes use of a [LicenseFilter] object to test each license for some requirements such as having a certain number of workers available, being a certain license type or having particular features.  The default [LicenseFilter] provided by [EngineWrapper] will acquire the first license it finds available, but it can be configured to be more selective.
+`Licensor.findAvailableLicencesStream` returns an `Stream<AvailableLicence>`.  The stream is then filtered to `AvailableLicence` instances for which the `LicenseFilter.isValid` method returns **true**.  This tests each license for some requirements such as having a certain number of workers available, being a certain license type or having particular features.  The default [LicenseFilter] provided by [EngineWrapper] will acquire the first license it finds available, but it can be configured to be more selective.  The first matching license is then acquired, taking as many workers as are specified by `LicenseFilter.getMinWorkers`.
 
 ```java
 logger.info("Finding first license which meets filter requirements...");
-for(AvailableLicence license : licences) {
-	logger.info("\t Count: " + license.getCount());
-	logger.info("\t Workers: " + license.getWorkers());
-	logger.info("\t Short Name: " + license.getShortName());
-	logger.info("\t Type: " + license.getSource().getType());
-	logger.info("\t ID: " + license.getSource().getLocation());
-	logger.info("\t Description: " + license.getDescription());
-	LicenseFeaturesLogger.logFeaturesOfLicense(license);
-	
-	if(licenseFilter.isValid(license)) {
-		if(license.canChooseWorkers()) {
-			logger.info(">>>> Acquiring this licence with "+licenseFilter.getMinWorkers()+" workers");
-			int targetWorkerCount = licenseFilter.getMinWorkers();
-			if(targetWorkerCount < 1) { targetWorkerCount = 2; }
-			Map<String,Object> acquireSettings = new HashMap<String,Object>();
-			acquireSettings.put("workerCount", targetWorkerCount);
-			license.acquire(acquireSettings);
-			licenceObtained = true;	
-		} else {
-			logger.info(">>>> Acquiring this licence");
-			license.acquire();
-			licenceObtained = true;	
-		}
-		
-		break;
+Stream<AvailableLicence> licences = licensor.findAvailableLicencesStream(licenseOptions);
+boolean licenceObtained = false;
+Optional<AvailableLicence> possiblyFoundLicense = licences.filter(availableLicence -> licenseFilter.isValid(availableLicence)).findFirst();
+if(possiblyFoundLicense.isEmpty() == false) {
+	AvailableLicence foundLicense = possiblyFoundLicense.get();
+	logger.info(">>>> Acquiring following license: "+LicenseFeaturesLogger.summarizeLicense(foundLicense));
+	if(foundLicense.canChooseWorkers()) {
+		int targetWorkerCount = licenseFilter.getMinWorkers();
+		if(targetWorkerCount < 1) { targetWorkerCount = 2; }
+		Map<String,Object> acquireSettings = new HashMap<String,Object>();
+		acquireSettings.put("workerCount", targetWorkerCount);
+		foundLicense.acquire(acquireSettings);
 	} else {
-		logger.info("<<<< Ignoring this license, does not meet requirements of license filter");
-		continue;
+		foundLicense.acquire();
 	}
+	licenceObtained = true;
+} else {
+	logger.warn("!!!! No license found that matches "+licenseFilter.toString());
 }
 ```
 
@@ -143,7 +132,7 @@ For example, if I wish to only acquire a license which:
 You configure the license filter to only acquire licenses meeting this criteria with the following code:
 
 ```java
-EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.0.1.325");
+EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.2.4.392","D:\\NuixEngineLogs");
 
 LicenseFilter filter = wrapper.getLicenseFilter();
 filter.setMinWorkers(8);
@@ -234,7 +223,7 @@ In the example [NuixDiagnostics.saveDiagnostics][saveDiagnostics] is called when
 
 ```java
 public static void main(String[] args) throws Exception {
-	EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.0.1.325");
+	EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.2.4.392","D:\\NuixEngineLogs");
 	
 	try {
 		wrapper.withDongleLicense(new Consumer<Utilities>(){
