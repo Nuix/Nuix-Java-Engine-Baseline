@@ -266,7 +266,7 @@ public class LoadDataIntoCaseExample {
 			
 		} catch (Exception e) {
 			logger.error("Unhandled exception",e);
-			NuixDiagnostics.saveDiagnostics("C:\\EngineDiagnostics");
+			NuixDiagnostics.saveDiagnosticsToDirectory("C:\\EngineDiagnostics");
 		} finally {
 			wrapper.close();
 		}
