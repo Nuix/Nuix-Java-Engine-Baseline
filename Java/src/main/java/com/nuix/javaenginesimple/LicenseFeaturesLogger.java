@@ -20,7 +20,7 @@ public class LicenseFeaturesLogger {
 	private final static Logger logger = LogManager.getLogger("LicenseFeatures");
 	
 	// List of license features
-	// List generated from 7.6 license profiles documentation found here:
+	// List generated from 9.2 license profiles documentation found here:
 	// https://download.nuix.com/releases/desktop/stable/docs/en/reference/licence-profiles.html
 	private static String[] knownFeatures = new String[] {
 		"ANALYSIS",
@@ -40,6 +40,7 @@ public class LicenseFeaturesLogger {
 		"EXPORT_SINGLE_ITEM",
 		"EXPORT_VIEW",
 		"FAST_REVIEW",
+		"FRONT_LOAD_METADATA",
 		"GENERAL_DATA",
 		"GRAPH",
 		"GWAVA",
@@ -49,6 +50,7 @@ public class LicenseFeaturesLogger {
 		"LOTUS_NOTES",
 		"MAIL_XTENDER",
 		"METADATA_IMPORT",
+		"MICROSOFT_GRAPH",
 		"MOBILE_DEVICE_IMAGING",
 		"NETWORK_DATA",
 		"OCR_PROCESSING",
@@ -58,7 +60,6 @@ public class LicenseFeaturesLogger {
 		"PARTIAL_LOAD",
 		"PRODUCTION_SET",
 		"SCRIPTING",
-		"SOCIAL_MEDIA",
 		"SYMANTEC_VAULT",
 		"UNRESTRICTED_CASE_ACCESS",
 		"WORKER",
