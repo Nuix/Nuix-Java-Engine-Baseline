@@ -51,7 +51,7 @@ public class CreateSimpleCaseExample {
 			wrapper.trustAllCertificates();
 			wrapper.withCloudLicense(licenseUserName, licensePassword, new Consumer<Utilities>() {
 				public void accept(Utilities utilities) {
-					File caseDirectory = new File("D:\\Cases\\MyNuixSimpleCase");
+					File caseDirectory = new File("D:\\Cases\\MyNuixCase");
 					
 					// Specify additional settings to use when creating case
 					Map<String,Object> caseSettings = new HashMap<String,Object>();
