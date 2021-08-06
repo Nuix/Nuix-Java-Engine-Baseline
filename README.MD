@@ -217,9 +217,9 @@ Once a license has been obtained by [EngineWrapper] and a `Utilities` object has
 
 ## NuixDiagnostics
 
-When there is a problem, it is helpful to capture a snapshot of the state of things for trouble shooting purposes.  In the Nuix Workbench GUI we can generate a diagnostics file with the click of a button.  When using the Java engine API we have to do a bit more work.  The class [NuixDiagnostics] provides a method [saveDiagnostics](https://nuix.github.io/Nuix-Java-Engine-Baseline/com/nuix/javaenginesimple/NuixDiagnostics.html#saveDiagnostics-java.lang.String-) which can generate a Nuix diagnostics file for you.  The method accepts as an argument the directory (as a String or [java.io.File](https://docs.oracle.com/javase/8/docs/api/java/io/File.html)) to which the diagnostics zip will be saved.  The generated zip file will automatically be given a time stamped name in the form `NuixEngineDiagnostics-yyyyMMddHHmmss.zip`, for example `NuixEngineDiagnostics-20200408113545.zip`.
+When there is a problem, it is helpful to capture a snapshot of the state of things for trouble shooting purposes.  In the Nuix Workbench GUI we can generate a diagnostics file with the click of a button.  When using the Java engine API we have to do a bit more work.  The class [NuixDiagnostics] provides a method [saveDiagnosticsToDirectory](https://nuix.github.io/Nuix-Java-Engine-Baseline/com/nuix/javaenginesimple/NuixDiagnostics.html#saveDiagnosticsToDirectory-java.lang.String-) which can generate a Nuix diagnostics file for you.  The method accepts as an argument the directory (as a String or [java.io.File](https://docs.oracle.com/javase/8/docs/api/java/io/File.html)) to which the diagnostics zip will be saved.  The generated zip file will automatically be given a time stamped name in the form `NuixEngineDiagnostics-yyyyMMddHHmmss.zip`, for example `NuixEngineDiagnostics-20200408113545.zip`.
 
-In the example [NuixDiagnostics.saveDiagnostics][saveDiagnostics] is called when an exception bubbles all the way up to our main `try`/`catch`.
+In the example [saveDiagnosticsToDirectory](https://nuix.github.io/Nuix-Java-Engine-Baseline/com/nuix/javaenginesimple/NuixDiagnostics.html#saveDiagnosticsToDirectory-java.lang.String-) is called when an exception bubbles all the way up to our main `try`/`catch`.
 
 ```java
 public static void main(String[] args) throws Exception {
@@ -235,7 +235,7 @@ public static void main(String[] args) throws Exception {
 		logger.error("Unhandled exception",e);
 		// Lets dump a diagnostics file since something went wrong and having
 		// this may be helpful for troubleshooting
-		NuixDiagnostics.saveDiagnostics("C:\\EngineDiagnostics");
+		NuixDiagnostics.saveDiagnosticsToDirectory("C:\\EngineDiagnostics");
 	}
 }
 ```
