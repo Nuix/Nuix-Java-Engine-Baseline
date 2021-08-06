@@ -2,16 +2,14 @@ package com.nuix.javaenginesimple.examples;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.joda.time.DateTime;
 
 import com.nuix.javaenginesimple.EngineWrapper;
@@ -26,19 +24,12 @@ import nuix.ItemEventInfo;
 import nuix.Utilities;
 
 public class BasicExportExample {
-	// Obtain a logger instance for this class
-	private final static Logger logger = Logger.getLogger(BasicExportExample.class);
+	private static Logger logger;
 
 	public static void main(String[] args) throws Exception {
 		String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
-		System.getProperties().put("nuix.logdir", logDirectory);
-		
-		Properties props = new Properties();
-		InputStream log4jSettingsStream = OpenCaseExample.class.getResourceAsStream("/log4j.properties");
-		props.load(log4jSettingsStream);
-		PropertyConfigurator.configure(props);
-		
-		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.0.1.325");
+		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.2.4.392",logDirectory);
+		logger = LogManager.getLogger(BasicExportExample.class);
 		
 		LicenseFilter licenseFilter = wrapper.getLicenseFilter();
 		licenseFilter.setMinWorkers(4);
@@ -243,7 +234,7 @@ public class BasicExportExample {
 			
 		} catch (Exception e) {
 			logger.error("Unhandled exception",e);
-			NuixDiagnostics.saveDiagnostics("C:\\EngineDiagnostics");
+			NuixDiagnostics.saveDiagnosticsToDirectory("C:\\EngineDiagnostics");
 		} finally {
 			wrapper.close();
 		}

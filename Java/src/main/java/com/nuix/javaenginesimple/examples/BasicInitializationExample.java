@@ -1,11 +1,9 @@
 package com.nuix.javaenginesimple.examples;
 
-import java.io.InputStream;
-import java.util.Properties;
 import java.util.function.Consumer;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import com.nuix.javaenginesimple.EngineWrapper;
@@ -21,34 +19,22 @@ import nuix.Utilities;
  *
  */
 public class BasicInitializationExample {
-	// Obtain a logger instance for this class
-	private final static Logger logger = Logger.getLogger(BasicInitializationExample.class);
-
+	private static Logger logger;
+	
 	public static void main(String[] args) throws Exception {
-		
-		// ==================================
-		// * Configure some logging details *
-		// ==================================
-		// Specify a custom location for our log files
-		String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
-		System.getProperties().put("nuix.logdir", logDirectory);
-		
-		// Configure log4j using properties file, note that this should be performed after
-		// setting "nuix.logdir" to have that setting determine log output directory!
-		Properties props = new Properties();
-		InputStream log4jSettingsStream = BasicInitializationExample.class.getResourceAsStream("/log4j.properties");
-		props.load(log4jSettingsStream);
-		PropertyConfigurator.configure(props);
-		
-		
 		// =========================================================================================
 		// * Create instance of EngineWrapper which we will delegate much of the initialization to *
 		// =========================================================================================
-				
+		
+		// Specify a custom location for our log files
+		String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
+		
 		// Create an instance of engine wrapper, which will do the work of getting the Nuix bits initialized.
 		// Engine wrapper will need to know what directory you engine release resides.
-		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.0.1.325");
+		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.2.4.392", logDirectory);
 		
+		// Relying on log4j2 initializations in EngineWrapper creation, so we wait until after that to fetch our logger
+		logger = LogManager.getLogger(BasicInitializationExample.class);
 		
 		// =========================================================================================================
 		// * Create LicenseFilter instance which will instruct EngineWrapper on how to choose an available license *
@@ -116,10 +102,10 @@ public class BasicInitializationExample {
 			});
 			
 		} catch (Exception e) {
-			logger.error("Unhandled exception",e);
+			wrapper.logger.error("Unhandled exception",e);
 			// Lets dump a diagnostics file since something went wrong and having
 			// this may be helpful for trouble shooting
-			NuixDiagnostics.saveDiagnostics("C:\\EngineDiagnostics");
+			NuixDiagnostics.saveDiagnosticsToDirectory("C:\\EngineDiagnostics");
 		} finally {
 			wrapper.close();
 		}

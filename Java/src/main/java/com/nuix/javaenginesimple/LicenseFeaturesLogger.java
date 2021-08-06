@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.StringJoiner;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import nuix.LicenceProperties;
 import nuix.engine.AvailableLicence;
@@ -16,7 +17,7 @@ import nuix.engine.AvailableLicence;
  */
 public class LicenseFeaturesLogger {
 	// Obtain a logger instance for this class
-	private final static Logger logger = Logger.getLogger("LicenseFeatures");
+	private final static Logger logger = LogManager.getLogger("LicenseFeatures");
 	
 	// List of license features
 	// List generated from 7.6 license profiles documentation found here:

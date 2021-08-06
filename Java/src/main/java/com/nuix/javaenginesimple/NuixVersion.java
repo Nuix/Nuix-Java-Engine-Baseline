@@ -3,18 +3,7 @@ package com.nuix.javaenginesimple;
 import java.util.regex.Pattern;
 
 /***
- * Assists in representing a Nuix version in object form to assist with comparing two versions.  This allows for things such as
- * only executing chunks of code if the version meets a requirement.<br>
- * Ruby example:
- * <pre>
- * {@code
- * current_version = NuixVersion.new(NUIX_VERSION)
- * if current_version.isLessThan("7.8.0.10")
- *     puts "Sorry your version of Nuix is below the minimum required version of 7.8.0.10"
- *     exit 1
- * end
- * }
- * </pre>
+ * Provides a wrapper around Nuix version string that allows for comparison of versions.
  * @author Jason Wells
  *
  */

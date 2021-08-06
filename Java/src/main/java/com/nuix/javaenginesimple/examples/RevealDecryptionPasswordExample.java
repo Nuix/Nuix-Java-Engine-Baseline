@@ -2,10 +2,9 @@ package com.nuix.javaenginesimple.examples;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,23 +15,16 @@ import com.nuix.javaenginesimple.LicenseFilter;
 import com.nuix.javaenginesimple.NuixDiagnostics;
 
 import nuix.Case;
+import nuix.Item;
 import nuix.Utilities;
 
-/***
- * An example demonstrating a very basic search and tag workflow in which we create a Map where each key is a search query
- * and each associated value is a tag applied to the responsive items.
- * 
- * See BasicInitializationExample for more details regarding the basic initialization steps being taken.
- * @author Jason Wells
- *
- */
-public class BasicSearchAndTagExample {
+public class RevealDecryptionPasswordExample {
 	private static Logger logger = null;
 
 	public static void main(String[] args) throws Exception {
 		String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
 		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.2.4.392",logDirectory);
-		logger = LogManager.getLogger(BasicSearchAndTagExample.class);
+		logger = LogManager.getLogger(RevealDecryptionPasswordExample.class);
 		
 		LicenseFilter licenseFilter = wrapper.getLicenseFilter();
 		licenseFilter.setMinWorkers(4);
@@ -49,12 +41,14 @@ public class BasicSearchAndTagExample {
 			logger.info("License password was provided via argument -DLicense.Password");
 		}
 		
-		// We are going to use a Map<String,String> in which the key is the search we will run and the associated
-		// value is the tag we will apply to the results.
-		Map<String,String> searchAndTagData = new HashMap<String,String>();
-		searchAndTagData.put("cat", "Animals|Cat");
-		searchAndTagData.put("dog", "Animals|Dog");
-		searchAndTagData.put("mouse", "Animals|Mouse");
+		Function<char[],String> passwordHandler = new Function<char[],String>(){
+			@Override
+			public String apply(char[] t) {
+				// We convert the character array containing the password to
+				// a String and then return that to the outside
+				return new String(t);
+			}
+		};
 		
 		try {
 			wrapper.trustAllCertificates();
@@ -68,20 +62,12 @@ public class BasicSearchAndTagExample {
 						logger.info(String.format("Opening case: %s",caseDirectory.toString()));
 						nuixCase = utilities.getCaseFactory().open(caseDirectory);
 						logger.info("Case opened");
-						
-						// Iterate each key value pair in the searchAndTagData Map
-						for(Map.Entry<String, String> searchAndTagEntry : searchAndTagData.entrySet()) {
-							String query = searchAndTagEntry.getKey();
-							String tag = searchAndTagEntry.getValue();
-							logger.info(String.format("==== Tag: %s / Query: %s ====", tag, query));
-							
-							logger.info(String.format("Searching query: %s", query));
-							Set<nuix.Item> hits = nuixCase.searchUnsorted(query);
-							logger.info(String.format("Hits: %s", hits.size()));
-							
-							logger.info(String.format("Applying tag '%s' to %s items...", tag, hits.size()));
-							utilities.getBulkAnnotater().addTag(tag, hits);
-							logger.info("Tag applied to items");
+
+						Set<Item> items = nuixCase.searchUnsorted("flag:encrypted");
+						for(Item item : items) {
+							String guid = item.getGuid();
+							String password = item.revealDecryptionPassword(passwordHandler);
+							logger.info(String.format("Item with GUID %s was decrypted with password: %s", guid, password));
 						}
 						
 						// Note that nuixCase is closed in finally block below
@@ -105,4 +91,3 @@ public class BasicSearchAndTagExample {
 		}
 	}
 }
-
