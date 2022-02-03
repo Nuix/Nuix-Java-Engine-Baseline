@@ -4,10 +4,15 @@ Ignored
 # Java Project
 # ============
 
+*.class
 *.jar
 *.jardesc
 /Java/Doc
 /Java/*.jardesc
+/Java/engine
+/Java/build
+/Java/logs
+.gradle
 
 .settings
 .classpath
