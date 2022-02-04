@@ -1,10 +1,11 @@
 package com.nuix.javaenginesimple.examples;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,15 +17,23 @@ import com.nuix.javaenginesimple.NuixDiagnostics;
 
 import nuix.Case;
 import nuix.Item;
+import nuix.ReaderReadLogic;
+import nuix.Text;
 import nuix.Utilities;
 
-public class RevealDecryptionPasswordExample {
+public class UsingTextExample {
 	private static Logger logger = null;
 
 	public static void main(String[] args) throws Exception {
-		String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
-		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.2.4.392",logDirectory);
-		logger = LogManager.getLogger(RevealDecryptionPasswordExample.class);
+		// Specify a custom location for our log files
+		String logDirectory = String.format("%s/%s",System.getProperty("nuix.logDir"),DateTime.now().toString("YYYYMMDD_HHmmss"));
+
+		// Create an instance of engine wrapper, which will do the work of getting the Nuix bits initialized.
+		// Engine wrapper will need to know what directory your engine release resides.
+		EngineWrapper wrapper = new EngineWrapper(System.getProperty("nuix.engineDir"), logDirectory);
+
+		// Relying on log4j2 initializations in EngineWrapper creation, so we wait until after that to fetch our logger
+		logger = LogManager.getLogger(UsingTextExample.class);
 		
 		LicenseFilter licenseFilter = wrapper.getLicenseFilter();
 		licenseFilter.setMinWorkers(4);
@@ -41,12 +50,23 @@ public class RevealDecryptionPasswordExample {
 			logger.info("License password was provided via argument -DLicense.Password");
 		}
 		
-		Function<char[],String> passwordHandler = new Function<char[],String>(){
+		String query = "flag:audited AND content:*";
+		
+		// Contrived example where we will iterate each line of the item's text and when a given
+		// line is blank after trimming whitespace, we add 1 to our blank line count, ultimately
+		// returning the number of blank lines we encountered.
+		ReaderReadLogic<Integer> textOperation = new ReaderReadLogic<Integer>() {
 			@Override
-			public String apply(char[] t) {
-				// We convert the character array containing the password to
-				// a String and then return that to the outside
-				return new String(t);
+			public Integer withReader(Reader reader) throws IOException {
+				int blankLineCount = 0;
+				BufferedReader buffer = new BufferedReader(reader);
+				String line;
+				while((line = buffer.readLine()) != null) {
+					if(line.trim().isEmpty()) {
+						blankLineCount++;
+					}
+				}
+				return blankLineCount;
 			}
 		};
 		
@@ -63,11 +83,21 @@ public class RevealDecryptionPasswordExample {
 						nuixCase = utilities.getCaseFactory().open(caseDirectory);
 						logger.info("Case opened");
 
-						Set<Item> items = nuixCase.searchUnsorted("flag:encrypted");
+						logger.info(String.format("Searching for: %s", query));
+						Set<Item> items = nuixCase.searchUnsorted(query);
+						logger.info(String.format("%s items responsive", items.size()));
+
 						for(Item item : items) {
-							String guid = item.getGuid();
-							String password = item.revealDecryptionPassword(passwordHandler);
-							logger.info(String.format("Item with GUID %s was decrypted with password: %s", guid, password));
+							Text itemTextObject = item.getTextObject();
+							// Have our text operation do something with the items text.  Since this operation is handed a
+							// Reader rather than attempting to construct one solitary string in memory, this operation should
+							// behave better when an item has an especially large text value.
+							int blankLineCount = itemTextObject.usingText(textOperation);
+							
+							// Record the number of blank lines we encountered as custom metadata
+							item.getCustomMetadata().putInteger("ContentBlankLines", blankLineCount);
+							
+							logger.info(String.format("%s has %s blank lines in its content text", item.getGuid(), blankLineCount));
 						}
 						
 						// Note that nuixCase is closed in finally block below

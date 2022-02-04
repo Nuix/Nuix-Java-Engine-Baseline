@@ -25,8 +25,14 @@ public class CreateProductionSetExample {
 		private static Logger logger = null;
 
 		public static void main(String[] args) throws Exception {
-			String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
-			EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.2.4.392",logDirectory);
+			// Specify a custom location for our log files
+			String logDirectory = String.format("%s/%s",System.getProperty("nuix.logDir"),DateTime.now().toString("YYYYMMDD_HHmmss"));
+
+			// Create an instance of engine wrapper, which will do the work of getting the Nuix bits initialized.
+			// Engine wrapper will need to know what directory your engine release resides.
+			EngineWrapper wrapper = new EngineWrapper(System.getProperty("nuix.engineDir"), logDirectory);
+
+			// Relying on log4j2 initializations in EngineWrapper creation, so we wait until after that to fetch our logger
 			logger = LogManager.getLogger(CreateProductionSetExample.class);
 			
 			LicenseFilter licenseFilter = wrapper.getLicenseFilter();

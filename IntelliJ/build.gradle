@@ -1,0 +1,146 @@
+// Prevents IntelliJ from reporting some warnings that seem to be no real problem
+//file:noinspection GroovyAccessibility
+//file:noinspection GroovyAssignabilityCheck
+
+plugins {
+    id 'java'
+}
+
+group 'com.nuix'
+version '9.6.5.283'
+
+repositories {
+    mavenCentral()
+    flatDir { dirs 'engine/lib' }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+
+    // Used for logging
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
+
+    // Required for various date objects
+    implementation 'joda-time:joda-time:2.10.13'
+
+    // Reference Nuix dependencies
+    implementation fileTree(dir: 'engine/lib', include: 'nuix-scripting*.jar')
+    implementation fileTree(dir: 'engine/lib', include: 'nuix-engine*.jar')
+    runtimeOnly fileTree(dir: 'engine/lib', include: '*.jar')
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+// Here we define the location of some key directories so we can make
+// consistent references to them throughout the rest of this file
+String engineDirectory = rootProject.rootDir.getAbsolutePath() + "\\engine"
+String engineBinDirectory = engineDirectory + "\\bin"
+String engineX86BinDirectory = engineDirectory + "\\bin\\x86"
+String rootLogDir = rootProject.rootDir.getAbsolutePath() + "\\logs"
+String envPath = engineBinDirectory + ";" + engineX86BinDirectory
+
+def defaultJvmArgs = [
+        // Necessary for newer versions of Nuix.  Without this you will likely see
+        // an error regarding loading the BouncyCastle crypto library at run-time
+        "--add-exports=java.base/jdk.internal.loader=ALL-UNNAMED",
+
+        // This will be passed to EngineWrapper on creation allowing it to resolve
+        // all the dependencies in an engine release
+        "-Dnuix.engineDir=\"${engineDirectory}\"",
+
+        // Provided to EngineWrapper to specify the root directory where logs will be written
+        "-Dnuix.logDir=\"${rootLogDir}\"",
+
+        // Specify a temp directory accessible to the user running our code
+        "-Djava.io.tmpdir=\"${System.getenv("LOCALAPPDATA")}\\Temp\\Nuix\"",
+]
+
+task BasicInitialization(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    group = "Examples"
+    mainClass = "com.nuix.javaenginesimple.examples.BasicInitializationExample"
+    jvmArgs = defaultJvmArgs
+    setEnvironment(["PATH":envPath])
+}
+
+task CreateSimpleCase(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    group = "Examples"
+    mainClass = "com.nuix.javaenginesimple.examples.CreateSimpleCaseExample"
+    jvmArgs = defaultJvmArgs
+    setEnvironment(["PATH":envPath])
+}
+
+task OpenCase(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    group = "Examples"
+    mainClass = "com.nuix.javaenginesimple.examples.OpenCaseExample"
+    jvmArgs = defaultJvmArgs
+    setEnvironment(["PATH":envPath])
+}
+
+task BasicSearchAndTag(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    group = "Examples"
+    mainClass = "com.nuix.javaenginesimple.examples.BasicSearchAndTagExample"
+    jvmArgs = defaultJvmArgs
+    setEnvironment(["PATH":envPath])
+}
+
+task BasicExport(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    group = "Examples"
+    mainClass = "com.nuix.javaenginesimple.examples.BasicExportExample"
+    jvmArgs = defaultJvmArgs
+    setEnvironment(["PATH":envPath])
+}
+
+task CreateProductionSet(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    group = "Examples"
+    mainClass = "com.nuix.javaenginesimple.examples.CreateProductionSetExample"
+    jvmArgs = defaultJvmArgs
+    setEnvironment(["PATH":envPath])
+}
+
+task IntermediateSearchAndTag(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    group = "Examples"
+    mainClass = "com.nuix.javaenginesimple.examples.IntermediateSearchAndTagExample"
+    jvmArgs = defaultJvmArgs
+    setEnvironment(["PATH":envPath])
+}
+
+task LoadDataIntoCase(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    group = "Examples"
+    mainClass = "com.nuix.javaenginesimple.examples.LoadDataIntoCaseExample"
+    jvmArgs = defaultJvmArgs
+    setEnvironment(["PATH":envPath])
+}
+
+task RevealDecryptionPassword(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    group = "Examples"
+    mainClass = "com.nuix.javaenginesimple.examples.RevealDecryptionPasswordExample"
+    jvmArgs = defaultJvmArgs
+    setEnvironment(["PATH":envPath])
+}
+
+task UsingText(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    group = "Examples"
+    mainClass = "com.nuix.javaenginesimple.examples.UsingTextExample"
+    jvmArgs = defaultJvmArgs
+    setEnvironment(["PATH":envPath])
+}
+
+test {
+    useJUnitPlatform()
+}

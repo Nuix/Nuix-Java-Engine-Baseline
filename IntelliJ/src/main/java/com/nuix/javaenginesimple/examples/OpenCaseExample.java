@@ -1,10 +1,7 @@
 package com.nuix.javaenginesimple.examples;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
@@ -16,18 +13,28 @@ import com.nuix.javaenginesimple.LicenseFilter;
 import com.nuix.javaenginesimple.NuixDiagnostics;
 
 import nuix.Case;
-import nuix.Item;
-import nuix.ReaderReadLogic;
-import nuix.Text;
 import nuix.Utilities;
 
-public class UsingTextExample {
+/***
+ * An example demonstrating opening an existing Nuix case.
+ * 
+ * See BasicInitializationExample for more details regarding the basic initialization steps being taken.
+ * @author Jason Wells
+ *
+ */
+public class OpenCaseExample {
 	private static Logger logger = null;
 
 	public static void main(String[] args) throws Exception {
-		String logDirectory = String.format("C:\\NuixEngineLogs\\%s",DateTime.now().toString("YYYYMMDD_HHmmss"));
-		EngineWrapper wrapper = new EngineWrapper("D:\\engine-releases\\9.2.4.392",logDirectory);
-		logger = LogManager.getLogger(UsingTextExample.class);
+		// Specify a custom location for our log files
+		String logDirectory = String.format("%s/%s",System.getProperty("nuix.logDir"),DateTime.now().toString("YYYYMMDD_HHmmss"));
+
+		// Create an instance of engine wrapper, which will do the work of getting the Nuix bits initialized.
+		// Engine wrapper will need to know what directory you engine release resides.
+		EngineWrapper wrapper = new EngineWrapper(System.getProperty("nuix.engineDir"), logDirectory);
+
+		// Relying on log4j2 initializations in EngineWrapper creation, so we wait until after that to fetch our logger
+		logger = LogManager.getLogger(OpenCaseExample.class);
 		
 		LicenseFilter licenseFilter = wrapper.getLicenseFilter();
 		licenseFilter.setMinWorkers(4);
@@ -44,26 +51,6 @@ public class UsingTextExample {
 			logger.info("License password was provided via argument -DLicense.Password");
 		}
 		
-		String query = "flag:audited AND content:*";
-		
-		// Contrived example where we will iterate each line of the item's text and when a given
-		// line is blank after trimming whitespace, we add 1 to our blank line count, ultimately
-		// returning the number of blank lines we encountered.
-		ReaderReadLogic<Integer> textOperation = new ReaderReadLogic<Integer>() {
-			@Override
-			public Integer withReader(Reader reader) throws IOException {
-				int blankLineCount = 0;
-				BufferedReader buffer = new BufferedReader(reader);
-				String line;
-				while((line = buffer.readLine()) != null) {
-					if(line.trim().isEmpty()) {
-						blankLineCount++;
-					}
-				}
-				return blankLineCount;
-			}
-		};
-		
 		try {
 			wrapper.trustAllCertificates();
 			wrapper.withCloudLicense(licenseUserName, licensePassword, new Consumer<Utilities>() {
@@ -77,19 +64,9 @@ public class UsingTextExample {
 						nuixCase = utilities.getCaseFactory().open(caseDirectory);
 						logger.info("Case opened");
 						
-						Set<Item> items = nuixCase.searchUnsorted(query);
-						for(Item item : items) {
-							Text itemTextObject = item.getTextObject();
-							// Have our text operation do something with the items text.  Since this operation is handed a
-							// Reader rather than attempting to construct one solitary string in memory, this operation should
-							// behave better when an item has an especially large text value.
-							int blankLineCount = itemTextObject.usingText(textOperation);
-							
-							// Record the number of blank lines we encountered as custom metadata
-							item.getCustomMetadata().putInteger("ContentBlankLines", blankLineCount);
-							
-							logger.info(String.format("%s has %s blank lines in its content text", item.getGuid(), blankLineCount));
-						}
+						// *** Do things with the case here ***
+						long emailCount = nuixCase.count("kind:email");
+						logger.info(String.format("Email Item Count: %s",emailCount));
 						
 						// Note that nuixCase is closed in finally block below
 					} catch (IOException exc) {
@@ -112,3 +89,4 @@ public class UsingTextExample {
 		}
 	}
 }
+
