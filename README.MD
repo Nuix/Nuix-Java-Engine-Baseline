@@ -140,7 +140,7 @@ try {
 While [EngineWrapper] is iterating each available license, it will also log the feature set available in each license using [LicenseFeatureLogger.logFeaturesOfLicense(license)](https://nuix.github.io/Nuix-Java-Engine-Baseline/com/nuix/javaenginesimple/LicenseFeaturesLogger.html#logFeaturesOfLicense-nuix.LicenceProperties-).  An example of what this looks like in the logs:
 
 ```
-2020-04-08 11:35:30 INFO  LicenseFeatures:logFeaturesOfLicense():83 - License Features:
+2022-02-04 11:35:30 INFO  LicenseFeatures:logFeaturesOfLicense():83 - License Features:
 [X] ANALYSIS
 [ ] AOS_DATA
 [X] AUTOMATIC_CLASSIFIER_EDITING
@@ -187,7 +187,7 @@ While [EngineWrapper] is iterating each available license, it will also log the 
 Once a license has been obtained by [EngineWrapper] and a `Utilities` object has been obtained from the now licensed `Engine` instance, this class logs third party dependency information via a call to [ThirdPartyDependencyChecker.logAllDependencyInfo(Utilities)](https://nuix.github.io/Nuix-Java-Engine-Baseline/com/nuix/javaenginesimple/ThirdPartyDependencyChecker.html#logAllDependencyInfo-nuix.Utilities-).  The output of which looks like this:
 
 ```
-2020-04-08 11:35:45 INFO  ThirdPartyDependencyChecker:logAllDependencyInfo():38 - Reviewing third party dependency statuses:
+2022-02-04 11:35:45 INFO  ThirdPartyDependencyChecker:logAllDependencyInfo():38 - Reviewing third party dependency statuses:
 [X] 'Lotus Notes': Found Version 9.0.1
 [ ] 'Microsoft Access': Not found
 [X] 'Microsoft Word': Found PDF Capable Word
