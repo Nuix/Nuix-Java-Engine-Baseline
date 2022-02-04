@@ -2,6 +2,7 @@ Ignored
 
 IntelliJ/build/*
 IntelliJ/engine/*
+!IntelliJ/engine/README.TXT
 IntelliJ/logs/*
 IntelliJ/.idea/*
 
