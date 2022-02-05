@@ -141,6 +141,11 @@ task UsingText(type: JavaExec) {
     setEnvironment(["PATH":envPath])
 }
 
+// Slight modification to javadoc task provided by Java plugin to change output directory
+javadoc {
+    destinationDir = new File(rootProject.rootDir.getAbsolutePath() + "\\..\\docs")
+}
+
 test {
     useJUnitPlatform()
 }
