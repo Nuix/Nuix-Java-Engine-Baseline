@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.nuix'
-version '9.6.5.283'
+version '9.10.9.584'
 
 repositories {
     mavenCentral()
@@ -15,19 +15,18 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 
     // Used for logging
-    implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
-    implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
+    implementation 'org.apache.logging.log4j:log4j-api:2.19.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
 
     // Required for various date objects
-    implementation 'joda-time:joda-time:2.10.13'
+    implementation 'joda-time:joda-time:2.12.0'
 
     // Reference Nuix dependencies
-    implementation fileTree(dir: 'engine/lib', include: 'nuix-scripting*.jar')
-    implementation fileTree(dir: 'engine/lib', include: 'nuix-engine*.jar')
+    implementation fileTree(dir: 'engine/lib', include: '*nuix*.jar')
     runtimeOnly fileTree(dir: 'engine/lib', include: '*.jar')
 }
 
@@ -46,6 +45,9 @@ String rootLogDir = rootProject.rootDir.getAbsolutePath() + "\\logs"
 String envPath = engineBinDirectory + ";" + engineX86BinDirectory
 
 def defaultJvmArgs = [
+        "-Xms2g", // Set minimum heap (memory) size
+        "-Xmx4g", // Set maximum heap (memory) size
+
         // Necessary for newer versions of Nuix.  Without this you will likely see
         // an error regarding loading the BouncyCastle crypto library at run-time
         "--add-exports=java.base/jdk.internal.loader=ALL-UNNAMED",
@@ -59,9 +61,14 @@ def defaultJvmArgs = [
 
         // Specify a temp directory accessible to the user running our code
         "-Djava.io.tmpdir=\"${System.getenv("LOCALAPPDATA")}\\Temp\\Nuix\"",
+
+        // Forward ENV user and pass
+        "-DLicense.UserName=${System.getenv("NUIX_USERNAME")}",
+        "-DLicense.Password=${System.getenv("NUIX_PASSWORD")}",
 ]
 
 task BasicInitialization(type: JavaExec) {
+    System.out.println(String.join("\n",defaultJvmArgs))
     classpath sourceSets.main.runtimeClasspath
     group = "Examples"
     mainClass = "com.nuix.javaenginesimple.examples.BasicInitializationExample"

@@ -18,7 +18,7 @@ import nuix.engine.AvailableLicence;
 public class LicenseFeaturesLogger {
 	// Obtain a logger instance for this class
 	private final static Logger logger = LogManager.getLogger("LicenseFeatures");
-	
+
 	// List of license features
 	// List generated from 9.2 license profiles documentation found here:
 	// https://download.nuix.com/releases/desktop/stable/docs/en/reference/licence-profiles.html
@@ -74,7 +74,7 @@ public class LicenseFeaturesLogger {
 	public static String[] getKnownFeatures() {
 		return knownFeatures;
 	}
-	
+
 	public static List<String> getLicenseFeatures(LicenceProperties license){
 		List<String> result = new ArrayList<String>();
 		for (int i = 0; i < knownFeatures.length; i++) {
@@ -86,7 +86,7 @@ public class LicenseFeaturesLogger {
 		}
 		return result;
 	}
-	
+
 	public static String summarizeLicense(AvailableLicence license) {
 		String result = String.format("[%s/%s/%s, %s, Count:%s, Workers: %s, Features: %s]",
 				license.getSource().getLocation(),
@@ -94,12 +94,12 @@ public class LicenseFeaturesLogger {
 				license.getShortName(),
 				license.getDescription(),
 				license.getCount(),
-				license.getWorkers(),
+				((LicenceProperties)license).getWorkers(),
 				String.join("; ", getLicenseFeatures(license))
 				);
 		return result;
 	}
-	
+
 	/***
 	 * Logs a listing of whether each feature is present or not on the provided license.
 	 * @param license The license to log feature presence information about

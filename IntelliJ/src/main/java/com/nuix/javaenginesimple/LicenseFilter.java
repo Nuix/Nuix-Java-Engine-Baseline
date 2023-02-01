@@ -3,10 +3,10 @@ package com.nuix.javaenginesimple;
 import java.util.ArrayList;
 import java.util.List;
 
+import nuix.LicenceProperties;
+import nuix.engine.AvailableLicence;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import nuix.engine.AvailableLicence;
 
 /***
  * Specifies minimum requirements you may have when obtaining a license.  Used by {@link EngineWrapper} when iterating available
@@ -47,8 +47,7 @@ public class LicenseFilter {
 	 * @return True if all requirements met, false if any requirement has not been met.
 	 */
 	public boolean isValid(AvailableLicence license) {
-		
-		int workerCount = license.getWorkers();
+		int workerCount = ((LicenceProperties)license).getWorkers();
 		// Verify the minimum worker count
 		if(minWorkers > 0 && workerCount < minWorkers) {
 			logger.info(String.format("!!! License has %s workers, filter specifies a minimum of %s",workerCount,minWorkers));
