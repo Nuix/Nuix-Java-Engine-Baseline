@@ -1,7 +1,7 @@
 Nuix Java Engine Baseline
 =========================
 
-![Nuix Engine 9.6](https://img.shields.io/badge/Nuix%20Engine-9.6-green.svg)
+![Nuix Engine 9.10.x.x](https://img.shields.io/badge/Nuix%20Engine-9.10.x.x-green.svg)
 
 View the GitHub project [here](https://github.com/Nuix/Nuix-Java-Engine-Baseline) or download the latest release [here](https://github.com/Nuix/Nuix-Java-Engine-Baseline/releases).
 
@@ -320,7 +320,7 @@ Beyond that, a series of [JavaExec tasks](https://docs.gradle.org/current/dsl/or
 # License
 
 ```
-Copyright 2022 Nuix
+Copyright 2023 Nuix
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
