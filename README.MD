@@ -320,7 +320,7 @@ Beyond that, a series of [JavaExec tasks](https://docs.gradle.org/current/dsl/or
 # License
 
 ```
-Copyright 2022 Nuix
+Copyright 2023 Nuix
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
