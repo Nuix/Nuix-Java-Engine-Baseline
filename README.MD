@@ -375,6 +375,7 @@ Having trouble getting things up and running?  Here are several places you can s
 
 # License
 
+```
 Copyright 2023 Nuix
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -389,6 +390,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
+
 
 [EngineWrapper]: https://nuix.github.io/Nuix-Java-Engine-Baseline/com/nuix/javaenginesimple/EngineWrapper.html
 [LicenseFilter]: https://nuix.github.io/Nuix-Java-Engine-Baseline/com/nuix/javaenginesimple/LicenseFilter.html
