@@ -224,14 +224,14 @@ public static void main(String[] args) throws Exception {
 }
 ```
 
-# Running an Example
+# Running an Example Using Gradles
 
 A Gradle task is defined for running each example.  To run an example:
 1. Expand the **Gradle** tab (likely along the right side of the IDE).
 1. Expand **Nuix-Java-Engine-Baseline** -> **Tasks** -> **examples**.
 1. Double-click one of the tasks to run the corresponding example (**BasicInitialization** is a good initial test).
 
-# Gradle Build File
+## Gradle Build File
 
 The `plugins` section allows us to include plugins that provide functionality to our build file.  We include the `java` plugin which provides various functionality for a Java project.
 
@@ -317,9 +317,64 @@ def defaultJvmArgs = [
 
 Beyond that, a series of [JavaExec tasks](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.JavaExec.html) are defined, each which provides a way to run one of the examples.
 
-# License
+# Running an Example Outside Gradle
+
+Gradle simplifies running the examples, but what is needed to run an example (or your own code) outside of Gradle?  We need to take similar steps to what Gradle would be doing:
+- Start a JVM (Java Virtual Machine) to run the program.
+- Make sure that the engine release sub-directories `bin` and `bin\x86` can be resolved via the `PATH` environment variable.
+- Make sure your JAR can be resolved on the JVM classpath.
+- Make sure the Nuix dependency JAR files in the engine release `lib` sub-directory can be resolved on the JVM classpath.
+- Make sure we know the entry point to our program.  The entry point is the Java class containing the `public static void main(String[] args)` method to run.
+
+## Make Sure Java is Installed
+It is assumed that you have Java installed and that running the command `java` on the console will succeed.
+
+## `PATH` References to `bin` and `bin/x86`
+You will need to make sure that the `PATH` environment variable for the JVM process points to the engine release sub-directories `bin` and `bin\x86`.  This can be accomplished different ways.  The easiest is to add those paths to the `PATH` environment variable.  There are ways to set these temporarily for the JVM process you start.  For example you could use a batch file and `SET LOCAL` / `END LOCAL` ([doc](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/setlocal)) in combination with `SET` ([doc](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1)) or start your program via something like the .NET class [Process](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.process?view=net-7.0) which allows for customizing the environment variables just for a process it starts via 
+
+```csharp
+Process nuixProcess = new Process();
+...
+...
+string engineDir = "C:\\EngineRelease";
+string engineBinDir = engineDir + "\\bin";
+string enginex86BinDir = engineBinDir + "\\x86";
+string existingPath = Environment.GetEnvironment("PATH");
+nuixProcess.StartInfo.EnvironmentVariables.Add("PATH", existingPath+";"+engineBinDir+";"+enginex86BinDir );
+```
+
+## Construct the Command
+
+The command takes the basic form:
 
 ```
+java -cp "<Engine Lib Directory>/*;<Path to Jar>" <Main Class>
+```
+
+If my engine release `lib` directory is located at `C:\EngineRelease\lib`, my compiled JAR is located at `C:\MyApp\MyCustomNuixApp-v1.0.0.jar` and my `public static void main(String[] args)` method exists in a class `com.company.CustomNuixApp` then the command would look like this:
+
+```
+java -cp "C:/EngineRelease/lib/*;C:/MyApp/MyCustomNuixApp-v1.0.0.jar" com.company.CustomNuixApp
+```
+
+Some things to note:
+
+- The class path references use forward slashes (`/`) rather than the Windows norm of using back slashes (`\`).
+- The engine lib directory class path reference ends with `/*` to include all JAR files in that directory.
+- The program JAR reference is an absolute reference to the JAR file (it could be reference to its containing directory though).
+- The class path entries are delimited with a semicolon (`;`).
+- The *last argument* is the fully qualified name (package and class name) of the class containing the entry point we are running.
+
+# Where to Get Help
+
+Having trouble getting things up and running?  Here are several places you can seek assistance:
+
+- Create a [new Issue](https://github.com/Nuix/Nuix-Java-Engine-Baseline/issues/new)
+- Ask on the [Nuix Community Forums](https://forums.nuix.com/)
+- Contact [Nuix Support](https://nuix.service-now.com/support)
+
+# License
+
 Copyright 2023 Nuix
 
 Licensed under the Apache License, Version 2.0 (the "License");
