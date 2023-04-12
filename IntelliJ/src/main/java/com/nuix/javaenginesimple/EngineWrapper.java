@@ -332,6 +332,11 @@ public class EngineWrapper implements AutoCloseable {
 					
 					boolean licenseObtained = obtainLicense(licenseOptions);
 					if(licenseObtained){
+						// We want to release this CLS license when we complete our session such
+						// that if we start a new session with a different auth the engine does not
+						// attempt to "remember" this previously acquired license/auth.
+						engine.signOutAtClose();
+
 						Utilities utilities = engine.getUtilities();
 						ThirdPartyDependencyChecker.logAllDependencyInfo(utilities);
 						

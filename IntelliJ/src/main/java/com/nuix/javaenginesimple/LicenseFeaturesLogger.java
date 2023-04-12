@@ -88,7 +88,7 @@ public class LicenseFeaturesLogger {
 	}
 
 	public static String summarizeLicense(AvailableLicence license) {
-		String result = String.format("[%s/%s/%s, %s, Count:%s, Workers: %s, Features: %s]",
+		String result = String.format("[ %s / %s / %s, %s, Count:%s, Workers: %s, Features: %s]",
 				license.getSource().getLocation(),
 				license.getSource().getType(),
 				license.getShortName(),
