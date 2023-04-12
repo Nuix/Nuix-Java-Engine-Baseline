@@ -47,13 +47,13 @@ public class LicenseFilter {
 	 * @return True if all requirements met, false if any requirement has not been met.
 	 */
 	public boolean isValid(AvailableLicence license) {
+		logger.info("Checking License: "+LicenseFeaturesLogger.summarizeLicense(license));
+
 		// A license of this type will throw a null pointer exception due to it having a null workers value
 		if(license.getShortName().equalsIgnoreCase("server")) {
-			logger.info("!!! Ignoring 'Nuix Server' license as we cannot claim it for our needs...");
+			logger.info("!!! Ignoring 'Nuix Server' license as we cannot make use of it...");
 			return false;
 		}
-
-		logger.info("Checking License: "+LicenseFeaturesLogger.summarizeLicense(license));
 
 		int workerCount = ((LicenceProperties)license).getWorkers();
 
