@@ -7,6 +7,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import com.nuix.enginebaseline.LicenseFeaturesLogger;
+import com.nuix.enginebaseline.NuixVersion;
+import com.nuix.enginebaseline.ThirdPartyDependencyChecker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -120,7 +123,7 @@ public class EngineWrapper implements AutoCloseable {
 			// We start by getting our hands on a GlobalContainer instance.  There can only
 			// be one of these per Java process.
 			if(container == null){
-				container = nuix.engine.GlobalContainerFactory.newContainer();	
+				container = nuix.engine.GlobalContainerFactory.newContainer();
 			}
 			
 			logger.info("Initializing engine....");
@@ -386,7 +389,7 @@ public class EngineWrapper implements AutoCloseable {
 		Optional<AvailableLicence> possiblyFoundLicense = licences.filter(availableLicence -> licenseFilter.isValid(availableLicence)).findFirst();
 		if(possiblyFoundLicense.isEmpty() == false) {
 			AvailableLicence foundLicense = possiblyFoundLicense.get();
-			logger.info(">>>> Acquiring following license: "+LicenseFeaturesLogger.summarizeLicense(foundLicense));
+			logger.info(">>>> Acquiring following license: "+ LicenseFeaturesLogger.summarizeLicense(foundLicense));
 			if(foundLicense.canChooseWorkers()) {
 				int targetWorkerCount = licenseFilter.getMinWorkers();
 				if(targetWorkerCount < 1) { targetWorkerCount = 2; }

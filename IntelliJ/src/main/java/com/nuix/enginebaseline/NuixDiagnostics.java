@@ -1,4 +1,4 @@
-package com.nuix.javaenginesimple;
+package com.nuix.enginebaseline;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -15,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.joda.time.DateTime;
 
 public class NuixDiagnostics {
-	// Obtain a logger instance for this class
 	private final static Logger logger = LogManager.getLogger(NuixDiagnostics.class);
 		
 	public static void saveDiagnosticsToFile(File zipFile){

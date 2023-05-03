@@ -8,7 +8,7 @@ import org.joda.time.DateTime;
 
 import com.nuix.javaenginesimple.EngineWrapper;
 import com.nuix.javaenginesimple.LicenseFilter;
-import com.nuix.javaenginesimple.NuixDiagnostics;
+import com.nuix.enginebaseline.NuixDiagnostics;
 
 import nuix.Utilities;
 

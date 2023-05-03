@@ -1,9 +1,10 @@
-package com.nuix.javaenginesimple;
+package com.nuix.enginebaseline;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.StringJoiner;
 
+import nuix.Licence;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -88,7 +89,7 @@ public class LicenseFeaturesLogger {
 	}
 
 	public static String summarizeLicense(AvailableLicence license) {
-		String result = String.format("[ %s / %s / %s, %s, Count:%s, Workers: %s, Features: %s]",
+		String result = String.format("[Location=%s, Type=%s, ShortName=%s, Description=%s, Count=%s, Workers=%s, Features=%s]",
 				license.getSource().getLocation(),
 				license.getSource().getType(),
 				license.getShortName(),
@@ -97,6 +98,16 @@ public class LicenseFeaturesLogger {
 				((LicenceProperties)license).getWorkers(),
 				String.join("; ", getLicenseFeatures(license))
 				);
+		return result;
+	}
+
+	public static String summarizeLicense(Licence license) {
+		String result = String.format("[ShortName=%s, Description=%s, Workers=%s, Features=%s]",
+				license.getShortName(),
+				license.getDescription(),
+				((LicenceProperties)license).getWorkers(),
+				String.join("; ", getLicenseFeatures(license))
+		);
 		return result;
 	}
 
