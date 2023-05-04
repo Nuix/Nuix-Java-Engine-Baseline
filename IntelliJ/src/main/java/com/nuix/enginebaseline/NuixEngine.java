@@ -549,5 +549,10 @@ public class NuixEngine implements AutoCloseable {
             Runtime.getRuntime().removeShutdownHook(shutdownHook);
             shutdownHook = null;
         }
+
+        // Shutdown logging
+        if(log != null) {
+            ((LifeCycle) LogManager.getContext()).stop();
+        }
     }
 }
