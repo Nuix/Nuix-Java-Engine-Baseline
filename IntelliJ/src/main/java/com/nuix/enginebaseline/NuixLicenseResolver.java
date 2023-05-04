@@ -30,8 +30,8 @@ import java.util.stream.Stream;
  *         <li>{@link #withCertificateTrustCallback(CertificateTrustCallback)}</li>
  *         <li>{@link #withLicenseCredentials(String, String)}</li>
  *         <li>{@link #withLicenseCredentialsProvider(CredentialsCallback)}</li>
- *         <li>{@link #withLicenseCredentialsResolvedFromENV(String, String)}</li>
- *         <li>{@link #withLicenseCredentialsResolvedFromENV()}</li>
+ *         <li>{@link #withLicenseCredentialsResolvedFromEnvVars(String, String)}</li>
+ *         <li>{@link #withLicenseCredentialsResolvedFromEnvVars()}</li>
  *     </ul></li>
  * </ul>
  *<br><br>
@@ -42,7 +42,7 @@ import java.util.stream.Stream;
  * // authenticating using upon environment variable "NUIX_USERNAME" and "NUIX_PASSWORD",
  * // that have at least 4 workers and the feature "CASE_CREATION".
  * LicenseResolver cloud_4_workers = NuixLicenseResolver.fromCloud()
- *     .withLicenseCredentialsResolvedFromENV()
+ *     .withLicenseCredentialsResolvedFromEnvVars()
  *     .withMinWorkerCount(4)
  *     .withRequiredFeatures("CASE_CREATION");
  *
@@ -52,6 +52,7 @@ import java.util.stream.Stream;
  *     .withRequiredFeatures("CASE_CREATION");
  * }
  * </pre>
+ * @author Jason Wells
  */
 public class NuixLicenseResolver implements LicenseResolver {
     private static final Logger log = LogManager.getLogger(NuixLicenseResolver.class);
@@ -259,7 +260,7 @@ public class NuixLicenseResolver implements LicenseResolver {
      * @param passwordEnvVar The password of the environment variable
      * @return This license resolver for chained method calls.
      */
-    public NuixLicenseResolver withLicenseCredentialsResolvedFromENV(String usernameEnvVar, String passwordEnvVar) {
+    public NuixLicenseResolver withLicenseCredentialsResolvedFromEnvVars(String usernameEnvVar, String passwordEnvVar) {
         this.credentialsCallback = credentialsCallbackInfo -> {
             credentialsCallbackInfo.setUsername(System.getenv(usernameEnvVar));
             credentialsCallbackInfo.setPassword(System.getenv(passwordEnvVar));
@@ -272,8 +273,8 @@ public class NuixLicenseResolver implements LicenseResolver {
      * username will be pulled from "NUIX_USERNAME" and the value of password will be pulled from "NUIX_PASSWORD".
      * @return This license resolver for chained method calls.
      */
-    public NuixLicenseResolver withLicenseCredentialsResolvedFromENV() {
-        return withLicenseCredentialsResolvedFromENV("NUIX_USERNAME", "NUIX_PASSWORD");
+    public NuixLicenseResolver withLicenseCredentialsResolvedFromEnvVars() {
+        return withLicenseCredentialsResolvedFromEnvVars("NUIX_USERNAME", "NUIX_PASSWORD");
     }
 
     /***

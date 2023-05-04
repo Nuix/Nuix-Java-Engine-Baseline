@@ -12,7 +12,6 @@ import nuix.Utilities;
 /***
  * Helper class for logging information about what third party dependencies are satisfied. 
  * @author Jason Wells
- *
  */
 public class ThirdPartyDependencyChecker {
 	// Obtain a logger instance for this class

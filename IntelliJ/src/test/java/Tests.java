@@ -32,7 +32,7 @@ public class Tests {
     @Test
     public void GetLicenseFromCloud() throws Exception {
         NuixLicenseResolver cloud_4_workers = NuixLicenseResolver.fromCloud()
-                .withLicenseCredentialsResolvedFromENV()
+                .withLicenseCredentialsResolvedFromEnvVars()
                 .withMinWorkerCount(4)
                 .withRequiredFeatures("CASE_CREATION");
 
@@ -40,7 +40,7 @@ public class Tests {
                 .withRequiredFeatures("CASE_CREATION");
 
         NuixEngine.usingFirstAvailableLicense(cloud_4_workers, anyDongle)
-                .setEngineDistributionDirectoryFromENV()
+                .setEngineDistributionDirectoryFromEnvVar()
                 .run((utilities -> {
                     log.info("License was obtained!");
                 }));

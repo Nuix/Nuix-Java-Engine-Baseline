@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  * // authenticating using upon environment variable "NUIX_USERNAME" and "NUIX_PASSWORD",
  * // that have at least 4 workers and the feature "CASE_CREATION".
  * LicenseResolver cloud_4_workers = NuixLicenseResolver.fromCloud()
- *     .withLicenseCredentialsResolvedFromENV()
+ *     .withLicenseCredentialsResolvedFromEnvVars()
  *     .withMinWorkerCount(4)
  *     .withRequiredFeatures("CASE_CREATION");
  *
@@ -43,13 +43,14 @@ import java.util.function.Supplier;
  * // attempt to resolve a dongle license if one cannot be resolved from cloud, depending resolvers
  * // defined above.  Calling run method to execute code with a licensed Engine instance (if a license can be obtained).
  * NuixEngine.usingFirstAvailableLicense(cloud_4_workers, anyDongle)
- *     .setEngineDistributionDirectoryFromENV()
+ *     .setEngineDistributionDirectoryFromEnvVars()
  *     .run((utilities -> {
  *         log.info("License was obtained!");
  *         // Do something with Utilities and Engine here
  *     }));
  * }
  * </pre>
+ * @author Jason Wells
  */
 public class NuixEngine implements AutoCloseable {
     private static GlobalContainer globalContainer = null;
@@ -96,8 +97,8 @@ public class NuixEngine implements AutoCloseable {
      * <ul>
      *     <li>{@link #setEngineDistributionDirectorySupplier(Supplier)}</li>
      *     <li>{@link #setEngineDistributionDirectory(File)}</li>
-     *     <li>{@link #setEngineDistributionDirectoryFromENV(String)}</li>
-     *     <li>{@link #setEngineDistributionDirectoryFromENV()}</li>
+     *     <li>{@link #setEngineDistributionDirectoryFromEnvVar(String)}</li>
+     *     <li>{@link #setEngineDistributionDirectoryFromEnvVar()}</li>
      * </ul>
      * @param engineDistributionDirectorySupplier A supplier which will yield directory containing a Nuix Engine distribution.
      * @return This instance for method call chaining
@@ -115,8 +116,8 @@ public class NuixEngine implements AutoCloseable {
      * <ul>
      *    <li>{@link #setEngineDistributionDirectorySupplier(Supplier)}</li>
      *    <li>{@link #setEngineDistributionDirectory(File)}</li>
-     *    <li>{@link #setEngineDistributionDirectoryFromENV(String)}</li>
-     *    <li>{@link #setEngineDistributionDirectoryFromENV()}</li>
+     *    <li>{@link #setEngineDistributionDirectoryFromEnvVar(String)}</li>
+     *    <li>{@link #setEngineDistributionDirectoryFromEnvVar()}</li>
      *</ul>
      * @param directory The directory containing a Nuix Engine distribution
      * @return This instance for method call chaining
@@ -135,14 +136,14 @@ public class NuixEngine implements AutoCloseable {
      *<ul>
      *   <li>{@link #setEngineDistributionDirectorySupplier(Supplier)}</li>
      *   <li>{@link #setEngineDistributionDirectory(File)}</li>
-     *   <li>{@link #setEngineDistributionDirectoryFromENV(String)}</li>
-     *   <li>{@link #setEngineDistributionDirectoryFromENV()}</li>
+     *   <li>{@link #setEngineDistributionDirectoryFromEnvVar(String)}</li>
+     *   <li>{@link #setEngineDistributionDirectoryFromEnvVar()}</li>
      *</ul>
      * @param environmentVariableName The name of the environment variable which has its value set to a directory containing
      *                                a Nuix Engine distribution.
      * @return This instance for method call chaining
      */
-    public NuixEngine setEngineDistributionDirectoryFromENV(String environmentVariableName) {
+    public NuixEngine setEngineDistributionDirectoryFromEnvVar(String environmentVariableName) {
         setEngineDistributionDirectorySupplier(() -> new File(System.getenv(environmentVariableName)));
         return this;
     }
@@ -151,19 +152,19 @@ public class NuixEngine implements AutoCloseable {
      * For various reasons, this class needs to be able to resolve the location of a Nuix Engine distribution.
      * This method allows you to specify that this directory should be obtained from the environment variable
      * named "NUIX_ENGINE_DIR".  Note that this is effectively just a convenience method to calling
-     * {@link #setEngineDistributionDirectoryFromENV(String)} with the value "NUIX_ENGINE_DIR".  Note that due to the importance
+     * {@link #setEngineDistributionDirectoryFromEnvVar(String)} with the value "NUIX_ENGINE_DIR".  Note that due to the importance
      * of being able to resolve this, you must configure this value via one of the following methods before calling
      * {@link #run(Consumer)}, or you will get an error:
      * <ul>
      *    <li>{@link #setEngineDistributionDirectorySupplier(Supplier)}</li>
      *    <li>{@link #setEngineDistributionDirectory(File)}</li>
-     *    <li>{@link #setEngineDistributionDirectoryFromENV(String)}</li>
-     *    <li>{@link #setEngineDistributionDirectoryFromENV()}</li>
+     *    <li>{@link #setEngineDistributionDirectoryFromEnvVar(String)}</li>
+     *    <li>{@link #setEngineDistributionDirectoryFromEnvVar()}</li>
      * </ul>
      * @return This instance for method call chaining
      */
-    public NuixEngine setEngineDistributionDirectoryFromENV() {
-        setEngineDistributionDirectoryFromENV("NUIX_ENGINE_DIR");
+    public NuixEngine setEngineDistributionDirectoryFromEnvVar() {
+        setEngineDistributionDirectoryFromEnvVar("NUIX_ENGINE_DIR");
         return this;
     }
 
@@ -255,8 +256,8 @@ public class NuixEngine implements AutoCloseable {
      * <ul>
      *     <li>{@link #setEngineDistributionDirectorySupplier(Supplier)}</li>
      *     <li>{@link #setEngineDistributionDirectory(File)}</li>
-     *     <li>{@link #setEngineDistributionDirectoryFromENV(String)}</li>
-     *     <li>{@link #setEngineDistributionDirectoryFromENV()}</li>
+     *     <li>{@link #setEngineDistributionDirectoryFromEnvVar(String)}</li>
+     *     <li>{@link #setEngineDistributionDirectoryFromEnvVar()}</li>
      * </ul>
      *
      * @param engineOperation

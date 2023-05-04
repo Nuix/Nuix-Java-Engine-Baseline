@@ -3,6 +3,10 @@ package com.nuix.enginebaseline;
 import lombok.NonNull;
 import nuix.engine.Engine;
 
+/***
+ * An interface for providing {@link NuixEngine} license resolution.
+ * @author Jason Wells
+ */
 public interface LicenseResolver {
     /***
      * Attempts to license the provided Engine instance using resolution and filtering configuration of this instance.
