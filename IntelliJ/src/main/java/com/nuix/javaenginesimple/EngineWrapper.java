@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import com.nuix.enginebaseline.LicenseFeaturesLogger;
 import com.nuix.enginebaseline.NuixVersion;
-import com.nuix.enginebaseline.ThirdPartyDependencyChecker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;

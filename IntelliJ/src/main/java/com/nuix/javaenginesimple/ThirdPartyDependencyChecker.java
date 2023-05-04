@@ -1,4 +1,4 @@
-package com.nuix.enginebaseline;
+package com.nuix.javaenginesimple;
 
 import java.util.List;
 
