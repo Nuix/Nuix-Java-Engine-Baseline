@@ -33,6 +33,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
 
+    testImplementation("net.datafaker:datafaker:1.9.0")
+
     implementation(fileTree(baseDir = engineLibDir) {
         include(
                 "**/*log*.jar",
@@ -82,10 +84,10 @@ fun configTestEnv(test: Test) {
     // test data they may need.  For example, if your test needs a Nuix case and there is a zip
     // file containing that case hosted online, your test might first see if the zip is already present
     // in the TestData directory, if not it can download it there and reuse it on future invocations.
-    val testDataDirectory = "${projectDir}\\TestData"
+    val testDataDirectory = "${projectDir}\\..\\TestData"
 
     // Specify output directory that tests can use to store output for post test review
-    val testOutputDirectory = "${projectDir}\\TestOutput\\${System.currentTimeMillis()}"
+    val testOutputDirectory = "${projectDir}\\..\\TestOutput\\${System.currentTimeMillis()}"
 
     test.setEnvironment(
             // Add our engine release's bin and bin/x86 to PATH
