@@ -1,10 +1,10 @@
 package com.nuix.enginebaseline;
 
+import lombok.NonNull;
 import nuix.LicenceProperties;
 import nuix.engine.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Function;
@@ -116,7 +116,7 @@ public class LicenseResolver {
      * @param port The port of the NMS server.
      * @return An NMS specific license resolver
      */
-    public static LicenseResolver fromServer(@NotNull String host, int port) {
+    public static LicenseResolver fromServer(@NonNull String host, int port) {
         LicenseResolver result = new LicenseResolver();
         result.licenseSource = LicenseResolutionSource.Server;
         result.serverHost = host;
@@ -130,7 +130,7 @@ public class LicenseResolver {
      * @param host The host/ip of the NMS server.
      * @return An NMS specific license resolver
      */
-    public static LicenseResolver fromServer(@NotNull String host) {
+    public static LicenseResolver fromServer(@NonNull String host) {
         return fromServer(host, 27443);
     }
 
@@ -171,7 +171,7 @@ public class LicenseResolver {
      * @param customSource The custom source value to provide.
      * @return A license resolver that uses a custom license source.
      */
-    public static LicenseResolver fromCustomSource(@NotNull String customSource) {
+    public static LicenseResolver fromCustomSource(@NonNull String customSource) {
         LicenseResolver result = new LicenseResolver();
         result.licenseSource = LicenseResolutionSource.Custom;
         result.customSource = customSource;
@@ -224,7 +224,7 @@ public class LicenseResolver {
      * @return This license resolver for chained method calls.
      */
     public LicenseResolver withFinalDecisionMadeBy(
-            @NotNull Function<Stream<AvailableLicence>, Optional<AvailableLicence>> finalDecider) {
+            @NonNull Function<Stream<AvailableLicence>, Optional<AvailableLicence>> finalDecider) {
         this.finalDecider = finalDecider;
         return this;
     }
@@ -302,7 +302,7 @@ public class LicenseResolver {
      * @throws Exception Exceptions thrown by any of the methods working to obtain a license will be uncaught and allowed
      * to bubble up for caller to respond to.
      */
-    public boolean obtainLicense(Engine engine) throws Exception {
+    public boolean obtainLicense(@NonNull Engine engine) throws Exception {
         Map<String, Object> licenseOptions = Collections.emptyMap();
 
         log.info("License Source: "+licenseSource);
