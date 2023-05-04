@@ -1,5 +1,7 @@
 package com.nuix.enginebaseline;
 
+import nuix.ThirdPartyDependency;
+import nuix.ThirdPartyDependencyStatus;
 import nuix.Utilities;
 import nuix.engine.Engine;
 import nuix.engine.GlobalContainer;
@@ -298,7 +300,9 @@ public class NuixEngine implements AutoCloseable {
             ensureGlobalContainer();
             buildEngine();
             if (resolveLicenseChain()) {
-                engineOperation.accept(engine.getUtilities());
+                Utilities utilities = engine.getUtilities();
+                logAllDependencyInfo(utilities);
+                engineOperation.accept(utilities);
             } else {
                 log.error("No license was able to be resolved");
             }
@@ -481,6 +485,36 @@ public class NuixEngine implements AutoCloseable {
      */
     public NuixVersion getNuixVersion() {
         return NuixVersion.parse(getNuixVersionString());
+    }
+
+    /***
+     * Logs information about all Nuix third party dependencies
+     * @param utilities Needs an instance of Utilities to get access to third party dependency information
+     */
+    protected void logAllDependencyInfo(Utilities utilities) {
+        log.info("Reviewing third party dependency statuses:");
+        try {
+            List<ThirdPartyDependency> dependencies = utilities.getThirdPartyDependencies();
+            for(ThirdPartyDependency dependency : dependencies) {
+                try {
+                    ThirdPartyDependencyStatus status = dependency.performCheck();
+                    log.info(String.format(
+                            "[%s] '%s': %s",
+                            status.isAttentionRequired() ? " " : "X",
+                            dependency.getDescription(),
+                            status.getMessage()
+                    ));
+                } catch (Exception e) {
+                    log.error(String.format(
+                            "[!] '%s': Error Checking Status: %s",
+                            dependency.getDescription(),
+                            e.getMessage()
+                    ));
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while fetching list of third party dependencies",e);
+        }
     }
 
     /***
