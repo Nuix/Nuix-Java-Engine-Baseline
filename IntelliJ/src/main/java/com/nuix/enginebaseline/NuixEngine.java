@@ -29,14 +29,14 @@ import java.util.function.Supplier;
  * // Define a resolver which will resolve licenses from Cloud License Server (CLS),
  * // authenticating using upon environment variable "NUIX_USERNAME" and "NUIX_PASSWORD",
  * // that have at least 4 workers and the feature "CASE_CREATION".
- * LicenseResolver cloud_4_workers = LicenseResolver.fromCloud()
+ * LicenseResolver cloud_4_workers = NuixLicenseResolver.fromCloud()
  *     .withLicenseCredentialsResolvedFromENV()
  *     .withMinWorkerCount(4)
  *     .withRequiredFeatures("CASE_CREATION");
  *
  * // Define a resolver which will attempt to resolve a license from a local physical dongle
  * // that has the feature "CASE_CREATION".
- * LicenseResolver anyDongle = LicenseResolver.fromDongle()
+ * LicenseResolver anyDongle = NuixLicenseResolver.fromDongle()
  *     .withRequiredFeatures("CASE_CREATION");
  *
  * // Create a new NuixEngine instance which will first attempt to resolve a cloud license and then
@@ -56,7 +56,7 @@ public class NuixEngine implements AutoCloseable {
     protected Supplier<File> engineDistributionDirectorySupplier;
     protected Supplier<File> logDirectorySupplier;
     protected Supplier<File> userDataDirectorySupplier;
-    protected List<LicenseResolver> licenseResolvers;
+    protected List<NuixLicenseResolver> nuixLicenseResolvers;
 
     protected Logger log = null;
     protected Engine engine;
@@ -65,16 +65,16 @@ public class NuixEngine implements AutoCloseable {
     protected NuixEngine() {}
 
     /***
-     * Creates a new instance which will attempt to retrieve its license from one of the provided {@link LicenseResolver}
+     * Creates a new instance which will attempt to retrieve its license from one of the provided {@link NuixLicenseResolver}
      * instances in the order specified.
-     * @param licenseResolvers One or more resolvers which will be called upon in the order provided to obtain a license
+     * @param nuixLicenseResolvers One or more resolvers which will be called upon in the order provided to obtain a license
      *                         until one is able to successfully acquire an available license based on its configured source
      *                         and filtering/selection logic.
      * @return A new NuixEngine instance
      */
-    public static NuixEngine usingFirstAvailableLicense(LicenseResolver... licenseResolvers) {
+    public static NuixEngine usingFirstAvailableLicense(NuixLicenseResolver... nuixLicenseResolvers) {
         NuixEngine result = new NuixEngine();
-        result.licenseResolvers = Arrays.asList(licenseResolvers);
+        result.nuixLicenseResolvers = Arrays.asList(nuixLicenseResolvers);
         return result;
     }
 
@@ -84,7 +84,7 @@ public class NuixEngine implements AutoCloseable {
      */
     public static NuixEngine usingAnyAvailableLicense() {
         NuixEngine result = new NuixEngine();
-        result.licenseResolvers = List.of(LicenseResolver.fromAnySource());
+        result.nuixLicenseResolvers = List.of(NuixLicenseResolver.fromAnySource());
         return result;
     }
 
@@ -236,7 +236,7 @@ public class NuixEngine implements AutoCloseable {
      *     <li>Logging is initialized</li>
      *     <li>The Nuix Engine GlobaContainer instance is created if needed</li>
      *     <li>An Engine instance is created</li>
-     *     <li>Any provided {@link LicenseResolver} instances are iteratively called upon to obtain a license until an
+     *     <li>Any provided {@link NuixLicenseResolver} instances are iteratively called upon to obtain a license until an
      *     instance has successfully acquired one.
      *     </li>
      *     <li>The callback provided when calling this method is invoked with a licenses Utilities object if license
@@ -288,17 +288,17 @@ public class NuixEngine implements AutoCloseable {
     }
 
     /***
-     * When creating a new instance via {@link NuixEngine#usingFirstAvailableLicense(LicenseResolver...)}, caller can
-     * specify a series of {@link LicenseResolver} instances which will be called upon in sequence until one acquires
+     * When creating a new instance via {@link NuixEngine#usingFirstAvailableLicense(NuixLicenseResolver...)}, caller can
+     * specify a series of {@link NuixLicenseResolver} instances which will be called upon in sequence until one acquires
      * a license.  This method iterates through those resolvers to make that happen.
      * @return True if a license was obtained, false if not.
      * @throws Exception This method does not throw any methods itself, but instead allows any thrown methods to bubble up.
      */
     private boolean resolveLicenseChain() throws Exception {
         boolean licenseWasObtained = false;
-        for (LicenseResolver resolver : licenseResolvers) {
+        for (NuixLicenseResolver resolver : nuixLicenseResolvers) {
             log.info(String.format("Attempting to resolve license using: %s", resolver));
-            licenseWasObtained = resolver.obtainLicense(engine);
+            licenseWasObtained = resolver.resolveLicense(engine);
             if (licenseWasObtained) {
                 log.info(String.format("Obtained license: %s", LicenseFeaturesLogger.summarizeLicense(engine.getLicence())));
                 break;

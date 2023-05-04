@@ -1,4 +1,4 @@
-import com.nuix.enginebaseline.LicenseResolver;
+import com.nuix.enginebaseline.NuixLicenseResolver;
 import com.nuix.enginebaseline.NuixEngine;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,12 +31,12 @@ public class Tests {
 
     @Test
     public void GetLicenseFromCloud() throws Exception {
-        LicenseResolver cloud_4_workers = LicenseResolver.fromCloud()
+        NuixLicenseResolver cloud_4_workers = NuixLicenseResolver.fromCloud()
                 .withLicenseCredentialsResolvedFromENV()
                 .withMinWorkerCount(4)
                 .withRequiredFeatures("CASE_CREATION");
 
-        LicenseResolver anyDongle = LicenseResolver.fromDongle()
+        NuixLicenseResolver anyDongle = NuixLicenseResolver.fromDongle()
                 .withRequiredFeatures("CASE_CREATION");
 
         NuixEngine.usingFirstAvailableLicense(cloud_4_workers, anyDongle)
