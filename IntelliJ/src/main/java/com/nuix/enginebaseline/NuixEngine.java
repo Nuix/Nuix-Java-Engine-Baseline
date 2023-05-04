@@ -57,25 +57,38 @@ public class NuixEngine implements AutoCloseable {
     protected Supplier<File> engineDistributionDirectorySupplier;
     protected Supplier<File> logDirectorySupplier;
     protected Supplier<File> userDataDirectorySupplier;
-    protected List<NuixLicenseResolver> nuixLicenseResolvers;
+    protected List<LicenseResolver> nuixLicenseResolvers;
 
     protected Logger log = null;
     protected Engine engine;
     protected Thread shutdownHook = null;
 
-    protected NuixEngine() {}
+    protected NuixEngine() {
+    }
 
     /***
-     * Creates a new instance which will attempt to retrieve its license from one of the provided {@link NuixLicenseResolver}
+     * Creates a new instance which will attempt to retrieve its license from one of the provided {@link LicenseResolver}
      * instances in the order specified.
      * @param nuixLicenseResolvers One or more resolvers which will be called upon in the order provided to obtain a license
      *                         until one is able to successfully acquire an available license based on its configured source
      *                         and filtering/selection logic.
      * @return A new NuixEngine instance
      */
-    public static NuixEngine usingFirstAvailableLicense(NuixLicenseResolver... nuixLicenseResolvers) {
+    public static NuixEngine usingFirstAvailableLicense(LicenseResolver... nuixLicenseResolvers) {
+        return usingFirstAvailableLicense(Arrays.asList(nuixLicenseResolvers));
+    }
+
+    /***
+     * Creates a new instance which will attempt to retrieve its license from one of the provided {@link LicenseResolver}
+     * instances in the order specified.
+     * @param nuixLicenseResolvers List of one or more resolvers which will be called upon in the order provided to obtain a license
+     *                         until one is able to successfully acquire an available license based on its configured source
+     *                         and filtering/selection logic.
+     * @return A new NuixEngine instance
+     */
+    public static NuixEngine usingFirstAvailableLicense(List<LicenseResolver> nuixLicenseResolvers) {
         NuixEngine result = new NuixEngine();
-        result.nuixLicenseResolvers = Arrays.asList(nuixLicenseResolvers);
+        result.nuixLicenseResolvers = nuixLicenseResolvers;
         return result;
     }
 
@@ -264,11 +277,20 @@ public class NuixEngine implements AutoCloseable {
      * @throws Exception
      */
     public void run(Consumer<Utilities> engineOperation) throws Exception {
+        // Check to make sure some requirements are in place before proceeding
         checkPreConditions();
 
+        // Make sure logging gets initialized
         try {
             initializeLogging();
+        } catch (Exception exc) {
+            System.out.println("Error while initializing logging: " + exc.getMessage());
+            throw new Exception("Error while initializing logging", exc);
+        }
 
+        // Proceed with constructing engine instance, obtaining license and providing licensed Utilities
+        // to provided callback
+        try {
             log.info("Engine Distribution Directory: " + engineDistributionDirectorySupplier.get().getAbsolutePath());
             log.info("Log Directory: " + logDirectorySupplier.get().getAbsolutePath());
             log.info("User Date Directory: " + userDataDirectorySupplier.get().getAbsolutePath());
@@ -280,16 +302,15 @@ public class NuixEngine implements AutoCloseable {
             } else {
                 log.error("No license was able to be resolved");
             }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            throw new RuntimeException(e);
+        } catch (Exception exc) {
+            throw exc;
         } finally {
             close();
         }
     }
 
     /***
-     * When creating a new instance via {@link NuixEngine#usingFirstAvailableLicense(NuixLicenseResolver...)}, caller can
+     * When creating a new instance via {@link NuixEngine#usingFirstAvailableLicense(LicenseResolver...)}, caller can
      * specify a series of {@link NuixLicenseResolver} instances which will be called upon in sequence until one acquires
      * a license.  This method iterates through those resolvers to make that happen.
      * @return True if a license was obtained, false if not.
@@ -297,7 +318,7 @@ public class NuixEngine implements AutoCloseable {
      */
     private boolean resolveLicenseChain() throws Exception {
         boolean licenseWasObtained = false;
-        for (NuixLicenseResolver resolver : nuixLicenseResolvers) {
+        for (LicenseResolver resolver : nuixLicenseResolvers) {
             log.info(String.format("Attempting to resolve license using: %s", resolver));
             licenseWasObtained = resolver.resolveLicense(engine);
             if (licenseWasObtained) {
@@ -325,7 +346,7 @@ public class NuixEngine implements AutoCloseable {
         // Caller must have set engine distribution directory, fail if they have not.
         if (engineDistributionDirectorySupplier == null) {
             throw new IllegalStateException("Unable to resolve engine distribution directory, please call one of the following methods " +
-                    "before calling the run method: "+
+                    "before calling the run method: " +
                     "setEngineDistributionDirectorySupplier, setEngineDistributionDirectory, setEngineDistributionDirectoryFromENV");
         }
 
@@ -463,20 +484,31 @@ public class NuixEngine implements AutoCloseable {
     }
 
     /***
-     * Calls close on underlying Engine instance this instance may have.  Also will unregister shutdown hook if
+     * Calls close on underlying Engine instance this instance may have.  Will also unregister shutdown hook if
      * one was previously established.
      * @throws Exception If thrown, was a result of a method being called by this method and allowed to bubble up to caller.
      */
     @Override
     public void close() throws Exception {
+        // Close engine if we have an instance to close
         if (engine != null) {
-            log.info("Closing engine instance");
+            final String message = "Closing engine instance";
+            if (log != null) {
+                log.info(message);
+            } else {
+                System.out.println(message);
+            }
             engine.close();
         }
 
+        // Unregister shutdown hook since we are closing things up now
         if (shutdownHook != null) {
-            // Remove our shutdown hook since engine has now been closed
-            log.info("Removing shutdown hook to NuixEngine::close");
+            final String message = "Removing shutdown hook to NuixEngine::close";
+            if (log != null) {
+                log.info(message);
+            } else {
+                System.out.println(message);
+            }
             Runtime.getRuntime().removeShutdownHook(shutdownHook);
             shutdownHook = null;
         }
