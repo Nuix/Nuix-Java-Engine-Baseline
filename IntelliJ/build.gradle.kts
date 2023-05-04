@@ -37,6 +37,7 @@ dependencies {
         include(
                 "**/*log*.jar",
                 "**/*joda*.jar",
+                "**/*commons*.jar",
                 // All Nuix API jars
                 "**/nuix-*.jar"
         )
