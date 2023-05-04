@@ -9,8 +9,10 @@ import nuix.engine.GlobalContainerFactory;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LifeCycle;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.joda.time.DateTime;
 
@@ -275,10 +277,11 @@ public class NuixEngine implements AutoCloseable {
      *     <li>{@link #setEngineDistributionDirectoryFromEnvVar()}</li>
      * </ul>
      *
-     * @param engineOperation
+     * @param throwCapableConsumer Callback that will do something with licensed utilities.  Note that exceptions
+     *                             thrown by callback will be rethrown to caller.
      * @throws Exception
      */
-    public void run(Consumer<Utilities> engineOperation) throws Exception {
+    public void run(ThrowCapableConsumer<Utilities> throwCapableConsumer) throws Exception {
         // Check to make sure some requirements are in place before proceeding
         checkPreConditions();
 
@@ -302,7 +305,7 @@ public class NuixEngine implements AutoCloseable {
             if (resolveLicenseChain()) {
                 Utilities utilities = engine.getUtilities();
                 logAllDependencyInfo(utilities);
-                engineOperation.accept(utilities);
+                throwCapableConsumer.accept(utilities);
             } else {
                 log.error("No license was able to be resolved");
             }
