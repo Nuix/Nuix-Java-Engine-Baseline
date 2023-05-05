@@ -70,6 +70,11 @@ public class NuixEngine implements AutoCloseable {
     protected NuixEngine() {
     }
 
+    public static void closeGlobalContainer() {
+        globalContainer.close();
+        globalContainer = null;
+    }
+
     /***
      * Creates a new instance which will attempt to retrieve its license from one of the provided {@link LicenseResolver}
      * instances in the order specified.
@@ -110,7 +115,7 @@ public class NuixEngine implements AutoCloseable {
      * For various reasons, this class needs to be able to resolve the location of a Nuix Engine distribution.
      * This method allows you to provide a Supplier which will resolve it as needed.  Note that due to the importance
      * of being able to resolve this, you must configure this value via one of the following methods before calling
-     * {@link #run(Consumer)}, or you will get an error:
+     * {@link #run(ThrowCapableConsumer)}, or you will get an error:
      * <ul>
      *     <li>{@link #setEngineDistributionDirectorySupplier(Supplier)}</li>
      *     <li>{@link #setEngineDistributionDirectory(File)}</li>
@@ -129,7 +134,7 @@ public class NuixEngine implements AutoCloseable {
      * For various reasons, this class needs to be able to resolve the location of a Nuix Engine distribution.
      * This method allows you to specify an explicit directory value.  Note that due to the importance
      * of being able to resolve this, you must configure this value via one of the following methods before calling
-     * {@link #run(Consumer)}, or you will get an error:
+     * {@link #run(ThrowCapableConsumer)}, or you will get an error:
      * <ul>
      *    <li>{@link #setEngineDistributionDirectorySupplier(Supplier)}</li>
      *    <li>{@link #setEngineDistributionDirectory(File)}</li>
@@ -149,7 +154,7 @@ public class NuixEngine implements AutoCloseable {
      * This method allows you to specify an environment variable which contains as its value the a directory
      * containing a Nuix Engine distribution.  Note that due to the importance
      *of being able to resolve this, you must configure this value via one of the following methods before calling
-     *{@link #run(Consumer)}, or you will get an error:
+     *{@link #run(ThrowCapableConsumer)}, or you will get an error:
      *<ul>
      *   <li>{@link #setEngineDistributionDirectorySupplier(Supplier)}</li>
      *   <li>{@link #setEngineDistributionDirectory(File)}</li>
@@ -171,7 +176,7 @@ public class NuixEngine implements AutoCloseable {
      * named "NUIX_ENGINE_DIR".  Note that this is effectively just a convenience method to calling
      * {@link #setEngineDistributionDirectoryFromEnvVar(String)} with the value "NUIX_ENGINE_DIR".  Note that due to the importance
      * of being able to resolve this, you must configure this value via one of the following methods before calling
-     * {@link #run(Consumer)}, or you will get an error:
+     * {@link #run(ThrowCapableConsumer)}, or you will get an error:
      * <ul>
      *    <li>{@link #setEngineDistributionDirectorySupplier(Supplier)}</li>
      *    <li>{@link #setEngineDistributionDirectory(File)}</li>
