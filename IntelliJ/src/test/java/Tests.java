@@ -98,15 +98,15 @@ public class Tests {
      * @return A NuixEngine instance ready to use
      */
     public NuixEngine constructNuixEngine() {
-        NuixLicenseResolver cloud_4_workers = NuixLicenseResolver.fromCloud()
+        NuixLicenseResolver caseCreationCloud = NuixLicenseResolver.fromCloud()
                 .withLicenseCredentialsResolvedFromEnvVars()
                 .withMinWorkerCount(4)
                 .withRequiredFeatures("CASE_CREATION");
 
-        NuixLicenseResolver anyDongle = NuixLicenseResolver.fromDongle()
+        NuixLicenseResolver caseCreationDongle = NuixLicenseResolver.fromDongle()
                 .withRequiredFeatures("CASE_CREATION");
 
-        return NuixEngine.usingFirstAvailableLicense(cloud_4_workers, anyDongle)
+        return NuixEngine.usingFirstAvailableLicense(caseCreationCloud, caseCreationDongle)
                 .setEngineDistributionDirectoryFromEnvVar()
                 .setLogDirectory(new File(testOutputDirectory, "Logs"));
     }
