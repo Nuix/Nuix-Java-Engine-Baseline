@@ -40,6 +40,7 @@ dependencies {
                 "**/*log*.jar",
                 "**/*joda*.jar",
                 "**/*commons*.jar",
+                "**/*guava*.jar",
                 // All Nuix API jars
                 "**/nuix-*.jar"
         )
@@ -65,17 +66,6 @@ fun configTestEnv(test: Test) {
     // an error regarding loading the BouncyCastle crypto library at run-time
     test.jvmArgs(
             "--add-exports=java.base/jdk.internal.loader=ALL-UNNAMED",
-            "--add-opens=java.base/java.lang=ALL-UNNAMED",
-            "--add-opens=java.base/sun.nio.fs=ALL-UNNAMED",
-            "--add-opens=java.base/sun.net.dns=ALL-UNNAMED",
-            "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
-            "--add-opens=java.desktop/javax.swing=ALL-UNNAMED",
-            "--add-exports=java.base/jdk.internal.loader=ALL-UNNAMED",
-            "--add-opens=java.base/java.lang=ALL-UNNAMED",
-            "--add-opens=java.base/sun.nio.fs=ALL-UNNAMED",
-            "--add-opens=java.base/sun.net.dns=ALL-UNNAMED",
-            "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
-            "--add-opens=java.desktop/javax.swing=ALL-UNNAMED",
             "-Xmx4G",
             "-Djava.io.tmpdir=\"${nuixTempDirectory}\"",
     )
