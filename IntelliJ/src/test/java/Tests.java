@@ -1,10 +1,7 @@
 import com.nuix.enginebaseline.NuixEngine;
 import com.nuix.enginebaseline.NuixLicenseResolver;
 import net.datafaker.Faker;
-import nuix.Case;
-import nuix.EvidenceContainer;
-import nuix.Processor;
-import nuix.SimpleCase;
+import nuix.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -112,6 +109,8 @@ public class Tests {
     }
 
     public List<TermCount> createSearchableTestData(File outputDirectory, int itemsToGenerate) {
+        log.info(String.format("Generating %s random text files, for use as test data, to directory %s",
+                itemsToGenerate, outputDirectory));
         Map<String, TermCount> overallTermCounts = new HashMap<>();
 
         // Will hold terms to be written to each generated text file
@@ -218,6 +217,56 @@ public class Tests {
             for (TermCount termCount : termCounts) {
                 long hitCount = nuixCase.count(termCount.term);
                 assertEquals(termCount.count, hitCount, String.format("For term %s, expect %s but got %s",
+                        termCount.term, termCount.count, hitCount));
+            }
+
+            log.info("Closing case");
+            nuixCase.close();
+        }));
+    }
+
+    @Test
+    public void SearchAndTag() throws Exception {
+        File caseDirectory = new File(testOutputDirectory, "SearchAndTag_Case");
+        File dataDirectory = new File(testOutputDirectory, "SearchAndTag_Natives");
+
+        List<TermCount> termCounts = createSearchableTestData(dataDirectory, 1000);
+
+        NuixEngine nuixEngine = constructNuixEngine();
+        nuixEngine.run((utilities -> {
+            // Create a new case
+            Map<String, Object> caseSettings = Map.of(
+                    "compound", false,
+                    "name", "SearchAndTag",
+                    "description", "A Nuix case created using the Nuix Java Engine API",
+                    "investigator", "Test"
+            );
+            SimpleCase nuixCase = (SimpleCase) utilities.getCaseFactory().create(caseDirectory, caseSettings);
+
+            log.info("Queuing data for processing...");
+            Processor processor = nuixCase.createProcessor();
+            EvidenceContainer evidenceContainer = processor.newEvidenceContainer("SearchTestData");
+            evidenceContainer.addFile(dataDirectory);
+            evidenceContainer.save();
+            log.info("Processing starting...");
+            processor.process();
+            log.info("Processing completed");
+
+            log.info("Applying Tags...");
+            for (TermCount termCount : termCounts) {
+                String tag = "Terms|"+termCount.term;
+                Set<Item> responsiveItems = nuixCase.searchUnsorted(termCount.term);
+                log.info(String.format("Tagging %s items with tag '%s'",
+                        responsiveItems.size(), tag));
+                utilities.getBulkAnnotater().addTag(tag, responsiveItems);
+            }
+
+            log.info("Validating tag counts...");
+            for (TermCount termCount : termCounts) {
+                String tag = "Terms|"+termCount.term;
+                String query = "tag:\""+tag+"\"";
+                long hitCount = nuixCase.count(query);
+                assertEquals(termCount.count, hitCount, String.format("For term %s, expect %s tagged items, but got %s",
                         termCount.term, termCount.count, hitCount));
             }
 
