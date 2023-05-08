@@ -1,5 +1,6 @@
 package com.nuix.enginebaseline;
 
+import com.google.common.base.Suppliers;
 import nuix.ThirdPartyDependency;
 import nuix.ThirdPartyDependencyStatus;
 import nuix.Utilities;
@@ -12,15 +13,15 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LifeCycle;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.joda.time.DateTime;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /***
@@ -126,7 +127,7 @@ public class NuixEngine implements AutoCloseable {
      * @return This instance for method call chaining
      */
     public NuixEngine setEngineDistributionDirectorySupplier(Supplier<File> engineDistributionDirectorySupplier) {
-        this.engineDistributionDirectorySupplier = engineDistributionDirectorySupplier;
+        this.engineDistributionDirectorySupplier = Suppliers.memoize(() -> engineDistributionDirectorySupplier.get());
         return this;
     }
 
@@ -166,7 +167,12 @@ public class NuixEngine implements AutoCloseable {
      * @return This instance for method call chaining
      */
     public NuixEngine setEngineDistributionDirectoryFromEnvVar(String environmentVariableName) {
-        setEngineDistributionDirectorySupplier(() -> new File(System.getenv(environmentVariableName)));
+        setEngineDistributionDirectorySupplier(() -> {
+            String envValue = System.getenv(environmentVariableName);
+            System.out.println(String.format("Obtained value '%s' from ENV var '%s'",
+                    envValue, environmentVariableName));
+            return new File(envValue);
+        });
         return this;
     }
 
@@ -199,7 +205,7 @@ public class NuixEngine implements AutoCloseable {
      * @return This instance for method call chaining
      */
     public NuixEngine setLogDirectorySupplier(Supplier<File> logDirectorySupplier) {
-        this.logDirectorySupplier = logDirectorySupplier;
+        this.logDirectorySupplier = Suppliers.memoize(() -> logDirectorySupplier.get());
         return this;
     }
 
@@ -225,7 +231,7 @@ public class NuixEngine implements AutoCloseable {
      * @return This instance for method call chaining
      */
     public NuixEngine setUserDataDirectorySupplier(Supplier<File> userDataDirectorySupplier) {
-        this.userDataDirectorySupplier = userDataDirectorySupplier;
+        this.userDataDirectorySupplier = Suppliers.memoize(() -> userDataDirectorySupplier.get());
         return this;
     }
 
@@ -303,11 +309,11 @@ public class NuixEngine implements AutoCloseable {
         try {
             log.info("Engine Distribution Directory: " + engineDistributionDirectorySupplier.get().getAbsolutePath());
             log.info("Log Directory: " + logDirectorySupplier.get().getAbsolutePath());
-            log.info("User Date Directory: " + userDataDirectorySupplier.get().getAbsolutePath());
+            log.info("User Data Directory: " + userDataDirectorySupplier.get().getAbsolutePath());
 
             ensureGlobalContainer();
             buildEngine();
-            if (resolveLicenseChain()) {
+            if (obtainLicenseFromResolvers()) {
                 Utilities utilities = engine.getUtilities();
                 logAllDependencyInfo(utilities);
                 throwCapableConsumer.accept(utilities);
@@ -328,7 +334,7 @@ public class NuixEngine implements AutoCloseable {
      * @return True if a license was obtained, false if not.
      * @throws Exception This method does not throw any methods itself, but instead allows any thrown methods to bubble up.
      */
-    private boolean resolveLicenseChain() throws Exception {
+    private boolean obtainLicenseFromResolvers() throws Exception {
         boolean licenseWasObtained = false;
         for (LicenseResolver resolver : nuixLicenseResolvers) {
             log.info(String.format("Attempting to resolve license using: %s", resolver));
@@ -355,6 +361,19 @@ public class NuixEngine implements AutoCloseable {
      * </ul>
      */
     private void checkPreConditions() throws Exception {
+        // Due to changes in later versions of Java coupled with some added functionality
+        // added to Nuix at one point, we need to make sure the JVM we are running in
+        // was started with this arg:
+        // --add-exports=java.base/jdk.internal.loader=ALL-UNNAMED
+        // If it was not, then you will likely get error similar to this:
+        // java.lang.NoClassDefFoundError: org/bouncycastle/openpgp/PGPException
+        RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
+        List<String> jvmArgs = bean.getInputArguments();
+        final String requiredJvmArg = "--add-exports=java.base/jdk.internal.loader=ALL-UNNAMED";
+        if(jvmArgs.stream().noneMatch(arg -> arg.trim().equalsIgnoreCase(requiredJvmArg))) {
+            throw new IllegalStateException("Please ensure that JVM is started with argument: "+requiredJvmArg);
+        }
+
         // Caller must have set engine distribution directory, fail if they have not.
         if (engineDistributionDirectorySupplier == null) {
             throw new IllegalStateException("Unable to resolve engine distribution directory, please call one of the following methods " +
@@ -385,7 +404,7 @@ public class NuixEngine implements AutoCloseable {
         // exists so later during logging initialization we don't receive an exception about non-existent directory.
         logDirectorySupplier.get().mkdirs();
 
-        // If caller has not specified a user-date directory, assume the one that comes with the engine distribution
+        // If caller has not specified a user-data directory, assume the one that comes with the engine distribution
         // that is being used.
         if (userDataDirectorySupplier == null) {
             System.out.println("No user data directory was specified, assuming directory relative to engine distribution: " +
@@ -503,7 +522,7 @@ public class NuixEngine implements AutoCloseable {
         log.info("Reviewing third party dependency statuses:");
         try {
             List<ThirdPartyDependency> dependencies = utilities.getThirdPartyDependencies();
-            for(ThirdPartyDependency dependency : dependencies) {
+            for (ThirdPartyDependency dependency : dependencies) {
                 try {
                     ThirdPartyDependencyStatus status = dependency.performCheck();
                     log.info(String.format(
@@ -521,7 +540,7 @@ public class NuixEngine implements AutoCloseable {
                 }
             }
         } catch (Exception e) {
-            log.error("Error while fetching list of third party dependencies",e);
+            log.error("Error while fetching list of third party dependencies", e);
         }
     }
 
@@ -556,7 +575,7 @@ public class NuixEngine implements AutoCloseable {
         }
 
         // Shutdown logging
-        if(log != null) {
+        if (log != null) {
             ((LifeCycle) LogManager.getContext()).stop();
         }
     }
