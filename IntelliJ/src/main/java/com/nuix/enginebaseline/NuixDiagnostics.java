@@ -34,7 +34,6 @@ public class NuixDiagnostics {
 			for (ObjectName beanName : objectNames) {
 				if(beanName.toString().contains("DiagnosticsControl")){
 					zipFile.mkdirs();
-					
 					try {
 						mBeanServer.invoke(beanName,"generateDiagnostics",new Object[] {zipFile.getPath()},new String[] {"java.lang.String"});
 						return;

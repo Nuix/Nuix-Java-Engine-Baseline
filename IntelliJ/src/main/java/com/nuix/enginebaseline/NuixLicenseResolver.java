@@ -188,10 +188,7 @@ public class NuixLicenseResolver implements LicenseResolver {
         if (features == null) {
             return this;
         }
-
-        for (int i = 0; i < features.length; i++) {
-            requiredFeatures.add(features[i]);
-        }
+        requiredFeatures.addAll(Arrays.asList(features));
         return this;
     }
 
@@ -322,7 +319,7 @@ public class NuixLicenseResolver implements LicenseResolver {
                 licenseOptions = Map.of("sources", "dongle");
                 break;
             case Any:
-                licenseOptions = Collections.emptyMap();
+                // No further action needed
                 break;
             case Custom:
                 licenseOptions = Map.of("sources", customSource);
@@ -378,7 +375,7 @@ public class NuixLicenseResolver implements LicenseResolver {
 
             // Verify short name
             String availableLicenseShortName = availableLicense.getShortName().toLowerCase();
-            if (targetShortName != null && availableLicenseShortName.equalsIgnoreCase(targetShortName) == false) {
+            if (targetShortName != null && !availableLicenseShortName.equalsIgnoreCase(targetShortName)) {
                 log.info(String.format("License has shortname %s which does not match the target shortname %s",
                         availableLicenseShortName, targetShortName));
                 return false;

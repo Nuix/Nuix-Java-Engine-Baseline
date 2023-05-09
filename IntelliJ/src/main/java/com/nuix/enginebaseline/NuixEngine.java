@@ -17,6 +17,7 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.joda.time.DateTime;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.Arrays;
@@ -118,7 +119,6 @@ public class NuixEngine implements AutoCloseable {
      * of being able to resolve this, you must configure this value via one of the following methods before calling
      * {@link #run(ThrowCapableConsumer)}, or you will get an error:
      * <ul>
-     *     <li>{@link #setEngineDistributionDirectorySupplier(Supplier)}</li>
      *     <li>{@link #setEngineDistributionDirectory(File)}</li>
      *     <li>{@link #setEngineDistributionDirectoryFromEnvVar(String)}</li>
      *     <li>{@link #setEngineDistributionDirectoryFromEnvVar()}</li>
@@ -127,7 +127,7 @@ public class NuixEngine implements AutoCloseable {
      * @return This instance for method call chaining
      */
     public NuixEngine setEngineDistributionDirectorySupplier(Supplier<File> engineDistributionDirectorySupplier) {
-        this.engineDistributionDirectorySupplier = Suppliers.memoize(() -> engineDistributionDirectorySupplier.get());
+        this.engineDistributionDirectorySupplier = Suppliers.memoize(engineDistributionDirectorySupplier::get);
         return this;
     }
 
@@ -138,7 +138,6 @@ public class NuixEngine implements AutoCloseable {
      * {@link #run(ThrowCapableConsumer)}, or you will get an error:
      * <ul>
      *    <li>{@link #setEngineDistributionDirectorySupplier(Supplier)}</li>
-     *    <li>{@link #setEngineDistributionDirectory(File)}</li>
      *    <li>{@link #setEngineDistributionDirectoryFromEnvVar(String)}</li>
      *    <li>{@link #setEngineDistributionDirectoryFromEnvVar()}</li>
      *</ul>
@@ -159,7 +158,6 @@ public class NuixEngine implements AutoCloseable {
      *<ul>
      *   <li>{@link #setEngineDistributionDirectorySupplier(Supplier)}</li>
      *   <li>{@link #setEngineDistributionDirectory(File)}</li>
-     *   <li>{@link #setEngineDistributionDirectoryFromEnvVar(String)}</li>
      *   <li>{@link #setEngineDistributionDirectoryFromEnvVar()}</li>
      *</ul>
      * @param environmentVariableName The name of the environment variable which has its value set to a directory containing
@@ -169,8 +167,8 @@ public class NuixEngine implements AutoCloseable {
     public NuixEngine setEngineDistributionDirectoryFromEnvVar(String environmentVariableName) {
         setEngineDistributionDirectorySupplier(() -> {
             String envValue = System.getenv(environmentVariableName);
-            System.out.println(String.format("Obtained value '%s' from ENV var '%s'",
-                    envValue, environmentVariableName));
+            System.out.printf("Obtained value '%s' from ENV var '%s'%n",
+                    envValue, environmentVariableName);
             return new File(envValue);
         });
         return this;
@@ -187,7 +185,6 @@ public class NuixEngine implements AutoCloseable {
      *    <li>{@link #setEngineDistributionDirectorySupplier(Supplier)}</li>
      *    <li>{@link #setEngineDistributionDirectory(File)}</li>
      *    <li>{@link #setEngineDistributionDirectoryFromEnvVar(String)}</li>
-     *    <li>{@link #setEngineDistributionDirectoryFromEnvVar()}</li>
      * </ul>
      * @return This instance for method call chaining
      */
@@ -205,7 +202,7 @@ public class NuixEngine implements AutoCloseable {
      * @return This instance for method call chaining
      */
     public NuixEngine setLogDirectorySupplier(Supplier<File> logDirectorySupplier) {
-        this.logDirectorySupplier = Suppliers.memoize(() -> logDirectorySupplier.get());
+        this.logDirectorySupplier = Suppliers.memoize(logDirectorySupplier::get);
         return this;
     }
 
@@ -231,7 +228,7 @@ public class NuixEngine implements AutoCloseable {
      * @return This instance for method call chaining
      */
     public NuixEngine setUserDataDirectorySupplier(Supplier<File> userDataDirectorySupplier) {
-        this.userDataDirectorySupplier = Suppliers.memoize(() -> userDataDirectorySupplier.get());
+        this.userDataDirectorySupplier = Suppliers.memoize(userDataDirectorySupplier::get);
         return this;
     }
 
@@ -290,7 +287,6 @@ public class NuixEngine implements AutoCloseable {
      *
      * @param throwCapableConsumer Callback that will do something with licensed utilities.  Note that exceptions
      *                             thrown by callback will be rethrown to caller.
-     * @throws Exception
      */
     public void run(ThrowCapableConsumer<Utilities> throwCapableConsumer) throws Exception {
         // Check to make sure some requirements are in place before proceeding
@@ -320,8 +316,6 @@ public class NuixEngine implements AutoCloseable {
             } else {
                 log.error("No license was able to be resolved");
             }
-        } catch (Exception exc) {
-            throw exc;
         } finally {
             close();
         }
@@ -370,8 +364,8 @@ public class NuixEngine implements AutoCloseable {
         RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
         List<String> jvmArgs = bean.getInputArguments();
         final String requiredJvmArg = "--add-exports=java.base/jdk.internal.loader=ALL-UNNAMED";
-        if(jvmArgs.stream().noneMatch(arg -> arg.trim().equalsIgnoreCase(requiredJvmArg))) {
-            throw new IllegalStateException("Please ensure that JVM is started with argument: "+requiredJvmArg);
+        if (jvmArgs.stream().noneMatch(arg -> arg.trim().equalsIgnoreCase(requiredJvmArg))) {
+            throw new IllegalStateException("Please ensure that JVM is started with argument: " + requiredJvmArg);
         }
 
         // Caller must have set engine distribution directory, fail if they have not.
@@ -402,7 +396,9 @@ public class NuixEngine implements AutoCloseable {
 
         // If we reached here, we should have been able to resolve a log directory.  Lets make sure that directory
         // exists so later during logging initialization we don't receive an exception about non-existent directory.
-        logDirectorySupplier.get().mkdirs();
+        if (!logDirectorySupplier.get().mkdirs()) {
+            throw new IOException("Unable to create log directory: " + logDirectorySupplier.get().getAbsolutePath());
+        }
 
         // If caller has not specified a user-data directory, assume the one that comes with the engine distribution
         // that is being used.

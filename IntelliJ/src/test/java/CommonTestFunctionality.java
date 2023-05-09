@@ -51,6 +51,7 @@ public class CommonTestFunctionality {
     // of tests afterwards.
     protected static boolean deleteTestOutputOnCompletion = true;
 
+
     @BeforeAll
     public static void setup() throws Exception {
         log = LogManager.getLogger("Tests");
@@ -102,6 +103,13 @@ public class CommonTestFunctionality {
                 .setLogDirectory(new File(testOutputDirectory, "Logs"));
     }
 
+    /***
+     * Creates a series of random text files at a specified location, returning details about the expected terms
+     * and their counts so a test may later ingest and verify the counts.
+     * @param outputDirectory Where the text files should be written to
+     * @param itemsToGenerate The number of text files desired
+     * @return A List of {@link TermCount} objects
+     */
     public List<TermCount> createSearchableTestData(File outputDirectory, int itemsToGenerate) {
         log.info(String.format("Generating %s random text files, for use as test data, to directory %s",
                 itemsToGenerate, outputDirectory));
