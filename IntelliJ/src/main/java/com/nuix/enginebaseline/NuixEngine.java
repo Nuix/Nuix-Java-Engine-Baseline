@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /***
- * This class represents a wrapper over the Nuix Engine API.  It encapsulates the potentially tricky process of getting
+ * This class represents a wrapper over the Nuix Engine API.  It encapsulates the potentially error prone process of getting
  * a Nuix Engine instance initialized and licensed with a simplified interface.  Use this class as is or use it as a
  * starting point for your own implementation.<br><br>
  * Basic usage example:
@@ -66,11 +66,11 @@ public class NuixEngine implements AutoCloseable {
     protected List<LicenseResolver> nuixLicenseResolvers;
 
     protected Logger log = null;
-    protected Engine engine;
+    protected Engine engine = null;
+    protected Utilities utilities = null;
     protected Thread shutdownHook = null;
 
-    protected NuixEngine() {
-    }
+    protected NuixEngine() { }
 
     public static void closeGlobalContainer() {
         globalContainer.close();
@@ -246,8 +246,8 @@ public class NuixEngine implements AutoCloseable {
     }
 
     /***
-     * It is within this method you will want to place your code which makes use of the Nuix Engine.  Calling this method
-     * performs a series of steps:
+     * Gets Utilities object to begin making use of the Nuix API.  If instance has been previously obtained, then
+     * that instance will be returned.  Otherwise, calling this method performs a series of steps to get setup:
      * <ol>
      *     <li>A set of preconditions are checked.  Generally if a condition is not met an exception explaining the issue
      *     will be thrown.  In a couple instances a default will be assumed if possible.
@@ -271,10 +271,6 @@ public class NuixEngine implements AutoCloseable {
      *         If an exception is thrown during this process, it is caught, written to System.out and then rethrown
      *         to be further handled by the caller.
      *     </li>
-     *     <li>
-     *         Whether exiting this method due to an exception or completion of the provided callback, a 'finally' block
-     *         calls this instance's {@link #close()} method for you.
-     *     </li>
      * </ol>
      * Note that before calling this method you must call one of the following methods to configure where a
      * Nuix Engine distribution is located:
@@ -285,24 +281,25 @@ public class NuixEngine implements AutoCloseable {
      *     <li>{@link #setEngineDistributionDirectoryFromEnvVar()}</li>
      * </ul>
      *
-     * @param throwCapableConsumer Callback that will do something with licensed utilities.  Note that exceptions
-     *                             thrown by callback will be rethrown to caller.
+     * @return If this instance already has an instance of Utilities, that is returned.  Otherwise necessary steps
+     * will be taken to attempt to obtain and license underlying engine instance to ultimately provide a licensed
+     * Utilities instance.
      */
-    public void run(ThrowCapableConsumer<Utilities> throwCapableConsumer) throws Exception {
-        // Check to make sure some requirements are in place before proceeding
-        checkPreConditions();
+    public Utilities getUtilities() throws Exception {
+        if(utilities == null) {
+            // Check to make sure some requirements are in place before proceeding
+            checkPreConditions();
 
-        // Make sure logging gets initialized
-        try {
-            initializeLogging();
-        } catch (Exception exc) {
-            System.out.println("Error while initializing logging: " + exc.getMessage());
-            throw new Exception("Error while initializing logging", exc);
-        }
+            // Make sure logging gets initialized
+            try {
+                initializeLogging();
+            } catch (Exception exc) {
+                System.out.println("Error while initializing logging: " + exc.getMessage());
+                throw new Exception("Error while initializing logging", exc);
+            }
 
-        // Proceed with constructing engine instance, obtaining license and providing licensed Utilities
-        // to provided callback
-        try {
+            // Proceed with constructing engine instance, obtaining license and providing licensed Utilities
+            // to provided callback
             log.info("Engine Distribution Directory: " + engineDistributionDirectorySupplier.get().getAbsolutePath());
             log.info("Log Directory: " + logDirectorySupplier.get().getAbsolutePath());
             log.info("User Data Directory: " + userDataDirectorySupplier.get().getAbsolutePath());
@@ -310,12 +307,27 @@ public class NuixEngine implements AutoCloseable {
             ensureGlobalContainer();
             buildEngine();
             if (obtainLicenseFromResolvers()) {
-                Utilities utilities = engine.getUtilities();
+                utilities = engine.getUtilities();
                 logAllDependencyInfo(utilities);
-                throwCapableConsumer.accept(utilities);
             } else {
                 log.error("No license was able to be resolved");
             }
+        }
+
+        return utilities;
+    }
+
+    /***
+     * Convenience method for running an operation with a licensed engine instance and then automatically closing this instance.
+     * Supplied consumer will be provided a utilities instance by internally calling {@link #getUtilities()}.
+     * Upon return from consumer, either from normal return or exception, a 'finally' block will call the
+     * {@link #close()} method for you.  Exceptions will be allowed to bubble up, so caller can handle them directly.
+     * @param throwCapableConsumer A callback which is to receive Utilities upon successful initialization and licensing.
+     * @throws Exception May be thrown by process or getting engine initialized or code in supplied consumer.
+     */
+    public void run(ThrowCapableConsumer<Utilities> throwCapableConsumer) throws Exception {
+        try {
+            throwCapableConsumer.accept(getUtilities());
         } finally {
             close();
         }
@@ -330,6 +342,8 @@ public class NuixEngine implements AutoCloseable {
      */
     private boolean obtainLicenseFromResolvers() throws Exception {
         boolean licenseWasObtained = false;
+        // Iterate each provided license resolver in order until one signals to use it has licensed
+        // our engine instance.
         for (LicenseResolver resolver : nuixLicenseResolvers) {
             log.info(String.format("Attempting to resolve license using: %s", resolver));
             licenseWasObtained = resolver.resolveLicense(engine);
@@ -394,7 +408,7 @@ public class NuixEngine implements AutoCloseable {
             }
         }
 
-        // If we reached here, we should have been able to resolve a log directory.  Lets make sure that directory
+        // If we reached here, we should have been able to resolve a log directory.  Let's make sure that directory
         // exists so later during logging initialization we don't receive an exception about non-existent directory.
         if (!logDirectorySupplier.get().mkdirs()) {
             throw new IOException("Unable to create log directory: " + logDirectorySupplier.get().getAbsolutePath());
@@ -541,8 +555,13 @@ public class NuixEngine implements AutoCloseable {
     }
 
     /***
-     * Calls close on underlying Engine instance this instance may have.  Will also unregister shutdown hook if
-     * one was previously established.
+     * Cleans up resources associated with this instance:
+     * <ul>
+     *     <li>Calls close on underlying Engine instance</li>
+     *     <li>Drop reference to obtained Utilities object</li>
+     *     <li>Unregisters shutdown hook</li>
+     *     <li>Shuts down logging</li>
+     * </ul>
      * @throws Exception If thrown, was a result of a method being called by this method and allowed to bubble up to caller.
      */
     @Override
@@ -557,6 +576,9 @@ public class NuixEngine implements AutoCloseable {
             }
             engine.close();
         }
+
+        // Drop reference to Utilities object
+        utilities = null;
 
         // Unregister shutdown hook since we are closing things up now
         if (shutdownHook != null) {
@@ -573,6 +595,7 @@ public class NuixEngine implements AutoCloseable {
         // Shutdown logging
         if (log != null) {
             ((LifeCycle) LogManager.getContext()).stop();
+            log = null;
         }
     }
 }
