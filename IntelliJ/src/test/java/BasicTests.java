@@ -107,6 +107,8 @@ public class BasicTests extends CommonTestFunctionality {
             EvidenceContainer evidenceContainer = processor.newEvidenceContainer("SearchTestData");
             evidenceContainer.addFile(dataDirectory);
             evidenceContainer.save();
+
+            // Periodically log progress
             final long[] lastProgressTime = {0};
             int updateIntervalSeconds = 10;
             AtomicLong itemCount = new AtomicLong(0);
