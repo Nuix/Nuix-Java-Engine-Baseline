@@ -1,3 +1,4 @@
+import com.esotericsoftware.minlog.Log;
 import com.nuix.enginebaseline.NuixEngine;
 import com.nuix.enginebaseline.NuixLicenseResolver;
 import net.datafaker.Faker;
@@ -62,7 +63,7 @@ public class CommonTestFunctionality {
         log.info("TEST_DATA_DIRECTORY: " + testDataDirectory.getAbsolutePath());
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if(deleteTestOutputOnCompletion) {
+            if (deleteTestOutputOnCompletion) {
                 try {
                     FileUtils.deleteDirectory(testOutputDirectory);
                 } catch (IOException exc) {
@@ -115,11 +116,22 @@ public class CommonTestFunctionality {
                 itemsToGenerate, outputDirectory));
         Map<String, TermCount> overallTermCounts = new HashMap<>();
 
+        List<String> termPool = new ArrayList<>();
+
+        // Pre generate pool of 2000 terms
+        for (int i = 0; i < 2000; i++) {
+            String term = faker.text().text(4, 8);
+            termPool.add(term);
+        }
+
         // Will hold terms to be written to each generated text file
         Set<String> textFileTerms = new HashSet<>();
 
         // Iteratively generate test text files
         for (int i = 0; i < itemsToGenerate; i++) {
+            if (i + 1 % 1000 == 0) {
+                Log.info(String.format("Generated %s fake text files so far...", i + 1));
+            }
             textFileTerms.clear();
 
             // Randomly determine how many terms to write
@@ -129,14 +141,16 @@ public class CommonTestFunctionality {
             File textFile = new File(outputDirectory, String.format("%08d.txt", i));
 
             for (int t = 0; t < targetTermCount; t++) {
-                // Generate term
-                String term = faker.text().text(4, 8);
-                // We will only write each term once for simplicity
+                // Grab term from pool
+                String term = termPool.get(faker.random().nextInt(0, termPool.size() - 1));
+
+                // We will only write each term once per file for simplicity
                 if (textFileTerms.contains(term)) {
                     continue;
+                } else {
+                    textFileTerms.add(term);
                 }
-                // Add terms to list of terms to be written to file
-                textFileTerms.add(term);
+
                 // Track this term in overall counts for later verification
                 if (!overallTermCounts.containsKey(term)) {
                     overallTermCounts.put(term, new TermCount(term, 1));
