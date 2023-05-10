@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -87,7 +89,7 @@ public class BasicTests extends CommonTestFunctionality {
         File caseDirectory = new File(testOutputDirectory, "SearchAndTag_Case");
         File dataDirectory = new File(testOutputDirectory, "SearchAndTag_Natives");
 
-        List<TermCount> termCounts = createSearchableTestData(dataDirectory, 1000);
+        List<TermCount> termCounts = createSearchableTestData(dataDirectory, 5000);
 
         NuixEngine nuixEngine = constructNuixEngine();
         nuixEngine.run((utilities -> {
@@ -105,6 +107,17 @@ public class BasicTests extends CommonTestFunctionality {
             EvidenceContainer evidenceContainer = processor.newEvidenceContainer("SearchTestData");
             evidenceContainer.addFile(dataDirectory);
             evidenceContainer.save();
+            final long[] lastProgressTime = {0};
+            int updateIntervalSeconds = 10;
+            AtomicLong itemCount = new AtomicLong(0);
+            processor.whenItemProcessed(info -> {
+                long currentItemCount = itemCount.addAndGet(1);
+                if(System.currentTimeMillis() - lastProgressTime[0] > updateIntervalSeconds * 1000) {
+                    lastProgressTime[0] = System.currentTimeMillis();
+                    log.info(String.format("%s items processed", currentItemCount));
+                }
+            });
+
             log.info("Processing starting...");
             processor.process();
             log.info("Processing completed");
