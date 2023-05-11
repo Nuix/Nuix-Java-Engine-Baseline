@@ -1,7 +1,7 @@
 package com.nuix.enginebaseline;
 
 /***
- * An interface similar to {@link java.util.function.Consumer} but allows for throwing checked exceptions.
+ * An interface similar to {@link java.util.function.Consumer}, but allows for throwing checked exceptions.
  * @param <T> The type of the argument accepted.
  */
 @FunctionalInterface

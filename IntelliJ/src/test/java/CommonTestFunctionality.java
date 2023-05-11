@@ -50,7 +50,7 @@ public class CommonTestFunctionality {
     // When true, the testOutputDirectory used during tests will be deleted
     // upon test completion.  Set this to false if you wish to manually review the output
     // of tests afterwards.
-    protected static boolean deleteTestOutputOnCompletion = false;
+    protected static boolean deleteTestOutputOnCompletion = true;
 
 
     @BeforeAll
