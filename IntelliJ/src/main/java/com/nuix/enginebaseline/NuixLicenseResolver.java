@@ -185,10 +185,21 @@ public class NuixLicenseResolver implements LicenseResolver {
      * @return This license resolver for chained method calls.
      */
     public NuixLicenseResolver withRequiredFeatures(String... features) {
-        if (features == null) {
-            return this;
+        if (features != null) {
+            requiredFeatures.addAll(Arrays.asList(features));
         }
-        requiredFeatures.addAll(Arrays.asList(features));
+        return this;
+    }
+
+    /***
+     * Specifies a list of one or more features that a license must have to be acceptable.
+     * @param features The required features.
+     * @return This license resolver for chained method calls.
+     */
+    public NuixLicenseResolver withRequiredFeatures(Collection<String> features) {
+        if (features != null) {
+            requiredFeatures.addAll(features);
+        }
         return this;
     }
 
