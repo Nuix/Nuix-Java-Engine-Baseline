@@ -202,7 +202,7 @@ public class NuixEngine implements AutoCloseable {
      * @return This instance for method call chaining
      */
     public NuixEngine setLogDirectorySupplier(Supplier<File> logDirectorySupplier) {
-        this.logDirectorySupplier = Suppliers.memoize(logDirectorySupplier::get);
+        this.logDirectorySupplier = logDirectorySupplier::get;
         return this;
     }
 
@@ -410,8 +410,9 @@ public class NuixEngine implements AutoCloseable {
 
         // If we reached here, we should have been able to resolve a log directory.  Let's make sure that directory
         // exists so later during logging initialization we don't receive an exception about non-existent directory.
-        if (!logDirectorySupplier.get().mkdirs()) {
-            throw new IOException("Unable to create log directory: " + logDirectorySupplier.get().getAbsolutePath());
+        logDirectorySupplier.get().getCanonicalFile().mkdirs();
+        if (!logDirectorySupplier.get().getCanonicalFile().exists()) {
+            throw new IOException("Unable to create log directory: " + logDirectorySupplier.get().getCanonicalPath());
         }
 
         // If caller has not specified a user-data directory, assume the one that comes with the engine distribution
