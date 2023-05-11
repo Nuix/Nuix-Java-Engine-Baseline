@@ -13,13 +13,34 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BasicTests extends CommonTestFunctionality {
     @Test
-    public void GetLicense() throws Exception {
+    public void GetLicenseAutomaticCleanup() throws Exception {
         AtomicBoolean licenseWasObtained = new AtomicBoolean(false);
+
         NuixEngine nuixEngine = constructNuixEngine();
         nuixEngine.run((utilities -> {
             licenseWasObtained.set(true);
         }));
+
         assertTrue(licenseWasObtained.get());
+    }
+
+    @Test
+    public void GetLicenseTryWithResourcesCleanup() throws Exception {
+        // Create engine instance using try-with-resources, get utilities, use, closes
+        // at end of try-with-resources
+        try(NuixEngine nuixEngine = constructNuixEngine()) {
+            Utilities utilities = nuixEngine.getUtilities();
+            utilities.getItemTypeUtility().getAllTypes();
+        }
+    }
+
+    @Test
+    public void GetLicenseManualCleanup() throws Exception {
+        // Create engine instance, get utilities, use, then manually close
+        NuixEngine nuixEngine = constructNuixEngine();
+        Utilities utilities = nuixEngine.getUtilities();
+        utilities.getItemTypeUtility().getAllTypes();
+        nuixEngine.close();
     }
 
     @Test
