@@ -50,7 +50,7 @@ public class CommonTestFunctionality {
     // When true, the testOutputDirectory used during tests will be deleted
     // upon test completion.  Set this to false if you wish to manually review the output
     // of tests afterwards.
-    protected static boolean deleteTestOutputOnCompletion = true;
+    protected static boolean deleteTestOutputOnCompletion = false;
 
 
     @BeforeAll
@@ -91,17 +91,31 @@ public class CommonTestFunctionality {
      * @return A NuixEngine instance ready to use
      */
     public NuixEngine constructNuixEngine() {
+        return constructNuixEngine((String[])null);
+    }
+
+    /***
+     * Tests will generally call this method to construct the instance of NuixEngine they will use to perform
+     * their given test.  This allows you to customize it to your environment without having to alter all the tests.
+     * @return A NuixEngine instance ready to use
+     */
+    public NuixEngine constructNuixEngine(String... additionalRequiredFeatures) {
+        List<String> features = List.of("CASE_CREATION");
+        if(additionalRequiredFeatures != null && additionalRequiredFeatures.length > 0) {
+            features.addAll(List.of(additionalRequiredFeatures));
+        }
+
         NuixLicenseResolver caseCreationCloud = NuixLicenseResolver.fromCloud()
                 .withLicenseCredentialsResolvedFromEnvVars()
                 .withMinWorkerCount(4)
-                .withRequiredFeatures("CASE_CREATION");
+                .withRequiredFeatures(features);
 
         NuixLicenseResolver caseCreationDongle = NuixLicenseResolver.fromDongle()
                 .withRequiredFeatures("CASE_CREATION");
 
         return NuixEngine.usingFirstAvailableLicense(caseCreationCloud, caseCreationDongle)
                 .setEngineDistributionDirectoryFromEnvVar()
-                .setLogDirectory(new File(testOutputDirectory, "Logs"));
+                .setLogDirectory(new File(testOutputDirectory, "Logs_"+System.currentTimeMillis()));
     }
 
     /***
