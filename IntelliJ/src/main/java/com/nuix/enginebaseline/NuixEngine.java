@@ -348,7 +348,7 @@ public class NuixEngine implements AutoCloseable {
             log.info(String.format("Attempting to resolve license using: %s", resolver));
             licenseWasObtained = resolver.resolveLicense(engine);
             if (licenseWasObtained) {
-                log.info(String.format("Obtained license: %s", LicenseFeaturesLogger.summarizeLicense(engine.getLicence())));
+                log.info(String.format("Obtained license: %s", NuixLicenseFeaturesLogger.summarizeLicense(engine.getLicence())));
                 break;
             } else {
                 log.info("No license was obtained, will try next resolver if there is one");

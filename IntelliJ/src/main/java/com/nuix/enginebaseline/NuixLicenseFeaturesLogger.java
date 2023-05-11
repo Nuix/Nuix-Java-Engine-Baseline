@@ -12,7 +12,7 @@ import java.util.StringJoiner;
  * Helper class for logging what features are present on a given license.
  * @author Jason Wells
  */
-public class LicenseFeaturesLogger {
+public class NuixLicenseFeaturesLogger {
     // Obtain a logger instance for this class
     private final static Logger logger = LogManager.getLogger("LicenseFeatures");
 

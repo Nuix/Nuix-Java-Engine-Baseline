@@ -3,7 +3,7 @@ package com.nuix.javaenginesimple;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.nuix.enginebaseline.LicenseFeaturesLogger;
+import com.nuix.enginebaseline.NuixLicenseFeaturesLogger;
 import nuix.LicenceProperties;
 import nuix.engine.AvailableLicence;
 import org.apache.logging.log4j.LogManager;
@@ -48,7 +48,7 @@ public class LicenseFilter {
 	 * @return True if all requirements met, false if any requirement has not been met.
 	 */
 	public boolean isValid(AvailableLicence license) {
-		logger.info("Checking License: "+ LicenseFeaturesLogger.summarizeLicense(license));
+		logger.info("Checking License: "+ NuixLicenseFeaturesLogger.summarizeLicense(license));
 
 		// A license of this type will throw a null pointer exception due to it having a null workers value
 		if(license.getShortName().equalsIgnoreCase("server")) {

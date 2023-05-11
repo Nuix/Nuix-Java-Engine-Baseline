@@ -355,7 +355,7 @@ public class NuixLicenseResolver implements LicenseResolver {
 
         log.info("Applying filtering to available licenses...");
         Stream<AvailableLicence> filteredLicensesStream = availableLicensesStream.filter((availableLicense -> {
-            log.info("Inspecting license: "+LicenseFeaturesLogger.summarizeLicense(availableLicense));
+            log.info("Inspecting license: "+ NuixLicenseFeaturesLogger.summarizeLicense(availableLicense));
 
             // It is possible to get a Licence specifically for running an NMS instance and not an Engine instance
             // which we can ignore since it cannot license an Engine instance for us.

@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import com.nuix.enginebaseline.LicenseFeaturesLogger;
+import com.nuix.enginebaseline.NuixLicenseFeaturesLogger;
 import com.nuix.enginebaseline.NuixVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -388,7 +388,7 @@ public class EngineWrapper implements AutoCloseable {
 		Optional<AvailableLicence> possiblyFoundLicense = licences.filter(availableLicence -> licenseFilter.isValid(availableLicence)).findFirst();
 		if(possiblyFoundLicense.isEmpty() == false) {
 			AvailableLicence foundLicense = possiblyFoundLicense.get();
-			logger.info(">>>> Acquiring following license: "+ LicenseFeaturesLogger.summarizeLicense(foundLicense));
+			logger.info(">>>> Acquiring following license: "+ NuixLicenseFeaturesLogger.summarizeLicense(foundLicense));
 			if(foundLicense.canChooseWorkers()) {
 				int targetWorkerCount = licenseFilter.getMinWorkers();
 				if(targetWorkerCount < 1) { targetWorkerCount = 2; }
