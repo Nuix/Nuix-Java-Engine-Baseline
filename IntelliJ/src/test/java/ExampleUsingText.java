@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
@@ -21,9 +20,8 @@ public class ExampleUsingText extends CommonTestFunctionality {
     @Test
     public void ExampleUsingText() throws Exception {
         File caseDirectory = new File(testOutputDirectory, "ExampleUsingText_Case");
-        File dataDirectory = new File(testOutputDirectory, "ExampleUsingText_Natives");
-
-        List<CommonTestFunctionality.TermCount> termCounts = createSearchableTestData(dataDirectory, 5000);
+        File textFilesDirectory = TestData.getTestDataTextFilesDirectory();
+        Map<String,Long> termCounts = TestData.getTestDataTextFileTermCounts();
 
         NuixEngine nuixEngine = constructNuixEngine();
         nuixEngine.run((utilities -> {
@@ -39,7 +37,7 @@ public class ExampleUsingText extends CommonTestFunctionality {
             log.info("Queuing data for processing...");
             Processor processor = nuixCase.createProcessor();
             EvidenceContainer evidenceContainer = processor.newEvidenceContainer("SearchTestData");
-            evidenceContainer.addFile(dataDirectory);
+            evidenceContainer.addFile(textFilesDirectory);
             evidenceContainer.save();
 
             // Periodically log progress

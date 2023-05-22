@@ -3,7 +3,6 @@ import nuix.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,9 +71,8 @@ public class BasicTests extends CommonTestFunctionality {
     @Test
     public void LoadDataIntoSimpleCase() throws Exception {
         File caseDirectory = new File(testOutputDirectory, "LoadDataIntoSimpleCase_Case");
-        File dataDirectory = new File(testOutputDirectory, "LoadDataIntoSimpleCase_Natives");
-
-        List<TermCount> termCounts = createSearchableTestData(dataDirectory, 1000);
+        File textFilesDirectory = TestData.getTestDataTextFilesDirectory();
+        Map<String, Long> termCounts = TestData.getTestDataTextFileTermCounts();
 
         NuixEngine nuixEngine = constructNuixEngine();
         nuixEngine.run((utilities -> {
@@ -90,17 +88,19 @@ public class BasicTests extends CommonTestFunctionality {
             log.info("Queuing data for processing...");
             Processor processor = nuixCase.createProcessor();
             EvidenceContainer evidenceContainer = processor.newEvidenceContainer("SearchTestData");
-            evidenceContainer.addFile(dataDirectory);
+            evidenceContainer.addFile(textFilesDirectory);
             evidenceContainer.save();
             log.info("Processing starting...");
             processor.process();
             log.info("Processing completed");
 
             log.info("Validating search counts...");
-            for (TermCount termCount : termCounts) {
-                long hitCount = nuixCase.count(termCount.term);
-                assertEquals(termCount.count, hitCount, String.format("For term %s, expect %s but got %s",
-                        termCount.term, termCount.count, hitCount));
+            for (Map.Entry<String, Long> termCount : termCounts.entrySet()) {
+                String term = termCount.getKey();
+                Long count = termCount.getValue() + 1; // Add 1 for hit on term counts JSON
+                long hitCount = nuixCase.count(term);
+                assertEquals(count, hitCount, String.format("For term %s, expect %s but got %s",
+                        term, count, hitCount));
             }
 
             log.info("Closing case");
@@ -111,9 +111,8 @@ public class BasicTests extends CommonTestFunctionality {
     @Test
     public void SearchAndTag() throws Exception {
         File caseDirectory = new File(testOutputDirectory, "SearchAndTag_Case");
-        File dataDirectory = new File(testOutputDirectory, "SearchAndTag_Natives");
-
-        List<TermCount> termCounts = createSearchableTestData(dataDirectory, 5000);
+        File textFilesDirectory = TestData.getTestDataTextFilesDirectory();
+        Map<String, Long> termCounts = TestData.getTestDataTextFileTermCounts();
 
         NuixEngine nuixEngine = constructNuixEngine();
         nuixEngine.run((utilities -> {
@@ -129,7 +128,7 @@ public class BasicTests extends CommonTestFunctionality {
             log.info("Queuing data for processing...");
             Processor processor = nuixCase.createProcessor();
             EvidenceContainer evidenceContainer = processor.newEvidenceContainer("SearchTestData");
-            evidenceContainer.addFile(dataDirectory);
+            evidenceContainer.addFile(textFilesDirectory);
             evidenceContainer.save();
 
             // Periodically log progress
@@ -149,21 +148,24 @@ public class BasicTests extends CommonTestFunctionality {
             log.info("Processing completed");
 
             log.info("Applying Tags...");
-            for (TermCount termCount : termCounts) {
-                String tag = "Terms|" + termCount.term;
-                Set<Item> responsiveItems = nuixCase.searchUnsorted(termCount.term);
+            for (Map.Entry<String, Long> termCount : termCounts.entrySet()) {
+                String term = termCount.getKey();
+                String tag = "Terms|" + term;
+                Set<Item> responsiveItems = nuixCase.searchUnsorted(term);
                 log.info(String.format("Tagging %s items with tag '%s'",
                         responsiveItems.size(), tag));
                 utilities.getBulkAnnotater().addTag(tag, responsiveItems);
             }
 
             log.info("Validating tag counts...");
-            for (TermCount termCount : termCounts) {
-                String tag = "Terms|" + termCount.term;
+            for (Map.Entry<String, Long> termCount : termCounts.entrySet()) {
+                String term = termCount.getKey();
+                Long count = termCount.getValue() + 1; // Add 1 for hit on term counts JSON
+                String tag = "Terms|" + term;
                 String query = "tag:\"" + tag + "\"";
                 long hitCount = nuixCase.count(query);
-                assertEquals(termCount.count, hitCount, String.format("For term %s, expect %s tagged items, but got %s",
-                        termCount.term, termCount.count, hitCount));
+                assertEquals(count, hitCount, String.format("For term %s, expect %s tagged items, but got %s",
+                        term, count, hitCount));
             }
 
             log.info("Closing case");
@@ -174,9 +176,8 @@ public class BasicTests extends CommonTestFunctionality {
     @Test
     public void CreateProductionSet() throws Exception {
         File caseDirectory = new File(testOutputDirectory, "CreateProductionSet_Case");
-        File dataDirectory = new File(testOutputDirectory, "CreateProductionSet_Natives");
-
-        List<TermCount> termCounts = createSearchableTestData(dataDirectory, 5000);
+        File textFilesDirectory = TestData.getTestDataTextFilesDirectory();
+        Map<String, Long> termCounts = TestData.getTestDataTextFileTermCounts();
 
         NuixEngine nuixEngine = constructNuixEngine();
         nuixEngine.run((utilities -> {
@@ -192,7 +193,7 @@ public class BasicTests extends CommonTestFunctionality {
             log.info("Queuing data for processing...");
             Processor processor = nuixCase.createProcessor();
             EvidenceContainer evidenceContainer = processor.newEvidenceContainer("SearchTestData");
-            evidenceContainer.addFile(dataDirectory);
+            evidenceContainer.addFile(textFilesDirectory);
             evidenceContainer.save();
 
             // Periodically log progress
@@ -242,10 +243,9 @@ public class BasicTests extends CommonTestFunctionality {
     @Test
     public void Export() throws Exception {
         File caseDirectory = new File(testOutputDirectory, "ExportTest_Case");
-        File dataDirectory = new File(testOutputDirectory, "ExportTest_Natives");
+        File textFilesDirectory = TestData.getTestDataTextFilesDirectory();
+        Map<String, Long> termCounts = TestData.getTestDataTextFileTermCounts();
         File exportDirectory = new File(testOutputDirectory, "ExportTest_Export");
-
-        List<TermCount> termCounts = createSearchableTestData(dataDirectory, 5000);
 
         NuixEngine nuixEngine = constructNuixEngine();
         nuixEngine.run((utilities -> {
@@ -261,7 +261,7 @@ public class BasicTests extends CommonTestFunctionality {
             log.info("Queuing data for processing...");
             Processor processor = nuixCase.createProcessor();
             EvidenceContainer evidenceContainer = processor.newEvidenceContainer("SearchTestData");
-            evidenceContainer.addFile(dataDirectory);
+            evidenceContainer.addFile(textFilesDirectory);
             evidenceContainer.save();
 
             // Periodically log progress
@@ -339,7 +339,7 @@ public class BasicTests extends CommonTestFunctionality {
             // ParallelProcessingConfigurable.setParallelProcessingSettings for list of settings and what they do.
             exporter.setParallelProcessingSettings(Map.of(
                     "workerCount", utilities.getLicence().getWorkers(),
-                    "workerTemp", new File(testOutputDirectory,"WorkerTemp").getAbsolutePath()
+                    "workerTemp", new File(testOutputDirectory, "WorkerTemp").getAbsolutePath()
             ));
 
             // Track error count
@@ -348,6 +348,7 @@ public class BasicTests extends CommonTestFunctionality {
             exporter.whenItemEventOccurs(new ItemEventCallback() {
                 // Use this to track when we reported progress last
                 long lastProgressMillis = System.currentTimeMillis();
+
                 @Override
                 public void itemProcessed(ItemEventInfo info) {
                     // Report progress if it has been at least 5 seconds (5000 milliseconds) since

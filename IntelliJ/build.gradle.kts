@@ -41,6 +41,7 @@ dependencies {
                 "**/*joda*.jar",
                 "**/*commons*.jar",
                 "**/*guava*.jar",
+                "**/*gson*.jar",
                 // All Nuix API jars
                 "**/nuix-*.jar"
         )
