@@ -1,4 +1,6 @@
 Ignored
+TestData
+TestOutput
 
 IntelliJ/build/*
 IntelliJ/engine/*
