@@ -11,13 +11,19 @@ View the Java docs [here](https://nuix.github.io/Nuix-Java-Engine-Baseline/).
 
 **Written By:** Jason Wells
 
-This repository contains a series of examples making use of the Java Engine API and can be used as a starting point for your own Nuix Java Engine based project.  This project aims to provide a core implementation of functionality around the API for you to make immediate use of or build upon.  If you are looking for a simpler example demonstrating core concepts regarding getting the Nuix Java Engine API up and running, see the [Java SDK Starter repository](https://github.com/Nuix/java-sdk-starter).
+This repository contains a series of examples making use of the Java Engine API and can be used as a foundation for your own Nuix Java Engine based project.  This project provides implementation of some commonly desired functionality one may want around using the Nuix Engine API:
 
-# Getting Started
+- Environment configuration checks with hints at addressed misconfigurations
+- License resolution with fallbacks when initially desired license is not available
+- Logging initialization
+- Diagnostics generation
+- Third party dependency checking
 
-## Setup
+This project can provide you a quick way to get up and running with some additional functionality built on top.  Due to some of the extra features included, this project may not be the easiest way to wrap you head around the fundamental steps needed to use the Nuix Java Engine API.  If you are looking for a more straight forward example demonstrating core concepts regarding getting the Nuix Java Engine API up and running, see the [Java SDK Starter repository](https://github.com/Nuix/java-sdk-starter).
 
-### Nuix Java Engine Distributable
+# Setup
+
+## Nuix Java Engine Distributable
 
 We will need to obtain a Nuix Java Engine API distributable release.  This contains the various binaries and dependencies needed to run the Nuix Java Engine API.
 
@@ -26,7 +32,7 @@ We will need to obtain a Nuix Java Engine API distributable release.  This conta
 1. Edit the system environment variables, adding a new variable named `NUIX_ENGINE_DIR` assigning the directory in the previous step as the value.  The project refers to this environment variable to resolve these dependencies.
 1. (Optional) If you wish to obtain your license from either Nuix Management Server (NMS) or Nuix Cloud License Server (CLS) you may want to specify authentication credentials.  The project supports obtaining the user name and password from environment variables `NUIX_USERNAME` and `NUIX_PASSWORD` (although does not require this).
 
-### IDE
+## IDE
 
 This project makes use of [Gradle](https://gradle.org/) and has been tested with [IntelliJ Idea IDE](https://www.jetbrains.com/idea/).  It may work with other IDEs such as [Eclipse](https://www.eclipse.org/eclipseide/) as well, but it has only been tested in IntelliJ Idea.
 
@@ -38,7 +44,7 @@ This project makes use of [Gradle](https://gradle.org/) and has been tested with
 1. Start IntelliJ Idea and open project by selecting `\Nuix-Java-Engine-Baseline\IntelliJ\build.gradle.kts`.
 1. Import process should begin.  This can take a few minutes as dependencies are pulled down from the internet, dependencies are indexed, etc.
 
-## NuixEngine Class
+# NuixEngine Class
 
 Making use of the Nuix Java Engine API, at a high level, involves:
 
@@ -64,7 +70,7 @@ LicenseResolver anyDongle = NuixLicenseResolver.fromDongle()
     .withRequiredFeatures("CASE_CREATION");
 
 // Create a new NuixEngine instance which will first attempt to resolve a cloud license and then
-// attempt to resolve a dongle license if one cannot be resolved from cloud, depending resolvers
+// attempt to resolve a dongle license if one cannot be resolved from cloud, using resolvers
 // defined above.  Calling run method to execute code with a licensed Engine instance (if a license can be obtained).
 NuixEngine.usingFirstAvailableLicense(cloud_4_workers, anyDongle)
     .setEngineDistributionDirectoryFromEnvVars()
@@ -74,7 +80,7 @@ NuixEngine.usingFirstAvailableLicense(cloud_4_workers, anyDongle)
     }));
 ```
 
-The `run` method will internally call the `NuixEngine.getUtilities` method.  This in turn will do the following:
+In the example above, the `run` method will internally call the `NuixEngine.getUtilities` method.  This in turn will do the following:
 1. Call `NuixEngine.checkPreconditions` which will check some environmental settings, using sensible defaults when possible and throwing informative errors when it cannot.
 1. Initialize log4j2 logging for you.
 1. Constructuct `GlobalContainer` and `Engine` instances for you with some lifetime management hooked into JVM shut down.
