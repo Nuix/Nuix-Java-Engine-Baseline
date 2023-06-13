@@ -113,5 +113,5 @@ tasks.getByName<Test>("test") {
 }
 
 tasks.getByName<Javadoc>("javadoc"){
-    setDestinationDir(File("${projectDir}/docs"))
+    setDestinationDir(File("${projectDir}/../docs"))
 }
