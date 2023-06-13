@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "com.nuix.enginebaseline"
-version = "9.10.9.584"
+version = "9.10"
 
 val sourceCompatibility = 11
 val targetCompatibility = 11

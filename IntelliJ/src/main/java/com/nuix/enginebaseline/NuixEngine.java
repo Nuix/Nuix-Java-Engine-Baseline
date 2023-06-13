@@ -284,6 +284,7 @@ public class NuixEngine implements AutoCloseable {
      * @return If this instance already has an instance of Utilities, that is returned.  Otherwise necessary steps
      * will be taken to attempt to obtain and license underlying engine instance to ultimately provide a licensed
      * Utilities instance.
+     * @throws Exception Allows exceptions to bubble up so caller can handle them.
      */
     public Utilities getUtilities() throws Exception {
         if(utilities == null) {

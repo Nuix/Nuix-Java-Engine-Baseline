@@ -17,12 +17,11 @@ public class BasicTests extends CommonTestFunctionality {
     @Test
     public void GetLicenseAutomaticCleanup() throws Exception {
         AtomicBoolean licenseWasObtained = new AtomicBoolean(false);
-
         NuixEngine nuixEngine = constructNuixEngine();
+        // run method will call close before returning
         nuixEngine.run((utilities -> {
             licenseWasObtained.set(true);
         }));
-
         assertTrue(licenseWasObtained.get());
     }
 
