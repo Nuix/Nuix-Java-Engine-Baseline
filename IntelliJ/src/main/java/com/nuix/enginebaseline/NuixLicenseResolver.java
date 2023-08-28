@@ -3,8 +3,8 @@ package com.nuix.enginebaseline;
 import lombok.NonNull;
 import nuix.LicenceProperties;
 import nuix.engine.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Function;
@@ -55,7 +55,7 @@ import java.util.stream.Stream;
  * @author Jason Wells
  */
 public class NuixLicenseResolver implements LicenseResolver {
-    private static final Logger log = LogManager.getLogger(NuixLicenseResolver.class);
+    private static final Logger log = LoggerFactory.getLogger(NuixLicenseResolver.class);
 
     /***
      * An enum with options about how this license resolver should locate its license.
@@ -365,10 +365,10 @@ public class NuixLicenseResolver implements LicenseResolver {
             }
 
             // Get the number of workers this license has to offer
-            int availableWorkerCount = ((LicenceProperties) availableLicense).getWorkers();
+            Integer availableWorkerCount = ((LicenceProperties) availableLicense).getWorkers();
 
             // Verify the minimum worker count
-            if (minWorkerCount > 0 && availableWorkerCount < minWorkerCount) {
+            if (availableWorkerCount != null && minWorkerCount > 0 && availableWorkerCount < minWorkerCount) {
                 log.info(String.format("License has %s workers, filter specifies a minimum of %s, ignoring this license",
                         availableWorkerCount, minWorkerCount));
                 return false;

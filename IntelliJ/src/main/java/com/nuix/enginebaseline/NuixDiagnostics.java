@@ -10,16 +10,16 @@ import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /***
  * Provides methods for generating Nuix diagnostics files.
  * @author Jason Wells
  */
 public class NuixDiagnostics {
-	private final static Logger logger = LogManager.getLogger(NuixDiagnostics.class);
+	private final static Logger logger = LoggerFactory.getLogger(NuixDiagnostics.class);
 
 	/***
 	 * Saves a Nuix diagnostics zip file at the specified path.

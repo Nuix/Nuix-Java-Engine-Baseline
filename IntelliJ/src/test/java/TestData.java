@@ -1,8 +1,8 @@
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * path to existing test data if it has already been created.
  */
 public class TestData {
-    private static final Logger log = LogManager.getLogger(TestData.class);
+    private static final Logger log = LoggerFactory.getLogger(TestData.class);
     private static File testDataDirectory = new File(System.getenv("TEST_DATA_DIRECTORY"));
 
     public static void init() {

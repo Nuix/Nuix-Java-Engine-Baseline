@@ -2,7 +2,7 @@ plugins {
     id("java")
 }
 
-group = "com.nuix.enginebaseline"
+group = "com.nuix.engine-baseline"
 version = "9.10"
 
 val sourceCompatibility = 11
@@ -37,7 +37,7 @@ dependencies {
 
     implementation(fileTree(baseDir = engineLibDir) {
         include(
-                "**/*log*.jar",
+                "**/*slf4j*.jar",
                 "**/*joda*.jar",
                 "**/*commons*.jar",
                 "**/*guava*.jar",

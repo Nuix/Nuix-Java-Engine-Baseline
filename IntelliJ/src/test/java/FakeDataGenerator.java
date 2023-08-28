@@ -5,8 +5,8 @@ import org.apache.commons.collections4.KeyValue;
 import org.apache.commons.collections4.set.ListOrderedSet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * A class for generating random data.
  */
 public class FakeDataGenerator {
-    private static final Logger log = LogManager.getLogger(FakeDataGenerator.class);
+    private static final Logger log = LoggerFactory.getLogger(FakeDataGenerator.class);
     public static final int seed = 1234567890;
     public static final Faker faker = new Faker(new Random(seed));
     public static final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();

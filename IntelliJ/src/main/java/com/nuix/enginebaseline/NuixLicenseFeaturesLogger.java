@@ -3,8 +3,8 @@ package com.nuix.enginebaseline;
 import nuix.Licence;
 import nuix.LicenceProperties;
 import nuix.engine.AvailableLicence;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.StringJoiner;
 
@@ -14,7 +14,7 @@ import java.util.StringJoiner;
  */
 public class NuixLicenseFeaturesLogger {
     // Obtain a logger instance for this class
-    private final static Logger logger = LogManager.getLogger("LicenseFeatures");
+    private final static Logger logger = LoggerFactory.getLogger("LicenseFeatures");
 
     // List of license features copied from 9.10 license profiles documentation
     private static final String[] knownFeatures = new String[]{

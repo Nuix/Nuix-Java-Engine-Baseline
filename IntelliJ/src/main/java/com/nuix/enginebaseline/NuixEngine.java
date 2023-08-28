@@ -7,14 +7,9 @@ import nuix.Utilities;
 import nuix.engine.Engine;
 import nuix.engine.GlobalContainer;
 import nuix.engine.GlobalContainerFactory;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.LifeCycle;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -453,14 +448,12 @@ public class NuixEngine implements AutoCloseable {
             // Use Log4j2 config YAML from engine base directory
             File log4jConfigFile = new File(engineDistributionDirectorySupplier.get(), "config/log4j2.yml");
             System.setProperty("log4j.configurationFile", log4jConfigFile.getAbsolutePath());
-            log = LogManager.getLogger(this.getClass());
+            log = LoggerFactory.getLogger(this.getClass());
 
             // Set default level to INFO
-            LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-            Configuration config = ctx.getConfiguration();
-            LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
-            loggerConfig.setLevel(Level.INFO);
-            ctx.updateLoggers();
+            // Set default level to INFO
+            org.apache.log4j.Logger logger4j = org.apache.log4j.Logger.getRootLogger();
+            logger4j.setLevel(org.apache.log4j.Level.toLevel("INFO"));
         }
     }
 
@@ -592,12 +585,6 @@ public class NuixEngine implements AutoCloseable {
             }
             Runtime.getRuntime().removeShutdownHook(shutdownHook);
             shutdownHook = null;
-        }
-
-        // Shutdown logging
-        if (log != null) {
-            ((LifeCycle) LogManager.getContext()).stop();
-            log = null;
         }
     }
 }
