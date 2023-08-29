@@ -14,7 +14,7 @@
 <!--[if IE]>
 <script type="text/javascript" src="../../../jquery/jszip-utils/dist/jszip-utils-ie.min.js"></script>
 <![endif]-->
-<script type="text/javascript" src="../../../jquery/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../../../jquery/jquery-3.6.1.min.js"></script>
 <script type="text/javascript" src="../../../jquery/jquery-ui.min.js"></script>
 </head>
 <body>
@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":9,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":9,"i19":9,"i20":9};
+var data = {"i0":10,"i1":10,"i2":9,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":9,"i25":9,"i26":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -345,48 +345,98 @@ implements java.lang.AutoCloseable</pre>
 </td>
 </tr>
 <tr id="i10" class="altColor">
+<td class="colFirst"><code><a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptAsync(java.lang.String)">runRubyScriptAsync</a></span>&#8203;(java.lang.String&nbsp;script)</code></th>
+<td class="colLast">
+<div class="block">Runs the Ruby script contained in the provided String, defaulting to logging standard/error script output.</div>
+</td>
+</tr>
+<tr id="i11" class="rowColor">
+<td class="colFirst"><code><a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptAsync(java.lang.String,java.util.Map)">runRubyScriptAsync</a></span>&#8203;(java.lang.String&nbsp;script,
+                  @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables)</code></th>
+<td class="colLast">
+<div class="block">Runs the Ruby script contained in the provided String, defaulting to logging standard/error script output.</div>
+</td>
+</tr>
+<tr id="i12" class="altColor">
+<td class="colFirst"><code><a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptAsync(java.lang.String,java.util.Map,java.util.function.Consumer,java.util.function.Consumer)">runRubyScriptAsync</a></span>&#8203;(java.lang.String&nbsp;script,
+                  @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables,
+                  @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;standardOutputReceiver,
+                  @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;errorOutputReceiver)</code></th>
+<td class="colLast">
+<div class="block">Runs the Ruby script contained in the provided String.</div>
+</td>
+</tr>
+<tr id="i13" class="rowColor">
+<td class="colFirst"><code><a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptFileAsync(java.io.File)">runRubyScriptFileAsync</a></span>&#8203;(java.io.File&nbsp;scriptFile)</code></th>
+<td class="colLast">
+<div class="block">Runs the Ruby script contained in the specified file, defaulting to logging standard/error script output.</div>
+</td>
+</tr>
+<tr id="i14" class="altColor">
+<td class="colFirst"><code><a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptFileAsync(java.io.File,java.util.Map)">runRubyScriptFileAsync</a></span>&#8203;(java.io.File&nbsp;scriptFile,
+                      @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables)</code></th>
+<td class="colLast">
+<div class="block">Runs the Ruby script contained in the specified file, defaulting to logging standard/error script output.</div>
+</td>
+</tr>
+<tr id="i15" class="rowColor">
+<td class="colFirst"><code><a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptFileAsync(java.io.File,java.util.Map,java.util.function.Consumer,java.util.function.Consumer)">runRubyScriptFileAsync</a></span>&#8203;(java.io.File&nbsp;scriptFile,
+                      @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables,
+                      @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;standardOutputReceiver,
+                      @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;errorOutputReceiver)</code></th>
+<td class="colLast">
+<div class="block">Runs the Ruby script contained in the specified file.</div>
+</td>
+</tr>
+<tr id="i16" class="altColor">
 <td class="colFirst"><code><a href="NuixEngine.html" title="class in com.nuix.enginebaseline">NuixEngine</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setEngineDistributionDirectory(java.io.File)">setEngineDistributionDirectory</a></span>&#8203;(java.io.File&nbsp;directory)</code></th>
 <td class="colLast">
 <div class="block">For various reasons, this class needs to be able to resolve the location of a Nuix Engine distribution.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code><a href="NuixEngine.html" title="class in com.nuix.enginebaseline">NuixEngine</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setEngineDistributionDirectoryFromEnvVar()">setEngineDistributionDirectoryFromEnvVar</a></span>()</code></th>
 <td class="colLast">
 <div class="block">For various reasons, this class needs to be able to resolve the location of a Nuix Engine distribution.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code><a href="NuixEngine.html" title="class in com.nuix.enginebaseline">NuixEngine</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setEngineDistributionDirectoryFromEnvVar(java.lang.String)">setEngineDistributionDirectoryFromEnvVar</a></span>&#8203;(java.lang.String&nbsp;environmentVariableName)</code></th>
 <td class="colLast">
 <div class="block">For various reasons, this class needs to be able to resolve the location of a Nuix Engine distribution.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code><a href="NuixEngine.html" title="class in com.nuix.enginebaseline">NuixEngine</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setEngineDistributionDirectorySupplier(java.util.function.Supplier)">setEngineDistributionDirectorySupplier</a></span>&#8203;(java.util.function.Supplier&lt;java.io.File&gt;&nbsp;engineDistributionDirectorySupplier)</code></th>
 <td class="colLast">
 <div class="block">For various reasons, this class needs to be able to resolve the location of a Nuix Engine distribution.</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i20" class="altColor">
 <td class="colFirst"><code><a href="NuixEngine.html" title="class in com.nuix.enginebaseline">NuixEngine</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setLogDirectory(java.io.File)">setLogDirectory</a></span>&#8203;(java.io.File&nbsp;directory)</code></th>
 <td class="colLast">
 <div class="block">When logging is initialized a directory is specified in which log files are to be written.</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i21" class="rowColor">
 <td class="colFirst"><code><a href="NuixEngine.html" title="class in com.nuix.enginebaseline">NuixEngine</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setLogDirectorySupplier(java.util.function.Supplier)">setLogDirectorySupplier</a></span>&#8203;(java.util.function.Supplier&lt;java.io.File&gt;&nbsp;logDirectorySupplier)</code></th>
 <td class="colLast">
 <div class="block">When logging is initialized a directory is specified in which log files are to be written.</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i22" class="altColor">
 <td class="colFirst"><code><a href="NuixEngine.html" title="class in com.nuix.enginebaseline">NuixEngine</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setUserDataDirectory(java.io.File)">setUserDataDirectory</a></span>&#8203;(java.io.File&nbsp;directory)</code></th>
 <td class="colLast">
@@ -394,7 +444,7 @@ implements java.lang.AutoCloseable</pre>
  export profiles, word lists, etc.</div>
 </td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i23" class="rowColor">
 <td class="colFirst"><code><a href="NuixEngine.html" title="class in com.nuix.enginebaseline">NuixEngine</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setUserDataDirectorySupplier(java.util.function.Supplier)">setUserDataDirectorySupplier</a></span>&#8203;(java.util.function.Supplier&lt;java.io.File&gt;&nbsp;userDataDirectorySupplier)</code></th>
 <td class="colLast">
@@ -402,14 +452,14 @@ implements java.lang.AutoCloseable</pre>
  export profiles, word lists, etc.</div>
 </td>
 </tr>
-<tr id="i18" class="altColor">
+<tr id="i24" class="altColor">
 <td class="colFirst"><code>static <a href="NuixEngine.html" title="class in com.nuix.enginebaseline">NuixEngine</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#usingAnyAvailableLicense()">usingAnyAvailableLicense</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Create a new instance which will attempt to retrieve its license from anywhere it can.</div>
 </td>
 </tr>
-<tr id="i19" class="rowColor">
+<tr id="i25" class="rowColor">
 <td class="colFirst"><code>static <a href="NuixEngine.html" title="class in com.nuix.enginebaseline">NuixEngine</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#usingFirstAvailableLicense(com.nuix.enginebaseline.LicenseResolver...)">usingFirstAvailableLicense</a></span>&#8203;(<a href="LicenseResolver.html" title="interface in com.nuix.enginebaseline">LicenseResolver</a>...&nbsp;nuixLicenseResolvers)</code></th>
 <td class="colLast">
@@ -417,7 +467,7 @@ implements java.lang.AutoCloseable</pre>
  instances in the order specified.</div>
 </td>
 </tr>
-<tr id="i20" class="altColor">
+<tr id="i26" class="altColor">
 <td class="colFirst"><code>static <a href="NuixEngine.html" title="class in com.nuix.enginebaseline">NuixEngine</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#usingFirstAvailableLicense(java.util.List)">usingFirstAvailableLicense</a></span>&#8203;(java.util.List&lt;<a href="LicenseResolver.html" title="interface in com.nuix.enginebaseline">LicenseResolver</a>&gt;&nbsp;nuixLicenseResolvers)</code></th>
 <td class="colLast">
@@ -918,6 +968,194 @@ of being able to resolve this, you must configure this value via one of the foll
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A NuixVersion object representing the Nuix Engine version or one representing "0.0.0.0" if
  Engine has not yet been initialized.</dd>
+</dl>
+</li>
+</ul>
+<a id="runRubyScriptAsync(java.lang.String,java.util.Map,java.util.function.Consumer,java.util.function.Consumer)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>runRubyScriptAsync</h4>
+<pre class="methodSignature">public&nbsp;<a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a>&nbsp;runRubyScriptAsync&#8203;(java.lang.String&nbsp;script,
+                                           @Nullable
+                                           @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables,
+                                           @Nullable
+                                           @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;standardOutputReceiver,
+                                           @Nullable
+                                           @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;errorOutputReceiver)
+                                    throws java.lang.Exception</pre>
+<div class="block">Runs the Ruby script contained in the provided String.  The following variables/constants are injected into the
+ Ruby environment before executing the script:<br>
+ <ul>
+     <li><code>$utilities</code> - The Nuix utilities object</li>
+     <li><code>$nuix_version</code> - A <a href="NuixVersion.html" title="class in com.nuix.enginebaseline"><code>NuixVersion</code></a> object representing the current engine version</li>
+     <li><code>NUIX_VERSION</code> - A String containing the current engine version</li>
+ </ul></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>script</code> - The Ruby script to execute.  Cannot be null.</dd>
+<dd><code>additionalVariables</code> - A map of any additional global/local variables you would like to set.  Note that
+                            constants cannot be set using this approach.  Can be null.</dd>
+<dd><code>standardOutputReceiver</code> - Consumer which will receive standard output messages.  If null is provided, will
+                               default to logging info messages.</dd>
+<dd><code>errorOutputReceiver</code> - Consumer which will receive error output messages.  If null is provided, will
+                            default to logging error messages.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A <a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline"><code>RubyScriptRunner</code></a> instance.  Call <a href="RubyScriptRunner.html#join()"><code>RubyScriptRunner.join()</code></a> to wait for script to complete.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code> - Exceptions are allowed to bubble up.</dd>
+</dl>
+</li>
+</ul>
+<a id="runRubyScriptAsync(java.lang.String,java.util.Map)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>runRubyScriptAsync</h4>
+<pre class="methodSignature">public&nbsp;<a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a>&nbsp;runRubyScriptAsync&#8203;(java.lang.String&nbsp;script,
+                                           @Nullable
+                                           @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables)
+                                    throws java.lang.Exception</pre>
+<div class="block">Runs the Ruby script contained in the provided String, defaulting to logging standard/error script output.
+ The following variables/constants are injected into the Ruby environment before executing the script:<br>
+ <ul>
+     <li><code>$utilities</code> - The Nuix utilities object</li>
+     <li><code>$nuix_version</code> - A <a href="NuixVersion.html" title="class in com.nuix.enginebaseline"><code>NuixVersion</code></a> object representing the current engine version</li>
+     <li><code>NUIX_VERSION</code> - A String containing the current engine version</li>
+ </ul></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>script</code> - The Ruby script to execute.  Cannot be null.</dd>
+<dd><code>additionalVariables</code> - A map of any additional global/local variables you would like to set.  Note that
+                            constants cannot be set using this approach.  Can be null.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A <a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline"><code>RubyScriptRunner</code></a> instance.  Call <a href="RubyScriptRunner.html#join()"><code>RubyScriptRunner.join()</code></a> to wait for script to complete.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code> - Exceptions are allowed to bubble up.</dd>
+</dl>
+</li>
+</ul>
+<a id="runRubyScriptAsync(java.lang.String)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>runRubyScriptAsync</h4>
+<pre class="methodSignature">public&nbsp;<a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a>&nbsp;runRubyScriptAsync&#8203;(java.lang.String&nbsp;script)
+                                    throws java.lang.Exception</pre>
+<div class="block">Runs the Ruby script contained in the provided String, defaulting to logging standard/error script output.
+ The following variables/constants are injected into the Ruby environment before executing the script:<br>
+ <ul>
+     <li><code>$utilities</code> - The Nuix utilities object</li>
+     <li><code>$nuix_version</code> - A <a href="NuixVersion.html" title="class in com.nuix.enginebaseline"><code>NuixVersion</code></a> object representing the current engine version</li>
+     <li><code>NUIX_VERSION</code> - A String containing the current engine version</li>
+ </ul></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>script</code> - The Ruby script to execute.  Cannot be null.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A <a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline"><code>RubyScriptRunner</code></a> instance.  Call <a href="RubyScriptRunner.html#join()"><code>RubyScriptRunner.join()</code></a> to wait for script to complete.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code> - Exceptions are allowed to bubble up.</dd>
+</dl>
+</li>
+</ul>
+<a id="runRubyScriptFileAsync(java.io.File,java.util.Map,java.util.function.Consumer,java.util.function.Consumer)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>runRubyScriptFileAsync</h4>
+<pre class="methodSignature">public&nbsp;<a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a>&nbsp;runRubyScriptFileAsync&#8203;(java.io.File&nbsp;scriptFile,
+                                               @Nullable
+                                               @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables,
+                                               @Nullable
+                                               @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;standardOutputReceiver,
+                                               @Nullable
+                                               @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;errorOutputReceiver)
+                                        throws java.lang.Exception</pre>
+<div class="block">Runs the Ruby script contained in the specified file.  Note that since you are pointing to an actual file, script
+ will have a defined value for <code>__FILE__</code>, allowing for you to reference other files relative to the
+ specified script file.  The following variables/constants are injected into the Ruby environment before
+ executing the script:<br>
+ <ul>
+     <li><code>$utilities</code> - The Nuix utilities object</li>
+     <li><code>$nuix_version</code> - A <a href="NuixVersion.html" title="class in com.nuix.enginebaseline"><code>NuixVersion</code></a> object representing the current engine version</li>
+     <li><code>NUIX_VERSION</code> - A String containing the current engine version</li>
+ </ul></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>scriptFile</code> - The file containing the Ruby script to execute.  Cannot be null.</dd>
+<dd><code>additionalVariables</code> - A map of any additional global/local variables you would like to set.  Note that
+                            constants cannot be set using this approach.  Can be null.</dd>
+<dd><code>standardOutputReceiver</code> - Consumer which will receive standard output messages.  If null is provided, will
+                               default to logging info messages.</dd>
+<dd><code>errorOutputReceiver</code> - Consumer which will receive error output messages.  If null is provided, will
+                            default to logging error messages.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A <a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline"><code>RubyScriptRunner</code></a> instance.  Call <a href="RubyScriptRunner.html#join()"><code>RubyScriptRunner.join()</code></a> to wait for script to complete.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code> - Exceptions are allowed to bubble up.</dd>
+</dl>
+</li>
+</ul>
+<a id="runRubyScriptFileAsync(java.io.File,java.util.Map)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>runRubyScriptFileAsync</h4>
+<pre class="methodSignature">public&nbsp;<a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a>&nbsp;runRubyScriptFileAsync&#8203;(java.io.File&nbsp;scriptFile,
+                                               @Nullable
+                                               @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables)
+                                        throws java.lang.Exception</pre>
+<div class="block">Runs the Ruby script contained in the specified file, defaulting to logging standard/error script output.
+ Note that since you are pointing to an actual file, script will have a defined value for <code>__FILE__</code>,
+ allowing for you to reference other files relative to the specified script file.  The following
+ variables/constants are injected into the Ruby environment before executing the script:<br>
+ <ul>
+     <li><code>$utilities</code> - The Nuix utilities object</li>
+     <li><code>$nuix_version</code> - A <a href="NuixVersion.html" title="class in com.nuix.enginebaseline"><code>NuixVersion</code></a> object representing the current engine version</li>
+     <li><code>NUIX_VERSION</code> - A String containing the current engine version</li>
+ </ul></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>scriptFile</code> - The file containing the Ruby script to execute.  Cannot be null.</dd>
+<dd><code>additionalVariables</code> - A map of any additional global/local variables you would like to set.  Note that
+                            constants cannot be set using this approach.  Can be null.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A <a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline"><code>RubyScriptRunner</code></a> instance.  Call <a href="RubyScriptRunner.html#join()"><code>RubyScriptRunner.join()</code></a> to wait for script to complete.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code> - Exceptions are allowed to bubble up.</dd>
+</dl>
+</li>
+</ul>
+<a id="runRubyScriptFileAsync(java.io.File)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>runRubyScriptFileAsync</h4>
+<pre class="methodSignature">public&nbsp;<a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a>&nbsp;runRubyScriptFileAsync&#8203;(java.io.File&nbsp;scriptFile)
+                                        throws java.lang.Exception</pre>
+<div class="block">Runs the Ruby script contained in the specified file, defaulting to logging standard/error script output.
+ Note that since you are pointing to an actual file, script will have a defined value for <code>__FILE__</code>,
+ allowing for you to reference other files relative to the specified script file.  The following
+ variables/constants are injected into the Ruby environment before executing the script:<br>
+ <ul>
+     <li><code>$utilities</code> - The Nuix utilities object</li>
+     <li><code>$nuix_version</code> - A <a href="NuixVersion.html" title="class in com.nuix.enginebaseline"><code>NuixVersion</code></a> object representing the current engine version</li>
+     <li><code>NUIX_VERSION</code> - A String containing the current engine version</li>
+ </ul></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>scriptFile</code> - The file containing the Ruby script to execute.  Cannot be null.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A <a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline"><code>RubyScriptRunner</code></a> instance.  Call <a href="RubyScriptRunner.html#join()"><code>RubyScriptRunner.join()</code></a> to wait for script to complete.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code> - Exceptions are allowed to bubble up.</dd>
 </dl>
 </li>
 </ul>
