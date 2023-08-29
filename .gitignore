@@ -1,5 +1,14 @@
+# Allows for a directory to store things in without having them in version control
 Ignored
-TestData
+
+# Some tests generate test data, but we don't want that
+# being commit back to repository
+TestData/*
+
+# Scripting test makes use of this script file, so let it through
+!TestData/BasicRubyScript.rb
+
+# Do not need to version control test output
 TestOutput
 
 IntelliJ/build/*
