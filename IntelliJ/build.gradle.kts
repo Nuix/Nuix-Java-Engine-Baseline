@@ -25,7 +25,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/nuix/Nuix-Java-Engine-Baseline")
+            url = uri("https://maven.pkg.github.com/nuix/nuix-java-engine-baseline")
             credentials {
                 username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
                 password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
