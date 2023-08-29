@@ -191,27 +191,15 @@ fun configureTestEnvironment(test: Test) {
 
     // Args passed to JVM running tests
     test.jvmArgs(
-            "--add-exports=java.base/jdk.internal.loader=ALL-UNNAMED",  // Engine 9.6(?) and later require this
+            "--add-exports=java.base/jdk.internal.loader=ALL-UNNAMED",
             "-Xmx4G",
             "-Djava.io.tmpdir=\"${nuixTempDirectory}\"",
     )
-
-    // Directory used to store data a test may rely on (like sample data)
-    val testDataDirectory = "${projectDir}\\..\\..\\TestData"
-
-    // Directory that tests may write data to, unique to each test invocation
-    val testOutputDirectory = "${projectDir}\\..\\..\\TestOutput\\${System.currentTimeMillis()}"
 
     // Configure ENV vars for JVM tests run in
     test.setEnvironment(
             // Add our engine release's bin and bin/x86 to PATH
             Pair("PATH", "${System.getenv("PATH")};${nuixEngineDirectory}\\bin;${nuixEngineDirectory}\\bin\\x86"),
-
-            // Define where tests can place re-usable test data
-            Pair("TEST_DATA_DIRECTORY", testDataDirectory),
-
-            // Define where tests can write output produce for later review
-            Pair("TEST_OUTPUT_DIRECTORY", testOutputDirectory),
 
             // Forward ENV username and password
             Pair("NUIX_USERNAME", System.getenv("NUIX_USERNAME")),
