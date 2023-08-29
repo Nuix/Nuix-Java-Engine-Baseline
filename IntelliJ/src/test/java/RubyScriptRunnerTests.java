@@ -40,7 +40,7 @@ public class RubyScriptRunnerTests extends CommonTestFunctionality {
             rubyScriptRunner.join();
             log.info("Script Output:");
             log.info(String.join("", outputLines));
-            assertTrue(outputLines.size() > 0);
+            assertFalse(outputLines.isEmpty());
         }
     }
 
