@@ -1,2 +1,2 @@
-rootProject.name = "engine-wrapper"
+rootProject.name = "enginewrapper"
 
