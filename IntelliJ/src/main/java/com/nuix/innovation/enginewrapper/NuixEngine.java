@@ -775,4 +775,8 @@ public class NuixEngine implements AutoCloseable {
             log = null;
         }
     }
+
+    public void showConfidentialValuesInLog(boolean enabled) {
+        System.setProperty("nuix.log.confidential.showValues", String.valueOf(enabled));
+    }
 }
