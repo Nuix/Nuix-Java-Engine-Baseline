@@ -346,50 +346,56 @@ implements java.lang.AutoCloseable</pre>
 </tr>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code><a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptAsync(java.lang.String)">runRubyScriptAsync</a></span>&#8203;(java.lang.String&nbsp;script)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptAsync(java.lang.String,java.util.function.BiConsumer)">runRubyScriptAsync</a></span>&#8203;(java.lang.String&nbsp;script,
+                  @Nullable java.util.function.BiConsumer&lt;java.lang.Object,&#8203;org.jruby.embed.internal.BiVariableMap&gt;&nbsp;completedCallback)</code></th>
 <td class="colLast">
 <div class="block">Runs the Ruby script contained in the provided String, defaulting to logging standard/error script output.</div>
 </td>
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptAsync(java.lang.String,java.util.Map)">runRubyScriptAsync</a></span>&#8203;(java.lang.String&nbsp;script,
-                  @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptAsync(java.lang.String,java.util.Map,java.util.function.BiConsumer)">runRubyScriptAsync</a></span>&#8203;(java.lang.String&nbsp;script,
+                  @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables,
+                  @Nullable java.util.function.BiConsumer&lt;java.lang.Object,&#8203;org.jruby.embed.internal.BiVariableMap&gt;&nbsp;completedCallback)</code></th>
 <td class="colLast">
 <div class="block">Runs the Ruby script contained in the provided String, defaulting to logging standard/error script output.</div>
 </td>
 </tr>
 <tr id="i12" class="altColor">
 <td class="colFirst"><code><a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptAsync(java.lang.String,java.util.Map,java.util.function.Consumer,java.util.function.Consumer)">runRubyScriptAsync</a></span>&#8203;(java.lang.String&nbsp;script,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptAsync(java.lang.String,java.util.Map,java.util.function.Consumer,java.util.function.Consumer,java.util.function.BiConsumer)">runRubyScriptAsync</a></span>&#8203;(java.lang.String&nbsp;script,
                   @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables,
                   @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;standardOutputReceiver,
-                  @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;errorOutputReceiver)</code></th>
+                  @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;errorOutputReceiver,
+                  @Nullable java.util.function.BiConsumer&lt;java.lang.Object,&#8203;org.jruby.embed.internal.BiVariableMap&gt;&nbsp;completedCallback)</code></th>
 <td class="colLast">
 <div class="block">Runs the Ruby script contained in the provided String.</div>
 </td>
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code><a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptFileAsync(java.io.File)">runRubyScriptFileAsync</a></span>&#8203;(java.io.File&nbsp;scriptFile)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptFileAsync(java.io.File,java.util.function.BiConsumer)">runRubyScriptFileAsync</a></span>&#8203;(java.io.File&nbsp;scriptFile,
+                      @Nullable java.util.function.BiConsumer&lt;java.lang.Object,&#8203;org.jruby.embed.internal.BiVariableMap&gt;&nbsp;completedCallback)</code></th>
 <td class="colLast">
 <div class="block">Runs the Ruby script contained in the specified file, defaulting to logging standard/error script output.</div>
 </td>
 </tr>
 <tr id="i14" class="altColor">
 <td class="colFirst"><code><a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptFileAsync(java.io.File,java.util.Map)">runRubyScriptFileAsync</a></span>&#8203;(java.io.File&nbsp;scriptFile,
-                      @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptFileAsync(java.io.File,java.util.Map,java.util.function.BiConsumer)">runRubyScriptFileAsync</a></span>&#8203;(java.io.File&nbsp;scriptFile,
+                      @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables,
+                      @Nullable java.util.function.BiConsumer&lt;java.lang.Object,&#8203;org.jruby.embed.internal.BiVariableMap&gt;&nbsp;completedCallback)</code></th>
 <td class="colLast">
 <div class="block">Runs the Ruby script contained in the specified file, defaulting to logging standard/error script output.</div>
 </td>
 </tr>
 <tr id="i15" class="rowColor">
 <td class="colFirst"><code><a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptFileAsync(java.io.File,java.util.Map,java.util.function.Consumer,java.util.function.Consumer)">runRubyScriptFileAsync</a></span>&#8203;(java.io.File&nbsp;scriptFile,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runRubyScriptFileAsync(java.io.File,java.util.Map,java.util.function.Consumer,java.util.function.Consumer,java.util.function.BiConsumer)">runRubyScriptFileAsync</a></span>&#8203;(java.io.File&nbsp;scriptFile,
                       @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables,
                       @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;standardOutputReceiver,
-                      @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;errorOutputReceiver)</code></th>
+                      @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;errorOutputReceiver,
+                      @Nullable java.util.function.BiConsumer&lt;java.lang.Object,&#8203;org.jruby.embed.internal.BiVariableMap&gt;&nbsp;completedCallback)</code></th>
 <td class="colLast">
 <div class="block">Runs the Ruby script contained in the specified file.</div>
 </td>
@@ -857,7 +863,7 @@ of being able to resolve this, you must configure this value via one of the foll
      </ul>
      </li>
      <li>Logging is initialized</li>
-     <li>The Nuix Engine GlobaContainer instance is created if needed</li>
+     <li>The Nuix Engine GlobalContainer instance is created if needed</li>
      <li>An Engine instance is created</li>
      <li>Any provided <a href="NuixLicenseResolver.html" title="class in com.nuix.enginebaseline"><code>NuixLicenseResolver</code></a> instances are iteratively called upon to obtain a license until an
      instance has successfully acquired one.
@@ -971,7 +977,7 @@ of being able to resolve this, you must configure this value via one of the foll
 </dl>
 </li>
 </ul>
-<a id="runRubyScriptAsync(java.lang.String,java.util.Map,java.util.function.Consumer,java.util.function.Consumer)">
+<a id="runRubyScriptAsync(java.lang.String,java.util.Map,java.util.function.Consumer,java.util.function.Consumer,java.util.function.BiConsumer)">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -983,7 +989,9 @@ of being able to resolve this, you must configure this value via one of the foll
                                            @Nullable
                                            @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;standardOutputReceiver,
                                            @Nullable
-                                           @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;errorOutputReceiver)
+                                           @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;errorOutputReceiver,
+                                           @Nullable
+                                           @Nullable java.util.function.BiConsumer&lt;java.lang.Object,&#8203;org.jruby.embed.internal.BiVariableMap&gt;&nbsp;completedCallback)
                                     throws java.lang.Exception</pre>
 <div class="block">Runs the Ruby script contained in the provided String.  The following variables/constants are injected into the
  Ruby environment before executing the script:<br>
@@ -1001,6 +1009,8 @@ of being able to resolve this, you must configure this value via one of the foll
                                default to logging info messages.</dd>
 <dd><code>errorOutputReceiver</code> - Consumer which will receive error output messages.  If null is provided, will
                             default to logging error messages.</dd>
+<dd><code>completedCallback</code> - Optional callback to be invoked upon script completion.  Callback provided implicit value
+                          of last script operation as well as map of variables.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A <a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline"><code>RubyScriptRunner</code></a> instance.  Call <a href="RubyScriptRunner.html#join()"><code>RubyScriptRunner.join()</code></a> to wait for script to complete.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -1008,7 +1018,7 @@ of being able to resolve this, you must configure this value via one of the foll
 </dl>
 </li>
 </ul>
-<a id="runRubyScriptAsync(java.lang.String,java.util.Map)">
+<a id="runRubyScriptAsync(java.lang.String,java.util.Map,java.util.function.BiConsumer)">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -1016,7 +1026,9 @@ of being able to resolve this, you must configure this value via one of the foll
 <h4>runRubyScriptAsync</h4>
 <pre class="methodSignature">public&nbsp;<a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a>&nbsp;runRubyScriptAsync&#8203;(java.lang.String&nbsp;script,
                                            @Nullable
-                                           @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables)
+                                           @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables,
+                                           @Nullable
+                                           @Nullable java.util.function.BiConsumer&lt;java.lang.Object,&#8203;org.jruby.embed.internal.BiVariableMap&gt;&nbsp;completedCallback)
                                     throws java.lang.Exception</pre>
 <div class="block">Runs the Ruby script contained in the provided String, defaulting to logging standard/error script output.
  The following variables/constants are injected into the Ruby environment before executing the script:<br>
@@ -1030,6 +1042,8 @@ of being able to resolve this, you must configure this value via one of the foll
 <dd><code>script</code> - The Ruby script to execute.  Cannot be null.</dd>
 <dd><code>additionalVariables</code> - A map of any additional global/local variables you would like to set.  Note that
                             constants cannot be set using this approach.  Can be null.</dd>
+<dd><code>completedCallback</code> - Optional callback to be invoked upon script completion.  Callback provided implicit value
+                          of last script operation as well as map of variables.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A <a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline"><code>RubyScriptRunner</code></a> instance.  Call <a href="RubyScriptRunner.html#join()"><code>RubyScriptRunner.join()</code></a> to wait for script to complete.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -1037,13 +1051,15 @@ of being able to resolve this, you must configure this value via one of the foll
 </dl>
 </li>
 </ul>
-<a id="runRubyScriptAsync(java.lang.String)">
+<a id="runRubyScriptAsync(java.lang.String,java.util.function.BiConsumer)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>runRubyScriptAsync</h4>
-<pre class="methodSignature">public&nbsp;<a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a>&nbsp;runRubyScriptAsync&#8203;(java.lang.String&nbsp;script)
+<pre class="methodSignature">public&nbsp;<a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a>&nbsp;runRubyScriptAsync&#8203;(java.lang.String&nbsp;script,
+                                           @Nullable
+                                           @Nullable java.util.function.BiConsumer&lt;java.lang.Object,&#8203;org.jruby.embed.internal.BiVariableMap&gt;&nbsp;completedCallback)
                                     throws java.lang.Exception</pre>
 <div class="block">Runs the Ruby script contained in the provided String, defaulting to logging standard/error script output.
  The following variables/constants are injected into the Ruby environment before executing the script:<br>
@@ -1055,6 +1071,8 @@ of being able to resolve this, you must configure this value via one of the foll
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>script</code> - The Ruby script to execute.  Cannot be null.</dd>
+<dd><code>completedCallback</code> - Optional callback to be invoked upon script completion.  Callback provided implicit value
+                          of last script operation as well as map of variables.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A <a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline"><code>RubyScriptRunner</code></a> instance.  Call <a href="RubyScriptRunner.html#join()"><code>RubyScriptRunner.join()</code></a> to wait for script to complete.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -1062,7 +1080,7 @@ of being able to resolve this, you must configure this value via one of the foll
 </dl>
 </li>
 </ul>
-<a id="runRubyScriptFileAsync(java.io.File,java.util.Map,java.util.function.Consumer,java.util.function.Consumer)">
+<a id="runRubyScriptFileAsync(java.io.File,java.util.Map,java.util.function.Consumer,java.util.function.Consumer,java.util.function.BiConsumer)">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -1074,7 +1092,9 @@ of being able to resolve this, you must configure this value via one of the foll
                                                @Nullable
                                                @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;standardOutputReceiver,
                                                @Nullable
-                                               @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;errorOutputReceiver)
+                                               @Nullable java.util.function.Consumer&lt;java.lang.String&gt;&nbsp;errorOutputReceiver,
+                                               @Nullable
+                                               @Nullable java.util.function.BiConsumer&lt;java.lang.Object,&#8203;org.jruby.embed.internal.BiVariableMap&gt;&nbsp;completedCallback)
                                         throws java.lang.Exception</pre>
 <div class="block">Runs the Ruby script contained in the specified file.  Note that since you are pointing to an actual file, script
  will have a defined value for <code>__FILE__</code>, allowing for you to reference other files relative to the
@@ -1094,6 +1114,8 @@ of being able to resolve this, you must configure this value via one of the foll
                                default to logging info messages.</dd>
 <dd><code>errorOutputReceiver</code> - Consumer which will receive error output messages.  If null is provided, will
                             default to logging error messages.</dd>
+<dd><code>completedCallback</code> - Optional callback to be invoked upon script completion.  Callback provided implicit value
+                           of last script operation as well as map of variables.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A <a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline"><code>RubyScriptRunner</code></a> instance.  Call <a href="RubyScriptRunner.html#join()"><code>RubyScriptRunner.join()</code></a> to wait for script to complete.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -1101,7 +1123,7 @@ of being able to resolve this, you must configure this value via one of the foll
 </dl>
 </li>
 </ul>
-<a id="runRubyScriptFileAsync(java.io.File,java.util.Map)">
+<a id="runRubyScriptFileAsync(java.io.File,java.util.Map,java.util.function.BiConsumer)">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -1109,7 +1131,9 @@ of being able to resolve this, you must configure this value via one of the foll
 <h4>runRubyScriptFileAsync</h4>
 <pre class="methodSignature">public&nbsp;<a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a>&nbsp;runRubyScriptFileAsync&#8203;(java.io.File&nbsp;scriptFile,
                                                @Nullable
-                                               @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables)
+                                               @Nullable java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;additionalVariables,
+                                               @Nullable
+                                               @Nullable java.util.function.BiConsumer&lt;java.lang.Object,&#8203;org.jruby.embed.internal.BiVariableMap&gt;&nbsp;completedCallback)
                                         throws java.lang.Exception</pre>
 <div class="block">Runs the Ruby script contained in the specified file, defaulting to logging standard/error script output.
  Note that since you are pointing to an actual file, script will have a defined value for <code>__FILE__</code>,
@@ -1125,6 +1149,8 @@ of being able to resolve this, you must configure this value via one of the foll
 <dd><code>scriptFile</code> - The file containing the Ruby script to execute.  Cannot be null.</dd>
 <dd><code>additionalVariables</code> - A map of any additional global/local variables you would like to set.  Note that
                             constants cannot be set using this approach.  Can be null.</dd>
+<dd><code>completedCallback</code> - Optional callback to be invoked upon script completion.  Callback provided implicit value
+                          of last script operation as well as map of variables.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A <a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline"><code>RubyScriptRunner</code></a> instance.  Call <a href="RubyScriptRunner.html#join()"><code>RubyScriptRunner.join()</code></a> to wait for script to complete.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -1132,13 +1158,15 @@ of being able to resolve this, you must configure this value via one of the foll
 </dl>
 </li>
 </ul>
-<a id="runRubyScriptFileAsync(java.io.File)">
+<a id="runRubyScriptFileAsync(java.io.File,java.util.function.BiConsumer)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>runRubyScriptFileAsync</h4>
-<pre class="methodSignature">public&nbsp;<a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a>&nbsp;runRubyScriptFileAsync&#8203;(java.io.File&nbsp;scriptFile)
+<pre class="methodSignature">public&nbsp;<a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline">RubyScriptRunner</a>&nbsp;runRubyScriptFileAsync&#8203;(java.io.File&nbsp;scriptFile,
+                                               @Nullable
+                                               @Nullable java.util.function.BiConsumer&lt;java.lang.Object,&#8203;org.jruby.embed.internal.BiVariableMap&gt;&nbsp;completedCallback)
                                         throws java.lang.Exception</pre>
 <div class="block">Runs the Ruby script contained in the specified file, defaulting to logging standard/error script output.
  Note that since you are pointing to an actual file, script will have a defined value for <code>__FILE__</code>,
@@ -1152,6 +1180,8 @@ of being able to resolve this, you must configure this value via one of the foll
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>scriptFile</code> - The file containing the Ruby script to execute.  Cannot be null.</dd>
+<dd><code>completedCallback</code> - Optional callback to be invoked upon script completion.  Callback provided implicit value
+                          of last script operation as well as map of variables.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A <a href="RubyScriptRunner.html" title="class in com.nuix.enginebaseline"><code>RubyScriptRunner</code></a> instance.  Call <a href="RubyScriptRunner.html#join()"><code>RubyScriptRunner.join()</code></a> to wait for script to complete.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
