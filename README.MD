@@ -13,11 +13,12 @@ View the Java docs [here](https://nuix.github.io/Nuix-Java-Engine-Baseline/).
 
 This repository contains a series of examples making use of the Java Engine API and can be used as a foundation for your own Nuix Java Engine based project.  This project provides implementation of some commonly desired functionality one may want around using the Nuix Engine API:
 
-- Environment configuration checks with hints at addressed misconfigurations
+- Environment configuration checks with hints at addressing some misconfigurations
 - License resolution with fallbacks when initially desired license is not available
 - Logging initialization
 - Diagnostics generation
 - Third party dependency checking
+- Ruby script execution
 
 This project can provide you a quick way to get up and running with some additional functionality built on top.  Due to some of the extra features included, this project may not be the easiest way to wrap you head around the fundamental steps needed to use the Nuix Java Engine API.  If you are looking for a more straight forward example demonstrating core concepts regarding getting the Nuix Java Engine API up and running, see the [Java SDK Starter repository](https://github.com/Nuix/java-sdk-starter).
 
