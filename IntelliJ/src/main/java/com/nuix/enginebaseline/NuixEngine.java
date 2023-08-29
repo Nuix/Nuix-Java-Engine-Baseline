@@ -548,6 +548,8 @@ public class NuixEngine implements AutoCloseable {
      *                               default to logging info messages.
      * @param errorOutputReceiver Consumer which will receive error output messages.  If null is provided, will
      *                            default to logging error messages.
+     * @param completedCallback Optional callback to be invoked upon script completion.  Callback provided implicit value
+     *                          of last script operation as well as map of variables.
      * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
      * @throws Exception Exceptions are allowed to bubble up.
      */
@@ -583,6 +585,8 @@ public class NuixEngine implements AutoCloseable {
      * @param script The Ruby script to execute.  Cannot be null.
      * @param additionalVariables A map of any additional global/local variables you would like to set.  Note that
      *                            constants cannot be set using this approach.  Can be null.
+     * @param completedCallback Optional callback to be invoked upon script completion.  Callback provided implicit value
+     *                          of last script operation as well as map of variables.
      * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
      * @throws Exception Exceptions are allowed to bubble up.
      */
@@ -600,6 +604,8 @@ public class NuixEngine implements AutoCloseable {
      *     <li><code>NUIX_VERSION</code> - A String containing the current engine version</li>
      * </ul>
      * @param script The Ruby script to execute.  Cannot be null.
+     * @param completedCallback Optional callback to be invoked upon script completion.  Callback provided implicit value
+     *                          of last script operation as well as map of variables.
      * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
      * @throws Exception Exceptions are allowed to bubble up.
      */
@@ -625,6 +631,8 @@ public class NuixEngine implements AutoCloseable {
      *                               default to logging info messages.
      * @param errorOutputReceiver Consumer which will receive error output messages.  If null is provided, will
      *                            default to logging error messages.
+     *  @param completedCallback Optional callback to be invoked upon script completion.  Callback provided implicit value
+     *                           of last script operation as well as map of variables.
      * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
      * @throws Exception Exceptions are allowed to bubble up.
      */
@@ -662,6 +670,8 @@ public class NuixEngine implements AutoCloseable {
      * @param scriptFile The file containing the Ruby script to execute.  Cannot be null.
      * @param additionalVariables A map of any additional global/local variables you would like to set.  Note that
      *                            constants cannot be set using this approach.  Can be null.
+     * @param completedCallback Optional callback to be invoked upon script completion.  Callback provided implicit value
+     *                          of last script operation as well as map of variables.
      * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
      * @throws Exception Exceptions are allowed to bubble up.
      */
@@ -681,6 +691,8 @@ public class NuixEngine implements AutoCloseable {
      *     <li><code>NUIX_VERSION</code> - A String containing the current engine version</li>
      * </ul>
      * @param scriptFile The file containing the Ruby script to execute.  Cannot be null.
+     * @param completedCallback Optional callback to be invoked upon script completion.  Callback provided implicit value
+     *                          of last script operation as well as map of variables.
      * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
      * @throws Exception Exceptions are allowed to bubble up.
      */
