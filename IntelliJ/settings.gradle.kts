@@ -1,2 +1,2 @@
-rootProject.name = "Nuix-Java-Engine-Baseline"
+rootProject.name = "engine-wrapper"
 
