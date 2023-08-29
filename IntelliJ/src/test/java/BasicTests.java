@@ -30,6 +30,7 @@ public class BasicTests extends CommonTestFunctionality {
         // Create engine instance using try-with-resources, get utilities, use, closes
         // at end of try-with-resources
         try (NuixEngine nuixEngine = constructNuixEngine()) {
+            log.info("Obtaining utilities...");
             Utilities utilities = nuixEngine.getUtilities();
             utilities.getItemTypeUtility().getAllTypes();
         }

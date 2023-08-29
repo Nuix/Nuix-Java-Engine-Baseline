@@ -7,17 +7,25 @@ import nuix.Utilities;
 import nuix.engine.Engine;
 import nuix.engine.GlobalContainer;
 import nuix.engine.GlobalContainerFactory;
+import org.apache.logging.log4j.core.LifeCycle;
+import org.jetbrains.annotations.Nullable;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /***
@@ -65,7 +73,8 @@ public class NuixEngine implements AutoCloseable {
     protected Utilities utilities = null;
     protected Thread shutdownHook = null;
 
-    protected NuixEngine() { }
+    protected NuixEngine() {
+    }
 
     public static void closeGlobalContainer() {
         globalContainer.close();
@@ -282,7 +291,7 @@ public class NuixEngine implements AutoCloseable {
      * @throws Exception Allows exceptions to bubble up so caller can handle them.
      */
     public Utilities getUtilities() throws Exception {
-        if(utilities == null) {
+        if (utilities == null) {
             // Check to make sure some requirements are in place before proceeding
             checkPreConditions();
 
@@ -448,12 +457,15 @@ public class NuixEngine implements AutoCloseable {
             // Use Log4j2 config YAML from engine base directory
             File log4jConfigFile = new File(engineDistributionDirectorySupplier.get(), "config/log4j2.yml");
             System.setProperty("log4j.configurationFile", log4jConfigFile.getAbsolutePath());
-            log = LoggerFactory.getLogger(this.getClass());
+            log = LogManager.getLogger(this.getClass());
+            log.info("log4j.configurationFile => " + log4jConfigFile.getAbsolutePath());
 
             // Set default level to INFO
-            // Set default level to INFO
-            org.apache.log4j.Logger logger4j = org.apache.log4j.Logger.getRootLogger();
-            logger4j.setLevel(org.apache.log4j.Level.toLevel("INFO"));
+            LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+            Configuration config = ctx.getConfiguration();
+            LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
+            loggerConfig.setLevel(Level.INFO);
+            ctx.updateLoggers();
         }
     }
 
@@ -517,6 +529,150 @@ public class NuixEngine implements AutoCloseable {
      */
     public NuixVersion getNuixVersion() {
         return NuixVersion.parse(getNuixVersionString());
+    }
+
+    /***
+     * Runs the Ruby script contained in the provided String.  The following variables/constants are injected into the
+     * Ruby environment before executing the script:<br>
+     * <ul>
+     *     <li><code>$utilities</code> - The Nuix utilities object</li>
+     *     <li><code>$nuix_version</code> - A {@link NuixVersion} object representing the current engine version</li>
+     *     <li><code>NUIX_VERSION</code> - A String containing the current engine version</li>
+     * </ul>
+     * @param script The Ruby script to execute.  Cannot be null.
+     * @param additionalVariables A map of any additional global/local variables you would like to set.  Note that
+     *                            constants cannot be set using this approach.  Can be null.
+     * @param standardOutputReceiver Consumer which will receive standard output messages.  If null is provided, will
+     *                               default to logging info messages.
+     * @param errorOutputReceiver Consumer which will receive error output messages.  If null is provided, will
+     *                            default to logging error messages.
+     * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
+     * @throws Exception Exceptions are allowed to bubble up.
+     */
+    public RubyScriptRunner runRubyScriptAsync(String script, @Nullable Map<String, Object> additionalVariables,
+                                               @Nullable Consumer<String> standardOutputReceiver,
+                                               @Nullable Consumer<String> errorOutputReceiver) throws Exception {
+        Map<String, Object> vars = new HashMap<>();
+        if (additionalVariables != null) {
+            vars.putAll(additionalVariables);
+        }
+
+        vars.put("$utilities", getUtilities());
+        vars.put("$nuix_version", getNuixVersion());
+        RubyScriptRunner rubyScriptRunner = new RubyScriptRunner();
+        rubyScriptRunner.setStandardOutputConsumer(standardOutputReceiver);
+        rubyScriptRunner.setErrorOutputConsumer(errorOutputReceiver);
+        rubyScriptRunner.runScriptAsync(script, getNuixVersionString(), vars);
+        return rubyScriptRunner;
+    }
+
+    /***
+     * Runs the Ruby script contained in the provided String, defaulting to logging standard/error script output.
+     * The following variables/constants are injected into the Ruby environment before executing the script:<br>
+     * <ul>
+     *     <li><code>$utilities</code> - The Nuix utilities object</li>
+     *     <li><code>$nuix_version</code> - A {@link NuixVersion} object representing the current engine version</li>
+     *     <li><code>NUIX_VERSION</code> - A String containing the current engine version</li>
+     * </ul>
+     * @param script The Ruby script to execute.  Cannot be null.
+     * @param additionalVariables A map of any additional global/local variables you would like to set.  Note that
+     *                            constants cannot be set using this approach.  Can be null.
+     * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
+     * @throws Exception Exceptions are allowed to bubble up.
+     */
+    public RubyScriptRunner runRubyScriptAsync(String script, @Nullable Map<String, Object> additionalVariables) throws Exception {
+        return runRubyScriptAsync(script, additionalVariables, null, null);
+    }
+
+    /***
+     * Runs the Ruby script contained in the provided String, defaulting to logging standard/error script output.
+     * The following variables/constants are injected into the Ruby environment before executing the script:<br>
+     * <ul>
+     *     <li><code>$utilities</code> - The Nuix utilities object</li>
+     *     <li><code>$nuix_version</code> - A {@link NuixVersion} object representing the current engine version</li>
+     *     <li><code>NUIX_VERSION</code> - A String containing the current engine version</li>
+     * </ul>
+     * @param script The Ruby script to execute.  Cannot be null.
+     * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
+     * @throws Exception Exceptions are allowed to bubble up.
+     */
+    public RubyScriptRunner runRubyScriptAsync(String script) throws Exception {
+        return runRubyScriptAsync(script, null, null, null);
+    }
+
+    /***
+     * Runs the Ruby script contained in the specified file.  Note that since you are pointing to an actual file, script
+     * will have a defined value for <code>__FILE__</code>, allowing for you to reference other files relative to the
+     * specified script file.  The following variables/constants are injected into the Ruby environment before
+     * executing the script:<br>
+     * <ul>
+     *     <li><code>$utilities</code> - The Nuix utilities object</li>
+     *     <li><code>$nuix_version</code> - A {@link NuixVersion} object representing the current engine version</li>
+     *     <li><code>NUIX_VERSION</code> - A String containing the current engine version</li>
+     * </ul>
+     * @param scriptFile The file containing the Ruby script to execute.  Cannot be null.
+     * @param additionalVariables A map of any additional global/local variables you would like to set.  Note that
+     *                            constants cannot be set using this approach.  Can be null.
+     * @param standardOutputReceiver Consumer which will receive standard output messages.  If null is provided, will
+     *                               default to logging info messages.
+     * @param errorOutputReceiver Consumer which will receive error output messages.  If null is provided, will
+     *                            default to logging error messages.
+     * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
+     * @throws Exception Exceptions are allowed to bubble up.
+     */
+    public RubyScriptRunner runRubyScriptFileAsync(File scriptFile, @Nullable Map<String, Object> additionalVariables,
+                                                   @Nullable Consumer<String> standardOutputReceiver,
+                                                   @Nullable Consumer<String> errorOutputReceiver) throws Exception {
+        Map<String, Object> vars = new HashMap<>();
+        if (additionalVariables != null) {
+            vars.putAll(additionalVariables);
+        }
+
+        vars.put("$utilities", getUtilities());
+        vars.put("$nuix_version", getNuixVersion());
+        RubyScriptRunner rubyScriptRunner = new RubyScriptRunner();
+        rubyScriptRunner.setStandardOutputConsumer(standardOutputReceiver);
+        rubyScriptRunner.setErrorOutputConsumer(errorOutputReceiver);
+        rubyScriptRunner.runFileAsync(scriptFile, getNuixVersionString(), vars);
+        return rubyScriptRunner;
+    }
+
+    /***
+     * Runs the Ruby script contained in the specified file, defaulting to logging standard/error script output.
+     * Note that since you are pointing to an actual file, script will have a defined value for <code>__FILE__</code>,
+     * allowing for you to reference other files relative to the specified script file.  The following
+     * variables/constants are injected into the Ruby environment before executing the script:<br>
+     * <ul>
+     *     <li><code>$utilities</code> - The Nuix utilities object</li>
+     *     <li><code>$nuix_version</code> - A {@link NuixVersion} object representing the current engine version</li>
+     *     <li><code>NUIX_VERSION</code> - A String containing the current engine version</li>
+     * </ul>
+     * @param scriptFile The file containing the Ruby script to execute.  Cannot be null.
+     * @param additionalVariables A map of any additional global/local variables you would like to set.  Note that
+     *                            constants cannot be set using this approach.  Can be null.
+     * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
+     * @throws Exception Exceptions are allowed to bubble up.
+     */
+    public RubyScriptRunner runRubyScriptFileAsync(File scriptFile, @Nullable Map<String, Object> additionalVariables) throws Exception {
+        return runRubyScriptFileAsync(scriptFile, additionalVariables, null, null);
+    }
+
+    /***
+     * Runs the Ruby script contained in the specified file, defaulting to logging standard/error script output.
+     * Note that since you are pointing to an actual file, script will have a defined value for <code>__FILE__</code>,
+     * allowing for you to reference other files relative to the specified script file.  The following
+     * variables/constants are injected into the Ruby environment before executing the script:<br>
+     * <ul>
+     *     <li><code>$utilities</code> - The Nuix utilities object</li>
+     *     <li><code>$nuix_version</code> - A {@link NuixVersion} object representing the current engine version</li>
+     *     <li><code>NUIX_VERSION</code> - A String containing the current engine version</li>
+     * </ul>
+     * @param scriptFile The file containing the Ruby script to execute.  Cannot be null.
+     * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
+     * @throws Exception Exceptions are allowed to bubble up.
+     */
+    public RubyScriptRunner runRubyScriptFileAsync(File scriptFile) throws Exception {
+        return runRubyScriptFileAsync(scriptFile, null, null, null);
     }
 
     /***
@@ -585,6 +741,12 @@ public class NuixEngine implements AutoCloseable {
             }
             Runtime.getRuntime().removeShutdownHook(shutdownHook);
             shutdownHook = null;
+        }
+
+        // Shutdown logging
+        if (log != null) {
+            ((LifeCycle) LogManager.getContext()).stop();
+            log = null;
         }
     }
 }

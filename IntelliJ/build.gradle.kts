@@ -38,10 +38,12 @@ dependencies {
     implementation(fileTree(baseDir = engineLibDir) {
         include(
                 "**/*slf4j*.jar",
+                "**/*log*.jar",
                 "**/*joda*.jar",
                 "**/*commons*.jar",
                 "**/*guava*.jar",
                 "**/*gson*.jar",
+                "**/*jruby*.jar",
                 // All Nuix API jars
                 "**/nuix-*.jar"
         )
@@ -97,6 +99,8 @@ fun configTestEnv(test: Test) {
             // Forward LOCALAPPDATA and APPDATA
             Pair("LOCALAPPDATA",System.getenv("LOCALAPPDATA")),
             Pair("APPDATA",System.getenv("APPDATA")),
+            Pair("PROGRAMDATA",System.getenv("PROGRAMDATA")),
+            Pair("SYSTEMDRIVE",System.getenv("SYSTEMDRIVE")),
 
             // We need to make sure we set these so workers will properly resolve temp dir
             // (when using a worker based operation via EngineWrapper).

@@ -38,13 +38,14 @@ public class CommonTestFunctionality {
     // When true, the testOutputDirectory used during tests will be deleted
     // upon test completion.  Set this to false if you wish to manually review the output
     // of tests afterwards.
-    protected static boolean deleteTestOutputOnCompletion = true;
+    protected static boolean deleteTestOutputOnCompletion = false;
 
     @BeforeAll
     public static void setup() throws Exception {
         TestData.init();
         log = LoggerFactory.getLogger("Tests");
         testOutputDirectory = new File(System.getenv("TEST_OUTPUT_DIRECTORY"));
+        testDataDirectory = new File(System.getenv("TEST_DATA_DIRECTORY"));
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             if (deleteTestOutputOnCompletion) {
                 try {
@@ -73,7 +74,7 @@ public class CommonTestFunctionality {
      * their given test.  This allows you to customize it to your environment without having to alter all the tests.
      * @return A NuixEngine instance ready to use
      */
-    public NuixEngine constructNuixEngine() {
+    public NuixEngine constructNuixEngine() throws IOException {
         return constructNuixEngine((String[])null);
     }
 
@@ -82,7 +83,7 @@ public class CommonTestFunctionality {
      * their given test.  This allows you to customize it to your environment without having to alter all the tests.
      * @return A NuixEngine instance ready to use
      */
-    public NuixEngine constructNuixEngine(String... additionalRequiredFeatures) {
+    public NuixEngine constructNuixEngine(String... additionalRequiredFeatures) throws IOException {
         List<String> features = List.of("CASE_CREATION");
         if(additionalRequiredFeatures != null && additionalRequiredFeatures.length > 0) {
             features.addAll(List.of(additionalRequiredFeatures));
@@ -98,6 +99,6 @@ public class CommonTestFunctionality {
 
         return NuixEngine.usingFirstAvailableLicense(caseCreationCloud, caseCreationDongle)
                 .setEngineDistributionDirectoryFromEnvVar()
-                .setLogDirectory(new File(testOutputDirectory, "Logs_"+System.currentTimeMillis()));
+                .setLogDirectory(new File(testOutputDirectory, "Logs_"+System.currentTimeMillis()).getCanonicalFile());
     }
 }
