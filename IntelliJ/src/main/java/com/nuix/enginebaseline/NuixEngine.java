@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.jruby.embed.internal.BiVariableMap;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -551,7 +553,8 @@ public class NuixEngine implements AutoCloseable {
      */
     public RubyScriptRunner runRubyScriptAsync(String script, @Nullable Map<String, Object> additionalVariables,
                                                @Nullable Consumer<String> standardOutputReceiver,
-                                               @Nullable Consumer<String> errorOutputReceiver) throws Exception {
+                                               @Nullable Consumer<String> errorOutputReceiver,
+                                               @Nullable BiConsumer<Object, BiVariableMap> completedCallback) throws Exception {
         Map<String, Object> vars = new HashMap<>();
         if (additionalVariables != null) {
             vars.putAll(additionalVariables);
@@ -562,6 +565,9 @@ public class NuixEngine implements AutoCloseable {
         RubyScriptRunner rubyScriptRunner = new RubyScriptRunner();
         rubyScriptRunner.setStandardOutputConsumer(standardOutputReceiver);
         rubyScriptRunner.setErrorOutputConsumer(errorOutputReceiver);
+        if(completedCallback != null) {
+            rubyScriptRunner.whenScriptCompletes(completedCallback);
+        }
         rubyScriptRunner.runScriptAsync(script, getNuixVersionString(), vars);
         return rubyScriptRunner;
     }
@@ -580,8 +586,9 @@ public class NuixEngine implements AutoCloseable {
      * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
      * @throws Exception Exceptions are allowed to bubble up.
      */
-    public RubyScriptRunner runRubyScriptAsync(String script, @Nullable Map<String, Object> additionalVariables) throws Exception {
-        return runRubyScriptAsync(script, additionalVariables, null, null);
+    public RubyScriptRunner runRubyScriptAsync(String script, @Nullable Map<String, Object> additionalVariables,
+                                               @Nullable BiConsumer<Object, BiVariableMap> completedCallback) throws Exception {
+        return runRubyScriptAsync(script, additionalVariables, null, null, completedCallback);
     }
 
     /***
@@ -596,8 +603,9 @@ public class NuixEngine implements AutoCloseable {
      * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
      * @throws Exception Exceptions are allowed to bubble up.
      */
-    public RubyScriptRunner runRubyScriptAsync(String script) throws Exception {
-        return runRubyScriptAsync(script, null, null, null);
+    public RubyScriptRunner runRubyScriptAsync(String script,
+                                               @Nullable BiConsumer<Object, BiVariableMap> completedCallback) throws Exception {
+        return runRubyScriptAsync(script, null, null, null, completedCallback);
     }
 
     /***
@@ -622,7 +630,8 @@ public class NuixEngine implements AutoCloseable {
      */
     public RubyScriptRunner runRubyScriptFileAsync(File scriptFile, @Nullable Map<String, Object> additionalVariables,
                                                    @Nullable Consumer<String> standardOutputReceiver,
-                                                   @Nullable Consumer<String> errorOutputReceiver) throws Exception {
+                                                   @Nullable Consumer<String> errorOutputReceiver,
+                                                   @Nullable BiConsumer<Object, BiVariableMap> completedCallback) throws Exception {
         Map<String, Object> vars = new HashMap<>();
         if (additionalVariables != null) {
             vars.putAll(additionalVariables);
@@ -633,6 +642,9 @@ public class NuixEngine implements AutoCloseable {
         RubyScriptRunner rubyScriptRunner = new RubyScriptRunner();
         rubyScriptRunner.setStandardOutputConsumer(standardOutputReceiver);
         rubyScriptRunner.setErrorOutputConsumer(errorOutputReceiver);
+        if(completedCallback != null) {
+            rubyScriptRunner.whenScriptCompletes(completedCallback);
+        }
         rubyScriptRunner.runFileAsync(scriptFile, getNuixVersionString(), vars);
         return rubyScriptRunner;
     }
@@ -653,8 +665,9 @@ public class NuixEngine implements AutoCloseable {
      * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
      * @throws Exception Exceptions are allowed to bubble up.
      */
-    public RubyScriptRunner runRubyScriptFileAsync(File scriptFile, @Nullable Map<String, Object> additionalVariables) throws Exception {
-        return runRubyScriptFileAsync(scriptFile, additionalVariables, null, null);
+    public RubyScriptRunner runRubyScriptFileAsync(File scriptFile, @Nullable Map<String, Object> additionalVariables,
+                                                   @Nullable BiConsumer<Object, BiVariableMap> completedCallback) throws Exception {
+        return runRubyScriptFileAsync(scriptFile, additionalVariables, null, null, completedCallback);
     }
 
     /***
@@ -671,8 +684,9 @@ public class NuixEngine implements AutoCloseable {
      * @return A {@link RubyScriptRunner} instance.  Call {@link RubyScriptRunner#join()} to wait for script to complete.
      * @throws Exception Exceptions are allowed to bubble up.
      */
-    public RubyScriptRunner runRubyScriptFileAsync(File scriptFile) throws Exception {
-        return runRubyScriptFileAsync(scriptFile, null, null, null);
+    public RubyScriptRunner runRubyScriptFileAsync(File scriptFile,
+                                                   @Nullable BiConsumer<Object, BiVariableMap> completedCallback) throws Exception {
+        return runRubyScriptFileAsync(scriptFile, null, null, null, completedCallback);
     }
 
     /***

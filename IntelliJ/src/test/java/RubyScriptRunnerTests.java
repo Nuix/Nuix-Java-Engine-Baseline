@@ -35,7 +35,8 @@ public class RubyScriptRunnerTests extends CommonTestFunctionality {
         List<String> outputLines = new ArrayList<>();
         try (NuixEngine nuixEngine = constructNuixEngine()) {
             String script = "$utilities.getItemTypeUtility.getAllKinds.each{|kind| puts kind.getName}";
-            RubyScriptRunner rubyScriptRunner = nuixEngine.runRubyScriptAsync(script, null, outputLines::add, outputLines::add);
+            RubyScriptRunner rubyScriptRunner = nuixEngine.runRubyScriptAsync(
+                    script, null, outputLines::add, outputLines::add, null);
             rubyScriptRunner.join();
             log.info("Script Output:");
             log.info(String.join("", outputLines));
@@ -52,26 +53,25 @@ public class RubyScriptRunnerTests extends CommonTestFunctionality {
                     "x", 40,
                     "y", 2
             );
-            RubyScriptRunner rubyScriptRunner = nuixEngine.runRubyScriptFileAsync(rubyScriptFile, additionalVariables, outputLines::add, outputLines::add);
+            RubyScriptRunner rubyScriptRunner = nuixEngine.runRubyScriptFileAsync(
+                    rubyScriptFile, additionalVariables, outputLines::add, outputLines::add, (result, vars) -> {
+                        log.info("Script Output:");
+                        log.info(String.join("", outputLines));
+                        assertFalse(outputLines.isEmpty());
 
-            rubyScriptRunner.whenScriptCompletes((result, vars) -> {
-                log.info("Script Output:");
-                log.info(String.join("", outputLines));
-                assertFalse(outputLines.isEmpty());
+                        log.info("Implicit Final Result: {}", result);
+                        assertEquals(42L, result);
 
-                log.info("Implicit Final Result: {}", result);
-                assertEquals(42L, result);
+                        // Note that for some reason entrySet will not include globals that were defined during
+                        // script execution, but will show globals set before script execution.  They will be
+                        // accessible via get still though ¯\_(ツ)_/¯
+                        for(Map.Entry<String,Object> entry : vars.entrySet()) {
+                            log.info("{} => {}", entry.getKey(), entry.getValue());
+                        }
 
-                // Note that for some reason entrySet will not include globals that were defined during
-                // script execution, but will show globals set before script execution.  They will be
-                // accessible via get still though ¯\_(ツ)_/¯
-                for(Map.Entry<String,Object> entry : vars.entrySet()) {
-                    log.info("{} => {}", entry.getKey(), entry.getValue());
-                }
-
-                Long zValue = (Long) vars.get("z");
-                assertEquals(42L, zValue);
-            });
+                        Long zValue = (Long) vars.get("z");
+                        assertEquals(42L, zValue);
+                    });
 
             rubyScriptRunner.join();
         }
