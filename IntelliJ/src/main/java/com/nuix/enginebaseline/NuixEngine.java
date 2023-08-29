@@ -264,7 +264,7 @@ public class NuixEngine implements AutoCloseable {
      *     </ul>
      *     </li>
      *     <li>Logging is initialized</li>
-     *     <li>The Nuix Engine GlobaContainer instance is created if needed</li>
+     *     <li>The Nuix Engine GlobalContainer instance is created if needed</li>
      *     <li>An Engine instance is created</li>
      *     <li>Any provided {@link NuixLicenseResolver} instances are iteratively called upon to obtain a license until an
      *     instance has successfully acquired one.
