@@ -49,7 +49,7 @@ dependencies {
         )
     })
 
-    testRuntimeOnly(fileTree(baseDir = engineLibDir) {
+    runtimeOnly(fileTree(baseDir = engineLibDir) {
         include("*.jar")
     })
 }
