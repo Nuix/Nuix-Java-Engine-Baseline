@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.nuix.innovation"
-version = "Nuix9.10-v1.1.0"
+version = "Nuix9.10-v1.1.1"
 
 val sourceCompatibility = 11
 val targetCompatibility = 11
