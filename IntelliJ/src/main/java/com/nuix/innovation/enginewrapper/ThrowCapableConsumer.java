@@ -1,4 +1,4 @@
-package com.nuix.enginebaseline;
+package com.nuix.innovation.enginewrapper;
 
 /***
  * An interface similar to {@link java.util.function.Consumer}, but allows for throwing checked exceptions.

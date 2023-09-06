@@ -1,4 +1,4 @@
-package com.nuix.enginebaseline;
+package com.nuix.innovation.enginewrapper;
 
 import nuix.Licence;
 import nuix.LicenceProperties;

@@ -138,6 +138,94 @@ Some things to note:
 - The class path entries are delimited with a semicolon (`;`).
 - The *last argument* is the fully qualified name (package and class name) of the class containing the entry point we are running.
 
+# Gradle Package Dependency
+
+Just want to make use of the wrapper?  You can add the wrapper classes as a dependency to your own Gradle project.
+
+You will need to generate a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) with at least the permission `read:packages`.  Place this token in the environment variable `GITHUB_TOKEN`.  Place your GitHub username in the environment variable `GITHUB_USERNAME`.  You can also supply the username and token by other means if you wish (see below), but the environment variables mentioned above should work with the Gradle code below.
+
+The you will need to merge the following into your project's `build.gradle.kts` file:
+
+```kotlin
+// Directory containing Nuix Engine release
+val nuixEngineDirectory: String = System.getenv("NUIX_ENGINE_DIR")
+println("NUIX_ENGINE_DIR: ${nuixEngineDirectory}")
+if (nuixEngineDirectory.isEmpty()) {
+    throw InvalidUserDataException("Please populate the environment variable 'NUIX_ENGINE_DIR' with directory containing a Nuix Engine release")
+}
+
+val engineLibDir = "${nuixEngineDirectory}\\lib"
+println("engineLibDir: ${engineLibDir}")
+
+repositories {
+    mavenCentral()
+
+    // Resolve GitHub username and access token
+    val github_username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
+    val github_token = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+
+    // Link to repository so package can be resolved
+    maven {
+        url = uri("https://maven.pkg.github.com/nuix/nuix-java-engine-baseline")
+        credentials {
+            username = github_username
+            password = github_token
+        }
+    }
+}
+
+dependencies {
+    // Engine wrapper as dependency
+    implementation("com.nuix.innovation:enginewrapper:Nuix9.10-v1.+")
+
+    // Test run-time engine release lib dir
+    testImplementation(fileTree(baseDir = engineLibDir) {
+        include("*.jar")
+    })
+}
+
+// Function to perform some configuration of test environment when tests are ran
+fun configureTestEnvironment(test: Test) {
+    // Engine runtime temp directory
+    val nuixTempDirectory = findProperty("tempDir") ?: "${System.getenv("LOCALAPPDATA")}\\Temp\\Nuix"
+
+    // Args passed to JVM running tests
+    test.jvmArgs(
+            "--add-exports=java.base/jdk.internal.loader=ALL-UNNAMED",
+            "-Xmx4G",
+            "-Djava.io.tmpdir=\"${nuixTempDirectory}\"",
+    )
+
+    // Configure ENV vars for JVM tests run in
+    test.setEnvironment(
+            // Add our engine release's bin and bin/x86 to PATH
+            Pair("PATH", "${System.getenv("PATH")};${nuixEngineDirectory}\\bin;${nuixEngineDirectory}\\bin\\x86"),
+
+            // Forward ENV username and password
+            Pair("NUIX_USERNAME", System.getenv("NUIX_USERNAME")),
+            Pair("NUIX_PASSWORD", System.getenv("NUIX_PASSWORD")),
+
+            // Forward LOCALAPPDATA and APPDATA
+            Pair("LOCALAPPDATA", System.getenv("LOCALAPPDATA")),
+            Pair("APPDATA", System.getenv("APPDATA")),
+
+            // We need to make sure we set these so workers will properly resolve temp dir
+            // (when using a worker based operation via EngineWrapper).
+            Pair("TEMP", nuixTempDirectory),
+            Pair("TMP", nuixTempDirectory),
+
+            Pair("NUIX_ENGINE_DIR", nuixEngineDirectory)
+    )
+}
+
+// Ensure that tests are ran by JUnit and that test environment gets configured
+tasks.test {
+    dependsOn(tasks.findByName("copyJarsToEngine"))
+    useJUnitPlatform()
+    configureTestEnvironment(this)
+}
+```
+
 # Where to Get Help
 
 Having trouble getting things up and running?  Here are several places you can seek assistance:

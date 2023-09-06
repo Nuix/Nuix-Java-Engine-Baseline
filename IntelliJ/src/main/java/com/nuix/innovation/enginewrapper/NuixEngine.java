@@ -1,4 +1,4 @@
-package com.nuix.enginebaseline;
+package com.nuix.innovation.enginewrapper;
 
 import com.google.common.base.Suppliers;
 import nuix.ThirdPartyDependency;
@@ -776,5 +776,9 @@ public class NuixEngine implements AutoCloseable {
             ((LifeCycle) LogManager.getContext()).stop();
             log = null;
         }
+    }
+
+    public void showConfidentialValuesInLog(boolean enabled) {
+        System.setProperty("nuix.log.confidential.showValues", String.valueOf(enabled));
     }
 }

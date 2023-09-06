@@ -1,9 +1,10 @@
 plugins {
     id("java")
+    id("maven-publish")
 }
 
-group = "com.nuix.engine-baseline"
-version = "9.10"
+group = "com.nuix.innovation"
+version = "Nuix9.10-v1.1.0"
 
 val sourceCompatibility = 11
 val targetCompatibility = 11
@@ -19,6 +20,24 @@ val engineLibDir = "${nuixEngineDirectory}\\lib"
 // to work correctly so we will define the directories relative to this project then set below
 val engineBinDir = "${nuixEngineDirectory}\\bin"
 val engineBinX86Dir = "${nuixEngineDirectory}\\bin\\x86"
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/nuix/nuix-java-engine-baseline")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        register<MavenPublication>("gpr") {
+            from(components["java"])
+        }
+    }
+}
 
 repositories {
     mavenCentral()

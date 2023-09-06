@@ -1,5 +1,5 @@
-import com.nuix.enginebaseline.NuixEngine;
-import com.nuix.enginebaseline.NuixLicenseResolver;
+import com.nuix.innovation.enginewrapper.NuixEngine;
+import com.nuix.innovation.enginewrapper.NuixLicenseResolver;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

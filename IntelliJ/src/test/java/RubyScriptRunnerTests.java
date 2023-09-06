@@ -1,7 +1,6 @@
-import com.nuix.enginebaseline.NuixEngine;
-import com.nuix.enginebaseline.RubyScriptRunner;
+import com.nuix.innovation.enginewrapper.NuixEngine;
+import com.nuix.innovation.enginewrapper.RubyScriptRunner;
 import nuix.Utilities;
-import org.jruby.embed.internal.BiVariableMap;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
