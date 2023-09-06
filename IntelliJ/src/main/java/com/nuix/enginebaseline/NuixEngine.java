@@ -79,8 +79,10 @@ public class NuixEngine implements AutoCloseable {
     }
 
     public static void closeGlobalContainer() {
-        globalContainer.close();
-        globalContainer = null;
+        if (globalContainer != null) {
+            globalContainer.close();
+            globalContainer = null;
+        }
     }
 
     /***
@@ -567,7 +569,7 @@ public class NuixEngine implements AutoCloseable {
         RubyScriptRunner rubyScriptRunner = new RubyScriptRunner();
         rubyScriptRunner.setStandardOutputConsumer(standardOutputReceiver);
         rubyScriptRunner.setErrorOutputConsumer(errorOutputReceiver);
-        if(completedCallback != null) {
+        if (completedCallback != null) {
             rubyScriptRunner.whenScriptCompletes(completedCallback);
         }
         rubyScriptRunner.runScriptAsync(script, getNuixVersionString(), vars);
@@ -650,7 +652,7 @@ public class NuixEngine implements AutoCloseable {
         RubyScriptRunner rubyScriptRunner = new RubyScriptRunner();
         rubyScriptRunner.setStandardOutputConsumer(standardOutputReceiver);
         rubyScriptRunner.setErrorOutputConsumer(errorOutputReceiver);
-        if(completedCallback != null) {
+        if (completedCallback != null) {
             rubyScriptRunner.whenScriptCompletes(completedCallback);
         }
         rubyScriptRunner.runFileAsync(scriptFile, getNuixVersionString(), vars);
