@@ -380,7 +380,7 @@ public class NuixEngine implements AutoCloseable {
     private void checkPreConditions() throws Exception {
         // This is for testing!
         boolean ignoreIssues = false;
-        if (System.getProperty("engine.ignore.preCheckIssues").equalsIgnoreCase("true")) {
+        if (System.getProperty("engine.ignore.preCheckIssues", "false").equalsIgnoreCase("true")) {
             ignoreIssues = true;
             System.out.println("engine.ignore.preCheckIssues = true, ignoring errors found during pre-check!");
         }
@@ -439,12 +439,18 @@ public class NuixEngine implements AutoCloseable {
             }
         }
 
-        // If caller has not specified a user-data directory, assume the one that comes with the engine distribution
-        // that is being used.
+        // If caller has not specified a user-data directory directly, check to see if one was specified in system property
+        // nuix.userDataDirs.  If not specified there, then use the one specified in the engine release directory.
         if (userDataDirectorySupplier == null) {
-            System.out.println("No user data directory was specified, assuming directory relative to engine distribution: " +
-                    new File(engineDistributionDirectorySupplier.get(), "user-data").getAbsolutePath());
-            userDataDirectorySupplier = () -> new File(engineDistributionDirectorySupplier.get(), "user-data");
+            String userDataDirProp = System.getProperty("nuix.userDataBase");
+            if (userDataDirProp != null && !userDataDirProp.isBlank()) {
+                System.out.println("Using user data directory provided in property 'nuix.userDataBase': " + userDataDirProp);
+                userDataDirectorySupplier = () -> new File(userDataDirProp);
+            } else {
+                System.out.println("No user data directory was specified, assuming directory relative to engine distribution: " +
+                        new File(engineDistributionDirectorySupplier.get(), "user-data").getAbsolutePath());
+                userDataDirectorySupplier = () -> new File(engineDistributionDirectorySupplier.get(), "user-data");
+            }
         }
 
         // Make sure PATH points to expected bin and bin/x86 subdirectories of our engine distribution

@@ -3,6 +3,7 @@ import nuix.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,6 +44,19 @@ public class BasicTests extends CommonTestFunctionality {
         Utilities utilities = nuixEngine.getUtilities();
         utilities.getItemTypeUtility().getAllTypes();
         nuixEngine.close();
+    }
+
+    @Test
+    public void OverrideUserDataViaProperty() throws Exception {
+        File engineUserDataBase = Paths.get(System.getenv("NUIX_ENGINE_DIR"), "user-data").toFile();
+        System.setProperty("nuix.userDataBase", engineUserDataBase.getCanonicalPath());
+        AtomicBoolean licenseWasObtained = new AtomicBoolean(false);
+        NuixEngine nuixEngine = constructNuixEngine();
+        // run method will call close before returning
+        nuixEngine.run((utilities -> {
+            licenseWasObtained.set(true);
+        }));
+        assertTrue(licenseWasObtained.get());
     }
 
     @Test
