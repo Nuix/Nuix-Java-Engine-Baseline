@@ -378,6 +378,13 @@ public class NuixEngine implements AutoCloseable {
      * </ul>
      */
     private void checkPreConditions() throws Exception {
+        // This is for testing!
+        boolean ignoreIssues = false;
+        if (System.getProperty("engine.ignore.preCheckIssues").equalsIgnoreCase("true")) {
+            ignoreIssues = true;
+            System.out.println("engine.ignore.preCheckIssues = true, ignoring errors found during pre-check!");
+        }
+
         // Due to changes in later versions of Java coupled with some added functionality
         // added to Nuix at one point, we need to make sure the JVM we are running in
         // was started with this arg:
@@ -388,14 +395,18 @@ public class NuixEngine implements AutoCloseable {
         List<String> jvmArgs = bean.getInputArguments();
         final String requiredJvmArg = "--add-exports=java.base/jdk.internal.loader=ALL-UNNAMED";
         if (jvmArgs.stream().noneMatch(arg -> arg.trim().equalsIgnoreCase(requiredJvmArg))) {
-            throw new IllegalStateException("Please ensure that JVM is started with argument: " + requiredJvmArg);
+            if (!ignoreIssues) {
+                throw new IllegalStateException("Please ensure that JVM is started with argument: " + requiredJvmArg);
+            }
         }
 
         // Caller must have set engine distribution directory, fail if they have not.
         if (engineDistributionDirectorySupplier == null) {
-            throw new IllegalStateException("Unable to resolve engine distribution directory, please call one of the following methods " +
-                    "before calling the run method: " +
-                    "setEngineDistributionDirectorySupplier, setEngineDistributionDirectory, setEngineDistributionDirectoryFromENV");
+            if (!ignoreIssues) {
+                throw new IllegalStateException("Unable to resolve engine distribution directory, please call one of the following methods " +
+                        "before calling the run method: " +
+                        "setEngineDistributionDirectorySupplier, setEngineDistributionDirectory, setEngineDistributionDirectoryFromENV");
+            }
         }
 
         // We need to set JVM system property 'nuix.libdir' so engine can resolve some things early on.
@@ -412,8 +423,10 @@ public class NuixEngine implements AutoCloseable {
                 System.out.println("No log directory specified, assuming local app data log directory: " + logDirectory.getAbsolutePath());
                 setLogDirectory(logDirectory);
             } else {
-                throw new IllegalStateException("Unable to resolve log directory, please call either " +
-                        "setLogDirectorySupplier or setLogDirectory method before calling run method");
+                if (!ignoreIssues) {
+                    throw new IllegalStateException("Unable to resolve log directory, please call either " +
+                            "setLogDirectorySupplier or setLogDirectory method before calling run method");
+                }
             }
         }
 
@@ -421,7 +434,9 @@ public class NuixEngine implements AutoCloseable {
         // exists so later during logging initialization we don't receive an exception about non-existent directory.
         logDirectorySupplier.get().getCanonicalFile().mkdirs();
         if (!logDirectorySupplier.get().getCanonicalFile().exists()) {
-            throw new IOException("Unable to create log directory: " + logDirectorySupplier.get().getCanonicalPath());
+            if (!ignoreIssues) {
+                throw new IOException("Unable to create log directory: " + logDirectorySupplier.get().getCanonicalPath());
+            }
         }
 
         // If caller has not specified a user-data directory, assume the one that comes with the engine distribution
@@ -433,22 +448,34 @@ public class NuixEngine implements AutoCloseable {
         }
 
         // Make sure PATH points to expected bin and bin/x86 subdirectories of our engine distribution
-        String[] pathDirs = System.getenv("PATH").split(";");
-        File expectedBinDir = new File(engineDistributionDirectorySupplier.get(), "bin");
-        File expectedBinX86Dir = new File(expectedBinDir, "x86");
+        String envPath = System.getenv("PATH");
 
-        // Make sure we can locate 'bin' subdirectory on PATH
-        if (Arrays.stream(pathDirs).noneMatch(pathDir -> pathDir.equalsIgnoreCase(expectedBinDir.getAbsolutePath()))) {
-            throw new IllegalStateException("PATH does not contain expected 'bin' directory: " + expectedBinDir.getAbsolutePath());
+        if (envPath == null || envPath.isBlank()) {
+            if (!ignoreIssues) {
+                throw new IllegalStateException("PATH is null or blank.  Needs to at least reference engine directories `bin` and `bin/x86`");
+            }
         } else {
-            System.out.println("'bin' Successfully found on PATH: " + expectedBinDir.getAbsolutePath());
-        }
+            String[] pathDirs = envPath.split(";");
+            File expectedBinDir = new File(engineDistributionDirectorySupplier.get(), "bin");
+            File expectedBinX86Dir = new File(expectedBinDir, "x86");
 
-        // Make sure we can locate 'bin\x86' subdirectory on PATH
-        if (Arrays.stream(pathDirs).noneMatch(pathDir -> pathDir.equalsIgnoreCase(expectedBinX86Dir.getAbsolutePath()))) {
-            throw new IllegalStateException("PATH does not contain expected 'bin\\x86' directory: " + expectedBinX86Dir.getAbsolutePath());
-        } else {
-            System.out.println("'bin\\x86' Successfully found on PATH: " + expectedBinX86Dir.getAbsolutePath());
+            // Make sure we can locate 'bin' subdirectory on PATH
+            if (Arrays.stream(pathDirs).noneMatch(pathDir -> pathDir.equalsIgnoreCase(expectedBinDir.getAbsolutePath()))) {
+                if (!ignoreIssues) {
+                    throw new IllegalStateException("PATH does not contain expected 'bin' directory: " + expectedBinDir.getAbsolutePath());
+                }
+            } else {
+                System.out.println("'bin' Successfully found on PATH: " + expectedBinDir.getAbsolutePath());
+            }
+
+            // Make sure we can locate 'bin\x86' subdirectory on PATH
+            if (Arrays.stream(pathDirs).noneMatch(pathDir -> pathDir.equalsIgnoreCase(expectedBinX86Dir.getAbsolutePath()))) {
+                if (!ignoreIssues) {
+                    throw new IllegalStateException("PATH does not contain expected 'bin\\x86' directory: " + expectedBinX86Dir.getAbsolutePath());
+                }
+            } else {
+                System.out.println("'bin\\x86' Successfully found on PATH: " + expectedBinX86Dir.getAbsolutePath());
+            }
         }
     }
 
