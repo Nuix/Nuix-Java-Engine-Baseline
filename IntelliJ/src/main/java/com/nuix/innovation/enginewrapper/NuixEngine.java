@@ -249,7 +249,7 @@ public class NuixEngine implements AutoCloseable {
      * @return This instance for method call chaining
      */
     public NuixEngine setUserDataDirectory(File directory) {
-        setLogDirectorySupplier(() -> directory);
+        setUserDataDirectorySupplier(() -> directory);
         return this;
     }
 
