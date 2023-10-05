@@ -7,15 +7,18 @@ import nuix.Utilities;
 import nuix.engine.Engine;
 import nuix.engine.GlobalContainer;
 import nuix.engine.GlobalContainerFactory;
-import org.apache.logging.log4j.core.LifeCycle;
-import org.jetbrains.annotations.Nullable;
-import org.joda.time.DateTime;
-import org.apache.logging.log4j.Level;
+import org.apache.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LifeCycle;
+import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.filter.AbstractFilter;
+import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.jetbrains.annotations.Nullable;
+import org.joda.time.DateTime;
 import org.jruby.embed.internal.BiVariableMap;
 
 import java.io.File;
@@ -490,19 +493,47 @@ public class NuixEngine implements AutoCloseable {
      */
     protected void initializeLogging() {
         if (log == null) {
+            // Default log4j2.yaml included with engine distribution references these system properties
+            // so we want them in place before we ask log4j2 to reload configuration
+            System.setProperty("nuix.loglevel", "info");
             System.setProperty("nuix.logdir", logDirectorySupplier.get().getAbsolutePath());
-            // Use Log4j2 config YAML from engine base directory
-            File log4jConfigFile = new File(engineDistributionDirectorySupplier.get(), "config/log4j2.yml");
-            System.setProperty("log4j.configurationFile", log4jConfigFile.getAbsolutePath());
-            log = LogManager.getLogger(this.getClass());
-            log.info("log4j.configurationFile => " + log4jConfigFile.getAbsolutePath());
 
-            // Set default level to INFO
-            LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-            Configuration config = ctx.getConfiguration();
-            LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
-            loggerConfig.setLevel(Level.INFO);
-            ctx.updateLoggers();
+            // Use Log4j2 config YAML from engine distribution directory
+            File log4jConfigFile = new File(engineDistributionDirectorySupplier.get(), "config/log4j2.yml");
+            System.setProperty("log4j.configurationFile", log4jConfigFile.toURI().toString());
+
+            // Report settings we're using
+            System.out.println("log4j.configurationFile => " + System.getProperty("log4j.configurationFile"));
+            System.out.println("nuix.loglevel => " + System.getProperty("nuix.loglevel"));
+            System.out.println("nuix.logdir => " + System.getProperty("nuix.logdir"));
+
+            // Log4j2 has likely already attempted to configure itself at this point but configuration
+            // above likely was not already in place at that moment.  Now that we have configured those values
+            // we ask log4j2 to reconfigure itself.  It should then find the "log4j.configurationFile" property
+            // and configure itself from that.
+            System.out.println("Asking log4j2 to reload configuration...");
+            LoggerContext context = (org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false);
+            context.reconfigure();
+
+            // Default log4j2.yml file only appends to console when logged event is fatal, also it logs that to
+            // SYSTEM_ERR rather than SYSTEM_OUT.  For testing it can be helpful to have INFO events written to the
+            // console, so we will add our own appender with these traits.
+            ConsoleAppender consoleAppender = ConsoleAppender.newBuilder()
+                    .setName("Nuix_Engine_Console_Appender")
+                    .setFilter(new AbstractFilter() {
+                        @Override
+                        public Result filter(LogEvent event) {
+                            return Result.NEUTRAL;
+                        }
+                    })
+                    .setLayout(PatternLayout.newBuilder().withPattern("%d{yyyy-MM-dd HH:mm:ss.SSS Z} [%t] %r %-5p %c - %m%n").build())
+                    .setConfiguration(context.getConfiguration()).build();
+            consoleAppender.start();
+            context.getConfiguration().addAppender(consoleAppender);
+            context.getRootLogger().addAppender(context.getConfiguration().getAppender(consoleAppender.getName()));
+            context.updateLoggers();
+
+            log = LogManager.getLogger(this.getClass());
         }
     }
 
@@ -522,9 +553,10 @@ public class NuixEngine implements AutoCloseable {
      * period has elapsed for the license.
      */
     protected void buildEngine() {
+        System.setProperty("nuix.userDataBase", userDataDirectorySupplier.get().getAbsolutePath());
         Map<Object, Object> engineConfiguration = Map.of(
                 "user", System.getProperty("user.name"),
-                "userDataDirs", userDataDirectorySupplier.get()
+                "userDataDirs", userDataDirectorySupplier.get().getAbsolutePath()
         );
 
         engine = globalContainer.newEngine(engineConfiguration);
