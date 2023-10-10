@@ -326,6 +326,8 @@ public class NuixEngine implements AutoCloseable {
             }
         }
 
+        // Set NuixVersion.current to right value
+        NuixVersion.setCurrent(NuixVersion.parse(engine.getVersion()));
         return utilities;
     }
 
@@ -597,7 +599,7 @@ public class NuixEngine implements AutoCloseable {
      * Engine has not yet been initialized.
      */
     public NuixVersion getNuixVersion() {
-        return NuixVersion.parse(getNuixVersionString());
+        return NuixVersion.getCurrent();
     }
 
     /***

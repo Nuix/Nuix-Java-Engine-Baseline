@@ -1,4 +1,5 @@
 import com.nuix.innovation.enginewrapper.NuixEngine;
+import com.nuix.innovation.enginewrapper.NuixVersion;
 import nuix.*;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +23,7 @@ public class BasicTests extends CommonTestFunctionality {
         // run method will call close before returning
         nuixEngine.run((utilities -> {
             licenseWasObtained.set(true);
+            log.info("Nuix v{}", NuixVersion.getCurrent());
         }));
         assertTrue(licenseWasObtained.get());
     }
