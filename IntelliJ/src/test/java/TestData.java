@@ -49,6 +49,16 @@ public class TestData {
         });
     }
 
+    public static File getTestDataCsvFilesDirectory() {
+        return getTestDataCreateAsNeeded("CSV_FILES", (dir) -> {
+            try {
+                FakeDataGenerator.generateRandomCsvFiles("CSV", dir, 5);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
     public static Map<String, Long> getTestDataTextFileTermCounts() throws IOException {
         File termCountsFile = new File(getTestDataTextFilesDirectory(), "@termcounts.json");
         Type listType = new TypeToken<Map<String, Long>>() {}.getType();

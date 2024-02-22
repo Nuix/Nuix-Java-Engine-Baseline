@@ -11,7 +11,7 @@ val targetCompatibility = 11
 
 // Directory where the Nuix Engine is located - used as a root for other directories and passed
 // to runtimes as an environment variable.
-val nuixEngineDirectory: String = System.getenv("NUIX_ENGINE_DIR")
+val nuixEngineDirectory: String = (findProperty("nuixEngineDirectory") ?: System.getenv("NUIX_ENGINE_DIR")).toString()
 if(nuixEngineDirectory.isNullOrEmpty()){
     throw InvalidUserDataException("Please populate the environment variable 'NUIX_ENGINE_DIR' with directory containing a Nuix Engine release")
 }

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /***
  * A class for generating random data.
@@ -122,6 +123,30 @@ public class FakeDataGenerator {
         );
 
         return termFileCounts;
+    }
+
+    private static String crudeToCsvRow(String... colData) {
+        return new ArrayList<>(List.of(colData)).stream()
+                .map(c -> c.replaceAll("\"", "\"\""))
+                .map(c -> "\"" + c + "\"")
+                .collect(Collectors.joining(","));
+    }
+
+    public static void generateRandomCsvFiles(String filenamePrefix, File directory, int count) throws IOException {
+        for (int i = 0; i < count; i++) {
+            String fileName = String.format("%s_%08d.csv", filenamePrefix, i);
+            File outputCsv = new File(directory, fileName);
+            StringJoiner csvContent = new StringJoiner("\n");
+            csvContent.add(crudeToCsvRow(
+                    "Alpha", "Beta", "Gamma"
+            ));
+            for (int r = 0; r < 1000; r++) {
+                csvContent.add(crudeToCsvRow(
+                        getRandomPoolTerm(), getRandomPoolTerm(), getRandomPoolTerm()
+                ));
+            }
+            FileUtils.writeStringToFile(outputCsv, csvContent.toString(), StandardCharsets.UTF_8);
+        }
     }
 
     public static <V> V rand(List<V> list) {
