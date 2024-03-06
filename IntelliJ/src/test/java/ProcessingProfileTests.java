@@ -1,5 +1,6 @@
 import com.nuix.innovation.enginewrapper.NuixEngine;
 import nuix.EvidenceContainer;
+import nuix.Item;
 import nuix.Processor;
 import nuix.SimpleCase;
 import nuix.profile.ProcessingProfile;
@@ -8,8 +9,10 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -116,6 +119,110 @@ public class ProcessingProfileTests extends CommonTestFunctionality {
 
             log.info("Processing starting...");
             processor.process();
+            log.info("Processing completed");
+
+            mimeTypes.forEach(m -> {
+                try {
+                    long csvDescendantCount = nuixCase.count("path-mime-type:" + m);
+                    assertEquals(0, csvDescendantCount, String.format("Expected no descendants of %s but got %s",
+                            m, csvDescendantCount));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+
+            log.info("Closing case");
+            nuixCase.close();
+        }));
+    }
+
+    @Test
+    public void testProcessingProfileMimeTypeAdherence_WinLogs_Reload() throws Exception {
+        File caseDirectory = new File(testOutputDirectory, "ProcessingProfileMimeTypeAdherenceWinLogsReload_Case");
+        File winLogsDirectory = new File(testDataDirectory, "WIN_LOGS");
+
+        if (!winLogsDirectory.exists()) {
+            System.out.println("WIN_LOGS dir does not exist, skipping test using it: " + winLogsDirectory);
+            return;
+        }
+
+        List<String> mimeTypes = List.of(
+                "application/vnd.ms-windows-event-logx",
+                "application/vnd.ms-windows-event-logx-chunk",
+                "application/vnd.ms-windows-event-logx-record"
+        );
+
+        NuixEngine nuixEngine = constructNuixEngine();
+        nuixEngine.run((utilities -> {
+            // Create a new case
+            Map<String, Object> caseSettings = Map.of(
+                    "compound", false,
+                    "name", "testProcessingProfileMimeTypeAdherence"
+            );
+            SimpleCase nuixCase = (SimpleCase) utilities.getCaseFactory().create(caseDirectory, caseSettings);
+
+
+            log.info("Queuing data for processing...");
+            Processor processor = nuixCase.createProcessor();
+            EvidenceContainer evidenceContainer = processor.newEvidenceContainer("WinLogs");
+            evidenceContainer.addFile(winLogsDirectory);
+            evidenceContainer.save();
+
+            System.out.println("Processing settings before loading profile:");
+            mimeTypes.forEach(m -> System.out.println(processor.getMimeTypeProcessingSettings(m)));
+
+            System.out.println("Processing settings after loading profile:");
+            processor.setProcessingProfile("Default");
+            mimeTypes.forEach(m -> System.out.println(processor.getMimeTypeProcessingSettings(m)));
+
+            System.out.println("Processing settings of profile:");
+            ProcessingProfileStore store = utilities.getProcessingProfileStore();
+            ProcessingProfile profile = store.getProfile("Default");
+            mimeTypes.forEach(m -> System.out.println(profile.getMimeTypeProcessingSettings(m)));
+
+            log.info("Processing starting...");
+            processor.process();
+            log.info("Processing completed");
+
+            // Reload data
+            Map<String, Object> reload_options = new HashMap<>();
+            reload_options.put("processText", true);
+            reload_options.put("extractShingles", true);
+            reload_options.put("processTextSummaries", true);
+            reload_options.put("enableExactQueries", true);
+            reload_options.put("extractNamedEntitiesFromText", true);
+            reload_options.put("extractNamedEntitiesFromTextStripped", true);
+            reload_options.put("extractNamedEntitiesFromProperties", true);
+            reload_options.put("extractNamedEntitiesFromCommunications", true);
+
+            // Mutate a copy of our baseline processing profile
+            ProcessingProfile modifiedProfileCopy = utilities.getProcessingProfileBuilder()
+                     .copy(profile)
+                     .withProcessingSettings(reload_options)
+                     .build();
+
+            Set<Item> items = nuixCase.searchUnsorted("");
+            log.info(items.size() + " Items found");
+
+            Processor processor2 = nuixCase.createProcessor();
+
+            System.out.println("Processing settings before loading profile:");
+            mimeTypes.forEach(m -> System.out.println(processor2.getMimeTypeProcessingSettings(m)));
+
+            System.out.println("Processing settings after loading profile:");
+            processor2.setProcessingProfile("Default");
+            mimeTypes.forEach(m -> System.out.println(processor2.getMimeTypeProcessingSettings(m)));
+
+            System.out.println("Processing settings of profile:");
+            mimeTypes.forEach(m -> System.out.println(profile.getMimeTypeProcessingSettings(m)));
+
+            // Use our mutated profile copy
+            processor2.setProcessingProfileObject(modifiedProfileCopy);
+            processor2.reloadItemsFromSourceData(items);
+
+            log.info("Processing starting...");
+            processor2.process();
             log.info("Processing completed");
 
             mimeTypes.forEach(m -> {
