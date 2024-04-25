@@ -1,6 +1,7 @@
 import com.nuix.innovation.enginewrapper.NuixEngine;
 import com.nuix.innovation.enginewrapper.NuixLicenseResolver;
 import org.apache.commons.io.FileUtils;
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.Logger;
@@ -10,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.util.*;
+import java.util.List;
 
 public class CommonTestFunctionality {
     // Used in some tests, this is a simple class to hold
@@ -75,7 +76,7 @@ public class CommonTestFunctionality {
      * @return A NuixEngine instance ready to use
      */
     public NuixEngine constructNuixEngine() throws IOException {
-        return constructNuixEngine((String[])null);
+        return constructNuixEngine((String[]) null);
     }
 
     /***
@@ -85,7 +86,7 @@ public class CommonTestFunctionality {
      */
     public NuixEngine constructNuixEngine(String... additionalRequiredFeatures) throws IOException {
         List<String> features = List.of("CASE_CREATION");
-        if(additionalRequiredFeatures != null && additionalRequiredFeatures.length > 0) {
+        if (additionalRequiredFeatures != null && additionalRequiredFeatures.length > 0) {
             features.addAll(List.of(additionalRequiredFeatures));
         }
 
@@ -99,6 +100,6 @@ public class CommonTestFunctionality {
 
         return NuixEngine.usingFirstAvailableLicense(caseCreationCloud, caseCreationDongle)
                 .setEngineDistributionDirectoryFromEnvVar()
-                .setLogDirectory(new File(testOutputDirectory, "Logs_"+System.currentTimeMillis()).getCanonicalFile());
+                .setLogDirectory(new File(testOutputDirectory, DateTime.now().toString("YYYY-MM-dd_HH-mm-ss")).getCanonicalFile());
     }
 }

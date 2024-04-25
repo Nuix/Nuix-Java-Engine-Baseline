@@ -458,8 +458,15 @@ public class NuixEngine implements AutoCloseable {
             }
         }
 
-        // Make sure PATH points to expected bin and bin/x86 subdirectories of our engine distribution
-        String envPath = System.getenv("PATH");
+        // Make sure PATH points to expected bin and bin/x86 subdirectories of our engine distribution.  Since it seems
+        // that case of the key "Path" vs "PATH" can matter, we will search for it in a case insensitive manner.
+        String envPath = null;
+        for(Map.Entry<String,String> envEntry : System.getenv().entrySet()) {
+            if(envEntry.getKey().trim().equalsIgnoreCase("PATH")) {
+                envPath = envEntry.getValue();
+                break;
+            }
+        }
 
         if (envPath == null || envPath.isBlank()) {
             if (!ignoreIssues) {
