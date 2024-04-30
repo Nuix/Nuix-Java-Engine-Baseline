@@ -92,7 +92,7 @@ public class NuixLicenseResolver implements LicenseResolver {
     protected Set<String> requiredFeatures = new HashSet<>();
     protected int minWorkerCount = 0;
     protected int maxWorkerCount = 0;
-    protected String targetShortName = null;
+    protected List<String> targetShortNames = null;
     protected Function<Stream<AvailableLicence>, Optional<AvailableLicence>> finalDecider;
 
     protected NuixLicenseResolver() {
@@ -226,6 +226,25 @@ public class NuixLicenseResolver implements LicenseResolver {
     }
 
     /***
+     * Specifies one or more license shortnames that desired license must have to be acceptable.
+     * @param shortNames One or more Nuix license short names (enterprise-workstation, enterprise-reviewer, etc).
+     * @return This license resolver for chained method calls.
+     */
+    public NuixLicenseResolver withLicenseShortNameMatching(String... shortNames) {
+        if (shortNames.length < 1) {
+            return this;
+        }
+
+        if (targetShortNames == null) {
+            targetShortNames = new ArrayList<>();
+        }
+
+        targetShortNames.addAll(Arrays.asList(shortNames));
+
+        return this;
+    }
+
+    /***
      * Allows you to provide a function which makes the final decision as to which available license to obtain.
      * Supplied function will be provided Stream of AvailableLicenses after this license resolver has applied any
      * filtering that it may have applied.
@@ -315,7 +334,7 @@ public class NuixLicenseResolver implements LicenseResolver {
     public boolean resolveLicense(@NonNull Engine engine) throws Exception {
         Map<String, Object> licenseOptions = Collections.emptyMap();
 
-        log.info("License Source: "+licenseSource);
+        log.info("License Source: " + licenseSource);
 
         switch (licenseSource) {
             case Cloud:
@@ -355,7 +374,7 @@ public class NuixLicenseResolver implements LicenseResolver {
 
         log.info("Applying filtering to available licenses...");
         Stream<AvailableLicence> filteredLicensesStream = availableLicensesStream.filter((availableLicense -> {
-            log.info("Inspecting license: "+ NuixLicenseFeaturesLogger.summarizeLicense(availableLicense));
+            log.info("Inspecting license: " + NuixLicenseFeaturesLogger.summarizeLicense(availableLicense));
 
             // It is possible to get a Licence specifically for running an NMS instance and not an Engine instance
             // which we can ignore since it cannot license an Engine instance for us.
@@ -386,9 +405,10 @@ public class NuixLicenseResolver implements LicenseResolver {
 
             // Verify short name
             String availableLicenseShortName = availableLicense.getShortName().toLowerCase();
-            if (targetShortName != null && !availableLicenseShortName.equalsIgnoreCase(targetShortName)) {
-                log.info(String.format("License has shortname %s which does not match the target shortname %s",
-                        availableLicenseShortName, targetShortName));
+            if (targetShortNames != null && !targetShortNames.isEmpty() &&
+                    targetShortNames.stream().noneMatch(availableLicenseShortName::equalsIgnoreCase)) {
+                log.info(String.format("License has shortname %s which does not match any of the target shortnames: %s",
+                        availableLicenseShortName, String.join(", ", targetShortNames)));
                 return false;
             }
 
@@ -438,7 +458,7 @@ public class NuixLicenseResolver implements LicenseResolver {
                 ", requiredFeatures=" + requiredFeatures +
                 ", minWorkerCount=" + minWorkerCount +
                 ", maxWorkerCount=" + maxWorkerCount +
-                ", targetShortName='" + targetShortName + '\'' +
+                ", targetShortNames='" + targetShortNames + '\'' +
                 '}';
     }
 }
