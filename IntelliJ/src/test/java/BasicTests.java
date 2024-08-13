@@ -257,6 +257,66 @@ public class BasicTests extends CommonTestFunctionality {
     }
 
     @Test
+    public void PerformClusterRun() throws Exception {
+        File caseDirectory = new File(testOutputDirectory, "CreateClusterRun_Case");
+        File textFilesDirectory = TestData.getTestDataTextFilesDirectory();
+        File otherFilesDirectory = TestData.getTestDataOtherFilesDirectory();
+        Map<String, Long> termCounts = TestData.getTestDataTextFileTermCounts();
+
+        NuixEngine nuixEngine = constructNuixEngine();
+        nuixEngine.run((utilities -> {
+            // Create a new case
+            Map<String, Object> caseSettings = Map.of(
+                    "compound", false,
+                    "name", "CreateClusterRun",
+                    "description", "A Nuix case created using the Nuix Java Engine API",
+                    "investigator", "Test"
+            );
+            SimpleCase nuixCase = (SimpleCase) utilities.getCaseFactory().create(caseDirectory, caseSettings);
+
+            log.info("Queuing data for processing...");
+            Processor processor = nuixCase.createProcessor();
+            EvidenceContainer evidenceContainer = processor.newEvidenceContainer("TestData");
+            evidenceContainer.addFile(textFilesDirectory);
+            evidenceContainer.addFile(otherFilesDirectory);
+            evidenceContainer.save();
+
+            // Periodically log progress
+            final long[] lastProgressTime = {0};
+            int updateIntervalSeconds = 10;
+            AtomicLong itemCount = new AtomicLong(0);
+            processor.whenItemProcessed(info -> {
+                long currentItemCount = itemCount.addAndGet(1);
+                if (System.currentTimeMillis() - lastProgressTime[0] > updateIntervalSeconds * 1000) {
+                    lastProgressTime[0] = System.currentTimeMillis();
+                    log.info(String.format("%s items processed", currentItemCount));
+                }
+            });
+
+            log.info("Processing starting...");
+            processor.process();
+            log.info("Processing completed");
+
+            // Create cluster run
+            List<Item> clusterRunItems = nuixCase.search("kind:email AND flag:top_level");
+            String clustRunName = "EmailThreading01";
+            Map<String, Object> clusterRunSettings = Map.of(
+                    "useNearDuplicates", true,
+                    "userEmailThreads", true
+            );
+            log.info("Generating cluster run `{}` over {} items, using settings:", clustRunName, clusterRunItems.size());
+            for (Map.Entry<String, Object> clustRunSetting : clusterRunSettings.entrySet()) {
+                log.info("{} => {}", clustRunSetting.getKey(), clustRunSetting.getValue());
+            }
+            boolean wasClusterProduced = nuixCase.generateClusterRun(clustRunName, clusterRunItems, clusterRunSettings);
+            log.info("Cluster run completed, at least one cluster was produced: {}", wasClusterProduced);
+
+            log.info("Closing case");
+            nuixCase.close();
+        }));
+    }
+
+    @Test
     public void Export() throws Exception {
         File caseDirectory = new File(testOutputDirectory, "ExportTest_Case");
         File textFilesDirectory = TestData.getTestDataTextFilesDirectory();

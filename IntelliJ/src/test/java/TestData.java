@@ -39,6 +39,10 @@ public class TestData {
         return subDirectory;
     }
 
+    public static File getTestDataOtherFilesDirectory() {
+        return new File(testDataDirectory, "OTHER");
+    }
+
     public static File getTestDataTextFilesDirectory() {
         return getTestDataCreateAsNeeded("TEXT_FILES", (dir) -> {
             try {

@@ -90,6 +90,10 @@ public class CommonTestFunctionality {
             features.addAll(List.of(additionalRequiredFeatures));
         }
 
+        NuixLicenseResolver cloudEnterpriseWorkstation = NuixLicenseResolver.fromCloud()
+                .withLicenseCredentialsResolvedFromEnvVars()
+                .withLicenseShortNameMatching("enterprise-workstation");
+
         NuixLicenseResolver caseCreationCloud = NuixLicenseResolver.fromCloud()
                 .withLicenseCredentialsResolvedFromEnvVars()
                 .withMinWorkerCount(4)
