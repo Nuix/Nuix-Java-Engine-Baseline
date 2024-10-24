@@ -30,10 +30,11 @@ gradle-app.setting
 # Cache of project
 .gradletasknamecache
 
+# Don't commit gradle.properties since we may store end user specific things like engine release dir
+IntelliJ/gradle.properties
+
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
-
-
 
 # From https://github.com/github/gitignore/blob/master/Java.gitignore
 *.class

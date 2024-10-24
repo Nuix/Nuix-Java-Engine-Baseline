@@ -4,16 +4,16 @@ plugins {
 }
 
 group = "com.nuix.innovation"
-version = "Nuix9.10-v1.1.7"
+version = "NuixNeo-100.12"
 
-val sourceCompatibility = 11
-val targetCompatibility = 11
+val sourceCompatibility = 17
+val targetCompatibility = 17
 
 // Directory where the Nuix Engine is located - used as a root for other directories and passed
 // to runtimes as an environment variable.
-val nuixEngineDirectory: String = System.getenv("NUIX_ENGINE_DIR")
-if(nuixEngineDirectory.isNullOrEmpty()){
-    throw InvalidUserDataException("Please populate the environment variable 'NUIX_ENGINE_DIR' with directory containing a Nuix Engine release")
+val nuixEngineDirectory = findProperty("nuixEngineDirectory") ?: System.getenv("NUIX_ENGINE_DIR")
+if (nuixEngineDirectory == null) {
+    throw InvalidUserDataException("Please populate the environment variable 'NUIX_ENGINE_DIR' or project property 'nuixEngineDirectory' with directory containing a Nuix Engine release")
 }
 val engineLibDir = "${nuixEngineDirectory}\\lib"
 // Nuix engine distributable dirs "bin" and "bin/x86" need to be on the PATH for engine
@@ -56,15 +56,15 @@ dependencies {
 
     implementation(fileTree(baseDir = engineLibDir) {
         include(
-                "**/*slf4j*.jar",
-                "**/*log*.jar",
-                "**/*joda*.jar",
-                "**/*commons*.jar",
-                "**/*guava*.jar",
-                "**/*gson*.jar",
-                "**/*jruby*.jar",
-                // All Nuix API jars
-                "**/nuix-*.jar"
+            "**/*slf4j*.jar",
+            "**/*log*.jar",
+            "**/*joda*.jar",
+            "**/*commons*.jar",
+            "**/*guava*.jar",
+            "**/*gson*.jar",
+            "**/*jruby*.jar",
+            // All Nuix API jars
+            "**/nuix-*.jar"
         )
     })
 
@@ -75,7 +75,7 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -87,9 +87,33 @@ fun configTestEnv(test: Test) {
     // Necessary for newer versions of Nuix.  Without this you will likely see
     // an error regarding loading the BouncyCastle crypto library at run-time
     test.jvmArgs(
-            "--add-exports=java.base/jdk.internal.loader=ALL-UNNAMED",
-            "-Xmx4G",
-            "-Djava.io.tmpdir=\"${nuixTempDirectory}\"",
+        "--add-opens", "java.base/java.io=ALL-UNNAMED",
+        "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+        "--add-opens", "java.base/java.time=ALL-UNNAMED",
+        "--add-opens", "java.base/java.util=ALL-UNNAMED",
+        "--add-opens", "java.base/java.util.concurrent.atomic=ALL-UNNAMED",
+        "--add-opens", "java.base/java.util.regex=ALL-UNNAMED",
+        "--add-opens", "java.base/sun.net.dns=ALL-UNNAMED",
+        "--add-opens", "java.base/sun.net.www.protocol.http=ALL-UNNAMED",
+        "--add-opens", "java.base/sun.nio.fs=ALL-UNNAMED",
+        "--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens", "java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED",
+        "--add-opens", "java.desktop/javax.swing=ALL-UNNAMED",
+        "--add-opens", "java.desktop/com.sun.java.swing=ALL-UNNAMED",
+        "--add-opens", "java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED",
+
+        "--add-exports", "java.base/jdk.internal.loader=ALL-UNNAMED",
+        "--add-exports", "java.desktop/com.apple.laf=ALL-UNNAMED",
+        "--add-exports", "java.desktop/com.sun.imageio=ALL-UNNAMED",
+        "--add-exports", "java.desktop/com.sun.imageio.plugins.gif=ALL-UNNAMED",
+        "--add-exports", "java.desktop/com.sun.imageio.plugins.jpeg=ALL-UNNAMED",
+        "--add-exports", "java.desktop/sun.awt=ALL-UNNAMED",
+        "--add-exports", "java.desktop/sun.awt.image=ALL-UNNAMED",
+        "--add-exports", "java.desktop/sun.font=ALL-UNNAMED",
+        "--add-exports", "java.xml/com.sun.xml.internal.stream=ALL-UNNAMED",
+        "-Xmx4G",
+        "-Djava.io.tmpdir=\"${nuixTempDirectory}\"",
+        "-Dscript.polyglot.useGraal=false",
     )
 
     // Going to pass location of test data so tests can obtain, extract and otherwise use
@@ -102,31 +126,31 @@ fun configTestEnv(test: Test) {
     val testOutputDirectory = "${projectDir}\\..\\TestOutput\\${System.currentTimeMillis()}"
 
     test.setEnvironment(
-            // Add our engine release's bin and bin/x86 to PATH
-            Pair("PATH","${System.getenv("PATH")};${engineBinDir};${engineBinX86Dir}"),
+        // Add our engine release's bin and bin/x86 to PATH
+        Pair("PATH", "${System.getenv("PATH")};${engineBinDir};${engineBinX86Dir}"),
 
-            // Define where tests can place re-usable test data
-            Pair("TEST_DATA_DIRECTORY",testDataDirectory),
+        // Define where tests can place re-usable test data
+        Pair("TEST_DATA_DIRECTORY", testDataDirectory),
 
-            // Define where tests can write output produce for later review
-            Pair("TEST_OUTPUT_DIRECTORY",testOutputDirectory),
+        // Define where tests can write output produce for later review
+        Pair("TEST_OUTPUT_DIRECTORY", testOutputDirectory),
 
-            // Forward ENV username and password
-            Pair("NUIX_USERNAME",System.getenv("NUIX_USERNAME")),
-            Pair("NUIX_PASSWORD",System.getenv("NUIX_PASSWORD")),
+        // Forward ENV username and password
+        Pair("NUIX_USERNAME", System.getenv("NUIX_USERNAME")),
+        Pair("NUIX_PASSWORD", System.getenv("NUIX_PASSWORD")),
 
-            // Forward LOCALAPPDATA and APPDATA
-            Pair("LOCALAPPDATA",System.getenv("LOCALAPPDATA")),
-            Pair("APPDATA",System.getenv("APPDATA")),
-            Pair("PROGRAMDATA",System.getenv("PROGRAMDATA")),
-            Pair("SYSTEMDRIVE",System.getenv("SYSTEMDRIVE")),
+        // Forward LOCALAPPDATA and APPDATA
+        Pair("LOCALAPPDATA", System.getenv("LOCALAPPDATA")),
+        Pair("APPDATA", System.getenv("APPDATA")),
+        Pair("PROGRAMDATA", System.getenv("PROGRAMDATA")),
+        Pair("SYSTEMDRIVE", System.getenv("SYSTEMDRIVE")),
 
-            // We need to make sure we set these so workers will properly resolve temp dir
-            // (when using a worker based operation via EngineWrapper).
-            Pair("TEMP",nuixTempDirectory),
-            Pair("TMP",nuixTempDirectory),
+        // We need to make sure we set these so workers will properly resolve temp dir
+        // (when using a worker based operation via EngineWrapper).
+        Pair("TEMP", nuixTempDirectory),
+        Pair("TMP", nuixTempDirectory),
 
-            Pair("NUIX_ENGINE_DIR", nuixEngineDirectory)
+        Pair("NUIX_ENGINE_DIR", nuixEngineDirectory)
     )
 }
 
@@ -135,6 +159,6 @@ tasks.getByName<Test>("test") {
     configTestEnv(this)
 }
 
-tasks.getByName<Javadoc>("javadoc"){
+tasks.getByName<Javadoc>("javadoc") {
     setDestinationDir(File("${projectDir}/../docs"))
 }
