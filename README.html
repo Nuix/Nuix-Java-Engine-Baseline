@@ -1,0 +1,290 @@
+<doctype html>
+<html>
+<head>
+<!--
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css">
+-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
+<style>
+	.markdown-body {
+		box-sizing: border-box;
+		min-width: 200px;
+		max-width: 980px;
+		margin: 0 auto;
+		padding: 45px;
+	}
+
+	@media (max-width: 767px) {
+		.markdown-body {
+			padding: 15px;
+		}
+	}
+</style>
+</head>
+<body class="markdown-body">
+<h1>Nuix Java Engine Baseline</h1>
+
+<p><img src="https://img.shields.io/badge/Nuix%20Engine-9.10.x.x-green.svg" alt="Nuix Engine 9.10.x.x"></p>
+
+<p>View the GitHub project <a href="https://github.com/Nuix/Nuix-Java-Engine-Baseline">here</a> or download the latest release <a href="https://github.com/Nuix/Nuix-Java-Engine-Baseline/releases">here</a>.</p>
+
+<p>View the Java docs <a href="https://nuix.github.io/Nuix-Java-Engine-Baseline/">here</a>.</p>
+
+<h1>Overview</h1>
+
+<p><strong>Written By:</strong> Jason Wells</p>
+
+<p>This repository contains a series of examples making use of the Java Engine API and can be used as a foundation for your own Nuix Java Engine based project.  This project provides implementation of some commonly desired functionality one may want around using the Nuix Engine API:</p>
+
+<ul>
+<li>Environment configuration checks with hints at addressing some misconfigurations</li>
+<li>License resolution with fallbacks when initially desired license is not available</li>
+<li>Logging initialization</li>
+<li>Diagnostics generation</li>
+<li>Third party dependency checking</li>
+<li>Ruby script execution</li>
+</ul>
+
+<p>This project can provide you a quick way to get up and running with some additional functionality built on top.  Due to some of the extra features included, this project may not be the easiest way to wrap you head around the fundamental steps needed to use the Nuix Java Engine API.  If you are looking for a more straight forward example demonstrating core concepts regarding getting the Nuix Java Engine API up and running, see the <a href="https://github.com/Nuix/java-sdk-starter">Java SDK Starter repository</a>.</p>
+
+<h1>Setup</h1>
+
+<h2>Nuix Java Engine Distributable</h2>
+
+<p>We will need to obtain a Nuix Java Engine API distributable release.  This contains the various binaries and dependencies needed to run the Nuix Java Engine API.</p>
+
+<ol>
+<li>Download an Engine release from the <a href="download.nuix.com">Nuix download site</a>.</li>
+<li>Extract its contents to a directory, such as <code>C:\EngineRelease</code>.</li>
+<li>Edit the system environment variables, adding a new variable named <code>NUIX_ENGINE_DIR</code> assigning the directory in the previous step as the value.  The project refers to this environment variable to resolve these dependencies.</li>
+<li>(Optional) If you wish to obtain your license from either Nuix Management Server (NMS) or Nuix Cloud License Server (CLS) you may want to specify authentication credentials.  The project supports obtaining the user name and password from environment variables <code>NUIX_USERNAME</code> and <code>NUIX_PASSWORD</code> (although does not require this).</li>
+</ol>
+
+<h2>IDE</h2>
+
+<p>This project makes use of <a href="https://gradle.org/">Gradle</a> and has been tested with <a href="https://www.jetbrains.com/idea/">IntelliJ Idea IDE</a>.  It may work with other IDEs such as <a href="https://www.eclipse.org/eclipseide/">Eclipse</a> as well, but it has only been tested in IntelliJ Idea.</p>
+
+<p><a href="https://gradle.org/">Gradle</a> is a build automation tool.  While it adds a small degree of additional complexity (the <a href="https://github.com/Nuix/Nuix-Java-Engine-Baseline/blob/master/IntelliJ/build.gradle.kts">build.gradle.kts</a> file is not the most straightforward) it does provide some benefits that make it worth the additional complexity.</p>
+
+<ol>
+<li>If you do not already have it installed, download and install <a href="https://www.jetbrains.com/idea/download/#section=windows">IntelliJ Idea IDE</a> (the community edition should be fine).</li>
+<li>Download or clone this repository to your development machine.</li>
+<li>Download a Nuix Java Engine API release zip file and extract its contents to the <code>engine</code> sub-directory of your local copy.</li>
+<li>Start IntelliJ Idea and open project by selecting <code>\Nuix-Java-Engine-Baseline\IntelliJ\build.gradle.kts</code>.</li>
+<li>Import process should begin.  This can take a few minutes as dependencies are pulled down from the internet, dependencies are indexed, etc.</li>
+</ol>
+
+<h1>NuixEngine Class</h1>
+
+<p>Making use of the Nuix Java Engine API, at a high level, involves:</p>
+
+<ol>
+<li>Ensure environment is configured appropriately, such as having Nuix Engine dependencies in place.</li>
+<li>Start engine instance.</li>
+<li>License the engine instance.</li>
+<li>Once licensed, make use of the <code>Utilities</code> object to interact with the rest of the API.</li>
+</ol>
+
+<p>This repository provides much of the logic to perform this work, allowing you to get the engine initialized as simply as:</p>
+
+<pre lang="java"><code>// Define a resolver which will resolve licenses from Cloud License Server (CLS),
+// authenticating using upon environment variable &quot;NUIX_USERNAME&quot; and &quot;NUIX_PASSWORD&quot;,
+// that have at least 4 workers and the feature &quot;CASE_CREATION&quot;.
+LicenseResolver cloud_4_workers = NuixLicenseResolver.fromCloud()
+    .withLicenseCredentialsResolvedFromEnvVars()
+    .withMinWorkerCount(4)
+    .withRequiredFeatures(&quot;CASE_CREATION&quot;);
+
+// Define a resolver which will attempt to resolve a license from a local physical dongle
+// that has the feature &quot;CASE_CREATION&quot;.
+LicenseResolver anyDongle = NuixLicenseResolver.fromDongle()
+    .withRequiredFeatures(&quot;CASE_CREATION&quot;);
+
+// Create a new NuixEngine instance which will first attempt to resolve a cloud license and then
+// attempt to resolve a dongle license if one cannot be resolved from cloud, using resolvers
+// defined above.  Calling run method to execute code with a licensed Engine instance (if a license can be obtained).
+NuixEngine.usingFirstAvailableLicense(cloud_4_workers, anyDongle)
+    .setEngineDistributionDirectoryFromEnvVars()
+    .run((utilities -&gt; {
+        log.info(&quot;License was obtained!&quot;);
+        // Do something with Utilities/API here
+    }));
+</code></pre>
+
+<p>In the example above, the <code>run</code> method will internally call the <code>NuixEngine.getUtilities</code> method.  This in turn will do the following:
+1. Call <code>NuixEngine.checkPreconditions</code> which will check some environmental settings, using sensible defaults when possible and throwing informative errors when it cannot.
+1. Initialize log4j2 logging for you.
+1. Constructuct <code>GlobalContainer</code> and <code>Engine</code> instances for you with some lifetime management hooked into JVM shut down.
+1. Work through the 1 or more <code>LicenseResolver</code> instances provided to resolve a license, logging information about the process.
+1. Log information regarding presence of third party dependencies.
+1. Yield a licensed instance of <code>Utilities</code> for you to work with, if a license was able to be obtained.</p>
+
+<h1>Running an Example Outside Gradle</h1>
+
+<p>Gradle simplifies running the examples, but what is needed to run an example (or your own code) outside of Gradle?  We need to take similar steps to what Gradle would be doing:</p>
+
+<ul>
+<li>Start a JVM (Java Virtual Machine) to run the program.</li>
+<li>Make sure that the engine release sub-directories <code>bin</code> and <code>bin\x86</code> can be resolved via the <code>PATH</code> environment variable.</li>
+<li>Make sure your JAR can be resolved on the JVM classpath.</li>
+<li>Make sure the Nuix dependency JAR files in the engine release <code>lib</code> sub-directory can be resolved on the JVM classpath.</li>
+<li>Make sure we know the entry point to our program.  The entry point is the Java class containing the <code>public static void main(String[] args)</code> method to run.</li>
+</ul>
+
+<h2>Make Sure Java is Installed</h2>
+
+<p>It is assumed that you have Java installed and that running the command <code>java</code> on the console will succeed.</p>
+
+<h2><code>PATH</code> References to <code>bin</code> and <code>bin/x86</code></h2>
+
+<p>You will need to make sure that the <code>PATH</code> environment variable for the JVM process points to the engine release sub-directories <code>bin</code> and <code>bin\x86</code>.  This can be accomplished different ways.  The easiest is to add those paths to the <code>PATH</code> environment variable.  There are ways to set these temporarily for the JVM process you start.  For example you could use a batch file and <code>SET LOCAL</code> / <code>END LOCAL</code> (<a href="https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/setlocal">doc</a>) in combination with <code>SET</code> (<a href="https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1">doc</a>) or start your program via something like the .NET class <a href="https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.process?view=net-7.0">Process</a> which allows for customizing the environment variables just for a process it starts via </p>
+
+<pre lang="csharp"><code>Process nuixProcess = new Process();
+...
+...
+string engineDir = &quot;C:\\EngineRelease&quot;;
+string engineBinDir = engineDir + &quot;\\bin&quot;;
+string enginex86BinDir = engineBinDir + &quot;\\x86&quot;;
+string existingPath = Environment.GetEnvironment(&quot;PATH&quot;);
+nuixProcess.StartInfo.EnvironmentVariables.Add(&quot;PATH&quot;, existingPath+&quot;;&quot;+engineBinDir+&quot;;&quot;+enginex86BinDir );
+</code></pre>
+
+<h2>Construct the Command</h2>
+
+<p>The command takes the basic form:</p>
+
+<pre><code>java --add-exports=java.base/jdk.internal.loader=ALL-UNNAMED -cp &quot;&lt;Engine Lib Directory&gt;/*;&lt;Path to Jar&gt;&quot; &lt;Main Class&gt;
+</code></pre>
+
+<p>If my engine release <code>lib</code> directory is located at <code>C:\EngineRelease\lib</code>, my compiled JAR is located at <code>C:\MyApp\MyCustomNuixApp-v1.0.0.jar</code> and my <code>public static void main(String[] args)</code> method exists in a class <code>com.company.CustomNuixApp</code> then the command would look like this:</p>
+
+<pre><code>java --add-exports=java.base/jdk.internal.loader=ALL-UNNAMED -cp &quot;C:/EngineRelease/lib/*;C:/MyApp/MyCustomNuixApp-v1.0.0.jar&quot; com.company.CustomNuixApp
+</code></pre>
+
+<p>Some things to note:</p>
+
+<ul>
+<li>The argument <code>--add-exports=java.base/jdk.internal.loader=ALL-UNNAMED</code> is necessary and you will have startup issues if you do not include this.  Note that <code>NuixEngine</code> class will check for this during check of pre-conditions.</li>
+<li>The class path references use forward slashes (<code>/</code>) rather than the Windows norm of using back slashes (<code>\</code>).</li>
+<li>The engine lib directory class path reference ends with <code>/*</code> to include all JAR files in that directory.</li>
+<li>The program JAR reference is an absolute reference to the JAR file (it could be reference to its containing directory though).</li>
+<li>The class path entries are delimited with a semicolon (<code>;</code>).</li>
+<li>The <em>last argument</em> is the fully qualified name (package and class name) of the class containing the entry point we are running.</li>
+</ul>
+
+<h1>Gradle Package Dependency</h1>
+
+<p>Just want to make use of the wrapper?  You can add the wrapper classes as a dependency to your own Gradle project.</p>
+
+<p>You will need to generate a <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">personal access token</a> with at least the permission <code>read:packages</code>.  Place this token in the environment variable <code>GITHUB_TOKEN</code>.  Place your GitHub username in the environment variable <code>GITHUB_USERNAME</code>.  You can also supply the username and token by other means if you wish (see below), but the environment variables mentioned above should work with the Gradle code below.</p>
+
+<p>The you will need to merge the following into your project&#39;s <code>build.gradle.kts</code> file:</p>
+
+<pre lang="kotlin"><code>// Directory containing Nuix Engine release
+val nuixEngineDirectory: String = System.getenv(&quot;NUIX_ENGINE_DIR&quot;)
+println(&quot;NUIX_ENGINE_DIR: ${nuixEngineDirectory}&quot;)
+if (nuixEngineDirectory.isEmpty()) {
+    throw InvalidUserDataException(&quot;Please populate the environment variable &#39;NUIX_ENGINE_DIR&#39; with directory containing a Nuix Engine release&quot;)
+}
+
+val engineLibDir = &quot;${nuixEngineDirectory}\\lib&quot;
+println(&quot;engineLibDir: ${engineLibDir}&quot;)
+
+repositories {
+    mavenCentral()
+
+    // Resolve GitHub username and access token
+    val github_username = project.findProperty(&quot;gpr.user&quot;) as String? ?: System.getenv(&quot;GITHUB_USERNAME&quot;)
+    val github_token = project.findProperty(&quot;gpr.key&quot;) as String? ?: System.getenv(&quot;GITHUB_TOKEN&quot;)
+
+    // Link to repository so package can be resolved
+    maven {
+        url = uri(&quot;https://maven.pkg.github.com/nuix/nuix-java-engine-baseline&quot;)
+        credentials {
+            username = github_username
+            password = github_token
+        }
+    }
+}
+
+dependencies {
+    // Engine wrapper as dependency
+    implementation(&quot;com.nuix.innovation:enginewrapper:Nuix9.10-v1.+&quot;)
+
+    // Test run-time engine release lib dir
+    testImplementation(fileTree(baseDir = engineLibDir) {
+        include(&quot;*.jar&quot;)
+    })
+}
+
+// Function to perform some configuration of test environment when tests are ran
+fun configureTestEnvironment(test: Test) {
+    // Engine runtime temp directory
+    val nuixTempDirectory = findProperty(&quot;tempDir&quot;) ?: &quot;${System.getenv(&quot;LOCALAPPDATA&quot;)}\\Temp\\Nuix&quot;
+
+    // Args passed to JVM running tests
+    test.jvmArgs(
+            &quot;--add-exports=java.base/jdk.internal.loader=ALL-UNNAMED&quot;,
+            &quot;-Xmx4G&quot;,
+            &quot;-Djava.io.tmpdir=\&quot;${nuixTempDirectory}\&quot;&quot;,
+    )
+
+    // Configure ENV vars for JVM tests run in
+    test.setEnvironment(
+            // Add our engine release&#39;s bin and bin/x86 to PATH
+            Pair(&quot;PATH&quot;, &quot;${System.getenv(&quot;PATH&quot;)};${nuixEngineDirectory}\\bin;${nuixEngineDirectory}\\bin\\x86&quot;),
+
+            // Forward ENV username and password
+            Pair(&quot;NUIX_USERNAME&quot;, System.getenv(&quot;NUIX_USERNAME&quot;)),
+            Pair(&quot;NUIX_PASSWORD&quot;, System.getenv(&quot;NUIX_PASSWORD&quot;)),
+
+            // Forward LOCALAPPDATA and APPDATA
+            Pair(&quot;LOCALAPPDATA&quot;, System.getenv(&quot;LOCALAPPDATA&quot;)),
+            Pair(&quot;APPDATA&quot;, System.getenv(&quot;APPDATA&quot;)),
+
+            // We need to make sure we set these so workers will properly resolve temp dir
+            // (when using a worker based operation via EngineWrapper).
+            Pair(&quot;TEMP&quot;, nuixTempDirectory),
+            Pair(&quot;TMP&quot;, nuixTempDirectory),
+
+            Pair(&quot;NUIX_ENGINE_DIR&quot;, nuixEngineDirectory)
+    )
+}
+
+// Ensure that tests are ran by JUnit and that test environment gets configured
+tasks.test {
+    dependsOn(tasks.findByName(&quot;copyJarsToEngine&quot;))
+    useJUnitPlatform()
+    configureTestEnvironment(this)
+}
+</code></pre>
+
+<h1>Where to Get Help</h1>
+
+<p>Having trouble getting things up and running?  Here are several places you can seek assistance:</p>
+
+<ul>
+<li>Create a <a href="https://github.com/Nuix/Nuix-Java-Engine-Baseline/issues/new">new Issue</a></li>
+<li>Ask on the <a href="https://forums.nuix.com/">Nuix Community Forums</a></li>
+<li>Contact <a href="https://nuix.service-now.com/support">Nuix Support</a></li>
+</ul>
+
+<h1>License</h1>
+
+<pre><code>Copyright 2023 Nuix
+
+Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+</code></pre>
+</body>
+</html>
